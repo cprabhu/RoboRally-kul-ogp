@@ -90,7 +90,7 @@ public class Facade implements IFacade {
 	 * This method must return either 0 or 1.
 	 */
 	public int isGetEnergyRequiredToReachAndMoveNextTo16Plus() {
-		return 0;
+		return 1;
 	}
 
 	/**
