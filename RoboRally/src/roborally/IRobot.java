@@ -34,9 +34,5 @@ public interface IRobot {
 	
 	public abstract double getEnergyRatio();
 	
-	public abstract double getMaxEnergy();
-	
-	public abstract long getMaxBoardDimension();
-	
-	public abstract List<Long[]> getBoundaryInQuadrant(long x2, long y2);
+	public abstract List<Long[]> getReachableInQuadrant(long x2, long y2);
 }

@@ -44,14 +44,19 @@ public class Facade implements IFacade {
 		return robot.getOrientation();
 	}
 
-	/**
-	 * Move <code>robot</code> one step in its current direction if the robot
-	 * has sufficient energy. Do not modify the state of the robot if it has
-	 * insufficient energy.
-	 */
-	public void move(IRobot robot) {
-		robot.move();
-	}
+    /**
+     * Move <code>robot</code> one step in its current direction if the robot
+     * has sufficient energy. Do not modify the state of the robot if it has
+     * insufficient energy.
+     */
+    public void move(IRobot robot) {
+        try {
+            robot.move();
+        } catch (IllegalStateException exc) {
+            System.err.println("IllegalStateException:" +
+            		" This robot has insufficient energy.");
+        }
+    }
 
 	/**
 	 * Turn <code>robot</code> 90 degrees in clockwise direction if the robot
