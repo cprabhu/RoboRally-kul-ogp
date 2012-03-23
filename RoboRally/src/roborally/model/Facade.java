@@ -16,7 +16,13 @@ public class Facade implements IFacade {
 	 * </p>
 	 */
 	public IRobot createRobot(long x, long y, int orientation, double energy) {
-		return new Robot(x, y, orientation, energy);
+	    try {
+	        return new Robot(x, y, orientation, energy);
+	    } catch (IllegalArgumentException exc) {
+	        System.err.println("IllegalArgumentException:" +
+	        		" This is not a valid position for this robot.");
+	    }
+	    return new Robot(0, 0, 0, 0);
 	}
 
 	/**
@@ -55,6 +61,9 @@ public class Facade implements IFacade {
         } catch (IllegalStateException exc) {
             System.err.println("IllegalStateException:" +
             		" This robot has insufficient energy.");
+        } catch (IllegalArgumentException exc) {
+            System.err.println("IllegalStateException:" +
+            " This robot can't move forward.");
         }
     }
 
@@ -81,7 +90,7 @@ public class Facade implements IFacade {
 	 * energy level, do not modify the state of the robot.
 	 */
 	public void recharge(IRobot robot, double energyAmount) {
-		robot.recharge(energyAmount);
+		    robot.recharge(energyAmount);
 	}
 
 	/**
@@ -133,6 +142,6 @@ public class Facade implements IFacade {
 	 * </ul>
 	 */
 	public void moveNextTo(IRobot robot, IRobot robot2) {
-		robot.moveNextTo(robot2);
+		    robot.moveNextTo(robot2);
 	}
 }

@@ -4,15 +4,16 @@ import static org.junit.Assert.*;
 import org.junit.*;
 import java.util.*;
 
+import roborally.IRobot;
 import roborally.model.Robot;
 
 public class RobotTest {
-    Robot robot;
+    IRobot robot;
     Double epsilon = 0.1;
     
     @Before
     public void setUp() {
-        robot = new Robot(7, 70, Robot.LEFT, Robot.getMaxEnergy());
+        robot = new Robot(7, 70, Robot.LEFT, -1300);
     }
     
     @Test
@@ -21,7 +22,7 @@ public class RobotTest {
         assertEquals(7, robot.getX());
         assertEquals(70, robot.getY());
         assertEquals(Robot.LEFT, robot.getOrientation());
-        assertEquals(Robot.getMaxEnergy(), robot.getEnergy(), epsilon);
+        assertEquals(robot.getMaxEnergy(), robot.getEnergy(), epsilon);
     }
     
     @Test (expected = IllegalArgumentException.class)
@@ -73,7 +74,7 @@ public class RobotTest {
 
     @Test
     public void testMoveNextTo() {
-        Robot robot2 = new Robot(20, 117, Robot.LEFT, Robot.getMaxEnergy());
+        IRobot robot2 = new Robot(20, 117, Robot.LEFT, -1300);
         robot.moveNextTo(robot2);
         long manhattanDistance = Math.abs(robot.getX() - robot2.getX())
                             + Math.abs(robot.getY() - robot2.getY());
@@ -82,12 +83,31 @@ public class RobotTest {
     
     @Test
     public void testMoveNextToBestEffort() {
-        Robot robot2 = new Robot(7, 150, Robot.UP, Robot.getMaxEnergy());
+        IRobot robot2 = new Robot(7, 150, Robot.UP, -1300);
         robot.moveNextTo(robot2);
         long manhattanDistance = Math.abs(robot.getX() - robot2.getX())
                             + Math.abs(robot.getY() - robot2.getY());
-        System.out.println(manhattanDistance);
         assertEquals(2, manhattanDistance);
+    }
+    
+    @Test
+    public void testMoveNextToOnTop() {
+        IRobot robot2 = new Robot(7, 70, Robot.LEFT, -1300);
+        robot.moveNextTo(robot2);
+        long manhattanDistance = Math.abs(robot.getX() - robot2.getX())
+                            + Math.abs(robot.getY() - robot2.getY());
+        assertEquals(1, manhattanDistance);
+
+    }
+    
+    @Test
+    public void testMoveNextToOnTopInsufficientEnergy() {
+        IRobot robot2 = new Robot(7, 70, Robot.UP, 0);
+        robot.setEnergy(0);
+        robot.moveNextTo(robot2);
+        long manhattanDistance = Math.abs(robot.getX() - robot2.getX())
+                            + Math.abs(robot.getY() - robot2.getY());
+        assertEquals(0, manhattanDistance);
     }
 
     @Test
@@ -103,11 +123,27 @@ public class RobotTest {
         Long[] coord2 = {(long) 7, (long) 71};
         Long[] coord3 = {(long) 8, (long) 70};
         Long[] coord4 = {(long) 8, (long) 71};
-
+        
         assertArrayEquals(coord1, reachable.get(0));
         assertArrayEquals(coord2, reachable.get(1));
         assertArrayEquals(coord3, reachable.get(2));
         assertArrayEquals(coord4, reachable.get(3));
+    }
+    
+    @Test
+    public void testGetReachableOnTop() {
+        List<Long[]> reachable = robot.getReachableInQuadrant(7, 70);
+        Long[] coord1 = {(long) 8, (long) 70};
+        Long[] coord2 = {(long) 6, (long) 70};
+        Long[] coord3 = {(long) 7, (long) 71};
+        Long[] coord4 = {(long) 7, (long) 69};
+        Long[] coord5 = {(long) 7, (long) 70};
+        
+        assertArrayEquals(coord1, reachable.get(0));
+        assertArrayEquals(coord2, reachable.get(1));
+        assertArrayEquals(coord3, reachable.get(2));
+        assertArrayEquals(coord4, reachable.get(3));
+        assertArrayEquals(coord5, reachable.get(4));
     }
 
     @Test
@@ -151,7 +187,7 @@ public class RobotTest {
 
     @Test
     public void testGetEnergy() {
-        assertEquals(Robot.getMaxEnergy(), robot.getEnergy(), epsilon);
+        assertEquals(robot.getMaxEnergy(), robot.getEnergy(), epsilon);
     }
 
     @Test
