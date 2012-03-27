@@ -3,97 +3,87 @@ package roborally;
 import static java.lang.System.out;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-public class RoboRally extends JFrame {
-
-	private static final long serialVersionUID = -3473726733665371064L;
-	// replace new roboraly.model.Facade() with new yourpackage.Facade()
-	// <begin>
-	private IFacade facade = new roborally.model.Facade();
-	// <end>
-	private Map<String, IRobot> robots = new HashMap<String, IRobot>();
-	private JLabel statusBar;
-	private RoboRallyView view;
-
-	public RoboRally() {
+public class RoboRally<Board, Robot, Wall, Battery> extends JFrame {
+	
+	private static final long serialVersionUID = 1949718792817670580L;
+	private static final long BOARD_WIDTH = 2000;
+	private static final long BOARD_HEIGHT = 1000;
+	
+	private Map<String, Robot> robots = new HashMap<String, Robot>();
+	private Map<String, Battery> batteries = new HashMap<String, Battery>();
+	private Board board;
+	private final RoboRallyView<Board, Robot, Wall, Battery> view;
+	private final IFacade<Board, Robot, Wall, Battery> facade;
+	private final JLabel statusBar;
+	
+	public RoboRally(IFacade<Board, Robot, Wall, Battery> facade) {
 		super("RoboRally");
+		this.facade = facade;
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setAlwaysOnTop(true);
+		board = facade.createBoard(BOARD_WIDTH, BOARD_HEIGHT);
 		this.setAlwaysOnTop(true);
 		JPanel root = new JPanel();
 		root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
 		statusBar = new JLabel();
-		view = new RoboRallyView(this);
+		statusBar.setAlignmentX(LEFT_ALIGNMENT);
+		statusBar.setHorizontalTextPosition(SwingConstants.LEFT);
+		view = new RoboRallyView<Board, Robot, Wall, Battery>(this);
 		root.add(view);
 		root.add(statusBar);
 		this.add(root);
-		try {
-			setIconImage(ImageIO.read(getClass().getClassLoader().getResource(
-					"res/roborally-icon.png")));
-		} catch (IOException e) {
-		}
-		// constructing and adding menubar
-		JMenuBar menuBar = new JMenuBar();
-		JMenu viewMenu = new JMenu("View");
-		final JCheckBoxMenuItem showGridItem = new JCheckBoxMenuItem(
-				"Show Grid");
-		showGridItem.setSelected(true);
-		showGridItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				view.setGridVisible(showGridItem.isSelected());
-			}
-		});
-		viewMenu.add(showGridItem);
-		final JCheckBoxMenuItem alwaysOnTopItem = new JCheckBoxMenuItem(
-				"Always on top");
-		alwaysOnTopItem.setSelected(true);
-		alwaysOnTopItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				RoboRally.this.setAlwaysOnTop(alwaysOnTopItem.isSelected());
-			}
-		});
-		viewMenu.add(alwaysOnTopItem);
-		menuBar.add(viewMenu);
-		this.setJMenuBar(menuBar);
 		this.setPreferredSize(new Dimension(400, 400));
 		this.pack();
 	}
-
-	IFacade getFacade() {
+	
+	void setStatus(String msg) {
+		statusBar.setText(msg);	
+	}
+	
+	Board getBoard() {
+		return board;
+	}
+	
+	IFacade<Board, Robot, Wall, Battery> getFacade() {
 		return facade;
 	}
-
-	Map<String, IRobot> getRobots() {
-		return robots;
+	
+	String getRobotName(Robot robot) {
+		for(Entry<String, Robot> entry : robots.entrySet()) {
+			if(entry.getValue() == robot) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
-
-	void setStatus(String msg) {
-		statusBar.setText(msg);
+	
+	String getBatteryName(Battery battery) {
+		for(Entry<String, Battery> entry : batteries.entrySet()) {
+			if(entry.getValue() == battery) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
-
-	private void parseCommand(String command) {
+	
+	private void processCommand(String command) {
 		String[] words = command.split(" ");
-		if (words[0].equals("addrobot") && 4 <= words.length
-				&& words.length <= 5) {
+		if(words[0].equals("addrobot") && 4 <= words.length && words.length <= 5) {
 			String name = words[1];
-			if (robots.containsKey(name)) {
+			if(robots.containsKey(name)) {
 				out.println("robot named " + name + " already exists");
 				return;
 			}
@@ -101,143 +91,220 @@ public class RoboRally extends JFrame {
 			try {
 				x = Long.parseLong(words[2]);
 				y = Long.parseLong(words[3]);
-			} catch (NumberFormatException ex) {
-				out.println("position expected but found " + words[2] + " "
-						+ words[3]);
+			} catch(NumberFormatException ex) {
+				out.println("position expected but found " + words[2] + " " + words[3]);
 				return;
 			}
-			double energy;
-			if (words.length == 5) {
+			double initialEnergy = 10000;
+			if(5 <= words.length ) {
 				try {
-					energy = Double.parseDouble(words[4]);
-				} catch (NumberFormatException ex) {
-					out.println("expected double but found " + words[4]);
+					initialEnergy = Double.parseDouble(words[4]);
+				} catch(NumberFormatException ex) {
+					out.println("double expected but found " + words[4]);
 					return;
 				}
-			} else {
-				energy = 20000;
 			}
-			IRobot newRobot = facade.createRobot(x, y, 1, energy);
-			if (newRobot != null) {
+			Robot newRobot = facade.createRobot(1, initialEnergy);
+			if(newRobot != null) {
 				robots.put(words[1], newRobot);
+				facade.putRobot(board, x, y, newRobot);
 			}
-		} else if (words[0].equals("move") && words.length == 2) {
+		} else if(words[0].equals("addbattery") && 4 <= words.length && words.length <= 6) {
 			String name = words[1];
-			if (!robots.containsKey(name)) {
-				out.println("robot named " + name + " does not exist");
-				return;
-			}
-			facade.move(robots.get(name));
-		} else if (words[0].equals("turn") && words.length == 2) {
-			String name = words[1];
-			if (!robots.containsKey(name)) {
-				out.println("robot named " + name + " does not exist");
-				return;
-			}
-			facade.turnClockwise(robots.get(name));
-		} else if (words[0].equals("moveto") && words.length == 3) {
-			String name1 = words[1];
-			String name2 = words[2];
-			if (!robots.containsKey(name1)) {
-				out.println("robot named " + name1 + " does not exist");
-				return;
-			}
-			if (!robots.containsKey(name2)) {
-				out.println("robot named " + name2 + " does not exist");
-				return;
-			}
-			facade.moveNextTo(robots.get(name1), robots.get(name2));
-		} else if (words[0].equals("recharge") && words.length == 3) {
-			String name = words[1];
-			if (!robots.containsKey(name)) {
-				out.println("robot named " + name + " does not exist");
-				return;
-			}
-			double energyAmount;
-			try {
-				energyAmount = Double.parseDouble(words[2]);
-			} catch (NumberFormatException ex) {
-				out.println("expected double but found " + words[2]);
-				return;
-			}
-			facade.recharge(robots.get(name), energyAmount);
-		} else if (words[0].equals("canreach") && words.length == 4) {
-			String name = words[1];
-			if (!robots.containsKey(name)) {
-				out.println("robot named " + name + " does not exist");
+			if(batteries.containsKey(name)) {
+				out.println("battery named " + name + " already exists");
 				return;
 			}
 			long x, y;
 			try {
 				x = Long.parseLong(words[2]);
 				y = Long.parseLong(words[3]);
-			} catch (NumberFormatException ex) {
-				out.println("position expected but found " + words[2] + " "
-						+ words[3]);
+			} catch(NumberFormatException ex) {
+				out.println("position expected but found " + words[2] + " " + words[3]);
 				return;
 			}
-			double requiredEnergy = facade.getEnergyRequiredToReach(
-					robots.get(name), x, y);
-			double availableEnergy = facade.getEnergy(robots.get(name));
-			if (requiredEnergy <= availableEnergy) {
-				out.println("yes (consuming " + requiredEnergy + " ws)");
-			} else {
-				out.println("no");
+			double initialEnergy = 1000;
+			if(5 <= words.length ) {
+				try {
+					initialEnergy = Double.parseDouble(words[4]);
+				} catch(NumberFormatException ex) {
+					out.println("double expected but found " + words[4]);
+					return;
+				}
 			}
-		} else if (words[0].equals("help")) {
+			int weight = 1500;
+			if(6 <= words.length) {
+				try {
+					weight = Integer.parseInt(words[5]);
+				} catch(NumberFormatException ex) {
+					out.println("integer expected but found " + words[5]);
+					return;
+				}
+			}
+			Battery newBattery = facade.createBattery(initialEnergy, weight);
+			if(newBattery != null) {
+				batteries.put(words[1], newBattery);
+				facade.putBattery(board, x, y, newBattery);
+			}
+		} else if(words[0].equals("addwall") && words.length == 3) {
+			int x, y;
+			try {
+				x = Integer.parseInt(words[1]);
+				y = Integer.parseInt(words[2]);
+			} catch(NumberFormatException ex) {
+				out.println("position expected but found " + words[1] + " " + words[2]);
+				return;
+			}
+			Wall wall = facade.createWall();
+			if(wall != null) {
+				facade.putWall(board, x, y, wall);
+			}
+		} else if(words[0].equals("move") && words.length == 2) {
+			String name = words[1];
+			if(! robots.containsKey(name)) {
+				out.println("robot named " + name + " does not exist");
+				return;
+			}
+			facade.move(robots.get(name));
+		} else if(words[0].equals("turn") && words.length == 2) {
+			String name = words[1];
+			if(! robots.containsKey(name)) {
+				out.println("robot named " + name + " does not exist");
+				return;
+			}
+			facade.turn(robots.get(name));
+		} else if(words[0].equals("pickup") && words.length == 3) {
+			String rname = words[1];
+			if(! robots.containsKey(rname)) {
+				out.println("robot named " + rname + " does not exist");
+				return;
+			}
+			String iname = words[2];
+			if(! batteries.containsKey(iname)) {
+				out.println("battery named " + iname + " does not exist");
+				return;
+			}
+			facade.pickUp(robots.get(rname), batteries.get(iname));
+		} else if(words[0].equals("use") && words.length == 3) {
+			String rname = words[1];
+			if(! robots.containsKey(rname)) {
+				out.println("robot named " + rname + " does not exist");
+				return;
+			}
+			String iname = words[2];
+			if(! batteries.containsKey(iname)) {
+				out.println("battery named " + iname + " does not exist");
+				return;
+			}
+			facade.use(robots.get(rname), batteries.get(iname));
+		} else if(words[0].equals("drop") && words.length == 3) {
+			String rname = words[1];
+			if(! robots.containsKey(rname)) {
+				out.println("robot named " + rname + " does not exist");
+				return;
+			}
+			String iname = words[2];
+			if(! batteries.containsKey(iname)) {
+				out.println("battery named " + iname + " does not exist");
+				return;
+			}
+			facade.drop(robots.get(rname), batteries.get(iname));
+		} 
+		else if(words[0].equals("moveto") && words.length == 3) {
+			String rname = words[1];
+			if(! robots.containsKey(rname)) {
+				out.println("robot named " + rname + " does not exist");
+				return;
+			}
+			String rname2 = words[2];
+			if(! robots.containsKey(rname2)) {
+				out.println("robot named " + rname2 + " does not exist");
+				return;
+			}
+			facade.moveNextTo(robots.get(rname), robots.get(rname2));
+		} else if(words[0].equals("shoot") && words.length == 2) {
+			String rname = words[1];
+			if(! robots.containsKey(rname)) {
+				out.println("robot named " + rname + " does not exist");
+				return;
+			}
+			facade.shoot(robots.get(rname));
+		} else if(words[0].equals("canreach") && words.length == 4) {
+			String name = words[1];
+			if(! robots.containsKey(name)) {
+				out.println("robot named " + name + " does not exist");
+				return;
+			}
+			int x, y;
+			try {
+				x = Integer.parseInt(words[2]);
+				y = Integer.parseInt(words[3]);
+			} catch(NumberFormatException ex) {
+				out.println("position expected but found " + words[2] + " " + words[3]);
+				return;
+			}
+			
+			double required = facade.getMinimalCostToReach(robots.get(name), x, y);
+			if(required == -1) {
+				out.println("no (blocked by obstacles)");
+			} else if(required == -2) {
+				out.println("no (insufficient energy)");
+			} else {
+				out.println("yes (consuming " + required + " ws)");
+			}
+		} else if(words[0].equals("help") && words.length == 1)  {
 			out.println("commands:");
-			out.println("\taddrobot <name> <long> <long> [<double>]");
-			out.println("\tmove <name>");
-			out.println("\tturn <name>");
-			out.println("\tmoveto <name> <name>");
-			out.println("\trecharge <name> <double>");
-			out.println("\tcanreach <name> <long> <long>");
+			out.println("\taddbattery <bname> <long> <long> [<double>] [<int>]");
+			out.println("\taddwall <long> <long>");
+			out.println("\taddrobot <rname> <long> <long> [<double>]");
+			out.println("\tmove <rname>");
+			out.println("\tturn <rname>");
+			out.println("\tshoot <rname>");
+			out.println("\tpickup <rname> <bname>");
+			out.println("\tuse <rname> <bname>");
+			out.println("\tdrop <rname> <bname>");
+			out.println("\tcanreach <rname> <long> <long>");
+			out.println("\tmoveto <rname> <long> <long>");
+			out.println("\texit");
 		} else {
 			out.println("unknown command");
 		}
 	}
-
-	private String readLine(BufferedReader reader) {
-		try {
+	
+	private String readCommand(BufferedReader reader) {
+		try { 
+			out.print(">");
+			out.flush();
 			return reader.readLine();
-		} catch (IOException ex) {
-			out.println("error reading from stdin");
+		} catch(IOException e) {
+			out.println("error reading from standard in");
 			System.exit(ERROR);
 			return null;
 		}
 	}
-
-	public void run() throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				System.in));
-		out.println("Welcome to RoboRally. Enter commands:");
-		out.print(">");
-		String command = readLine(reader);
-		while (command != null) {
-			if (command.equals("exit")) {
-				dispose();
+	
+	public void run() {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String command = readCommand(reader);
+		while(command != null) {
+			if(command.equals("exit")) {
 				break;
 			} else {
-				try {
-					parseCommand(command);
-				} catch (Exception e) {
-					System.err
-							.println("WARNING: unexpected exception thrown by IFacade implementation:");
-					e.printStackTrace();
-				}
+				processCommand(command);
 				view.repaint();
-				out.print(">");
-				command = readLine(reader);
 			}
+			command = readCommand(reader);
 		}
 		out.println("bye");
 	}
-
-	public static void main(String[] args) throws IOException {
-		if (System.getProperty("os.name").contains("Mac")) {
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-		}
-		RoboRally roboRally = new RoboRally();
+	
+	public static void main(String[] args) {
+		// modify the code between <begin> and <end> (substitute the generic arguments with your classes and replace
+		// roborally.model.Facade with your facade implementation)
+		/* <begin> */
+		RoboRally<roborally.model.Board, roborally.model.Robot, roborally.model.Wall, roborally.model.Battery> roboRally 
+			= new RoboRally<roborally.model.Board, roborally.model.Robot, roborally.model.Wall, roborally.model.Battery>(new roborally.model.Facade());
+		/* <end> */
 		roboRally.setVisible(true);
 		roboRally.run();
 	}
