@@ -15,7 +15,7 @@ public class Board {
 
     }
 
-    public void putElement(long[] position, Element element) {
+    public void putElement(Position position, Element element) {
 
     }
 
@@ -23,21 +23,23 @@ public class Board {
 
     }
 
-    public Set<Element> getElements(Class<Element> type) {
-        Set<Element> elements = new HashSet<Element>();
-        for (Set<Element> elementSet : occupiedPositions.values()) {
-            for (Element element : elementSet) {
-                if (type.isAssignableFrom(element.getClass()))
-                    elements.add(element);
-            }
-
-        }
-        return elements;
+    public Set<Element> getElementsAt(Position position) {
+        for (Position occupiedPosition : occupiedPositions)
+            if (position.equals(occupiedPosition))
+                return occupiedPosition.getElements();
+        return new HashSet<Element>();
     }
 
-    public boolean isValidPosition(long[] position) {
-        return position[0] >= 0 && position[0] <= WIDTH && position[1] >= 0
-                && position[1] <= HEIGHT;
+    public int getNumberOfOccupiedPositions() {
+        return occupiedPositions.size();
+    }
+
+    public boolean isValidPosition(Position position) {
+        return isValidPosition(position.X, position.Y);
+    }
+
+    public boolean isValidPosition(long x, long y) {
+        return x >= 0 && x <= WIDTH && y >= 0 && y <= HEIGHT;
     }
 
     public void terminate() {
@@ -50,8 +52,9 @@ public class Board {
         return isTerminated;
     }
 
+    public final long WIDTH;
+    public final long HEIGHT;
+
     private boolean isTerminated;
-    private final long WIDTH;
-    private final long HEIGHT;
-    private Map<long[], Set<Element>> occupiedPositions = new HashMap<long[], Set<Element>>();
+    private Set<Position> occupiedPositions = new HashSet<Position>();
 }

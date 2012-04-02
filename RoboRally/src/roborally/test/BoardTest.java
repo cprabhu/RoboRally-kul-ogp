@@ -7,24 +7,26 @@ import org.junit.*;
 import roborally.model.*;
 
 public class BoardTest {
-    
+
     @Before
     public void setUp() throws Exception {
         board = new Board(535, 364);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testBoard() {
         assertNotNull(board);
-        long[] position = {535, 364};
-        assertTrue(board.isValidPosition(position));
-        long[] illegalPositionUp = {298, -53};
+
+        Position legalPosition = new Position(346, 210, board);
+        assertTrue(board.isValidPosition(legalPosition));
+
+        Position illegalPositionUp = new Position(236, -17, board);
         assertFalse(board.isValidPosition(illegalPositionUp));
-        long[] illegalPositionRight = {647, 53};
+        Position illegalPositionRight = new Position(714, 156, board);
         assertFalse(board.isValidPosition(illegalPositionRight));
-        long[] illegalPositionDown = {46, 687};
+        Position illegalPositionDown = new Position(524, 425, board);
         assertFalse(board.isValidPosition(illegalPositionDown));
-        long[] illegalPositionLeft = {-64, 354};
+        Position illegalPositionLeft = new Position(-42, 357, board);
         assertFalse(board.isValidPosition(illegalPositionLeft));
     }
 
@@ -44,23 +46,26 @@ public class BoardTest {
     }
 
     @Test
-    public void testGetElements() {
+    public void testGetElementsAt() {
         fail("Not yet implemented");
     }
 
     @Test
     public void testIsValidPosition() {
-        long[] positionTrue = {354, 251};
-        assertTrue(board.isValidPosition(positionTrue));
-        long[] positionFalse = {146876847, -56684834};
-        assertFalse(board.isValidPosition(positionFalse));
+        assertTrue(board.isValidPosition(315, 243));
+
+        assertFalse(board.isValidPosition(236, -17));
+        assertFalse(board.isValidPosition(714, 156));
+        assertFalse(board.isValidPosition(524, 425));
+        assertFalse(board.isValidPosition(-42, 357));
     }
 
     @Test
+    // TODO: Test na het toevoegen van elementen.
     public void testTerminate() {
         assertFalse(board.isTerminated());
         board.terminate();
-        assertEquals(0, board.getElements(Element.class).size());
+        assertEquals(0, board.getNumberOfOccupiedPositions());
         assertTrue(board.isTerminated());
     }
 
@@ -70,6 +75,6 @@ public class BoardTest {
         board.terminate();
         assertTrue(board.isTerminated());
     }
-    
+
     private Board board;
 }
