@@ -40,6 +40,14 @@ public class Energy {
     public void removeEnergy(Energy energy) {
         amountOfEnergy -= energy.amountOfEnergy;
     }
+    
+    public void recharge(Energy energy, Energy maxEnergy){
+        this.addEnergy(energy);
+        if(this.compareTo(maxEnergy) == 1)
+            energy.amountOfEnergy = amountOfEnergy - maxEnergy.amountOfEnergy;
+        else
+            energy.amountOfEnergy = 0;
+    }
 
     private double amountOfEnergy;
 }

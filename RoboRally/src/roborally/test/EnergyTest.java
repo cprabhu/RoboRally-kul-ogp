@@ -52,5 +52,27 @@ public class EnergyTest {
 
         assertEquals(0, bigEnergy.compareTo(testEnergy));
     }
+    
+    @Test
+    public void testRecharge(){
+        Energy testEnergy = new Energy(100, unitOfPower.Wh);
+        Energy smallEnergy = new Energy(10, unitOfPower.Ws);
+        Energy bigEnergy = new Energy(100, unitOfPower.Wh);
+        Energy maxEnergy = new Energy(150, unitOfPower.Wh);
+        Energy zeroEnergy = new Energy(0, unitOfPower.Ws);
+        
+        assertEquals(-1, testEnergy.compareTo(maxEnergy));
+        
+        testEnergy.recharge(smallEnergy, maxEnergy);
+        
+        assertTrue(testEnergy.compareTo(maxEnergy) < 1);
+        assertEquals(0, smallEnergy.compareTo(zeroEnergy));
+        
+        testEnergy = bigEnergy;
+        testEnergy.recharge(bigEnergy, maxEnergy);
+        
+        assertFalse(testEnergy.compareTo(maxEnergy) > 1);
+        assertFalse(bigEnergy.compareTo(zeroEnergy) < 1);
+    }
 
 }

@@ -14,15 +14,28 @@ public class Position {
     }
 
     public void addElement(Element element) {
-        elements.add(element);
+        if(! elements.contains(new Wall()))
+            elements.add(element);
     }
 
     public void removeElement(Element element) {
         elements.remove(element);
+        
+        if(elements.isEmpty()){
+            board.removePosition(this);
+        }
     }
 
     public Set<Element> getElements() {
         return elements;
+    }
+    
+    public boolean containsElement(Element element){
+        return elements.contains(element);
+    }
+    
+    public boolean isEmpty(){
+        return elements.isEmpty();
     }
 
     public boolean equals(Object o) {

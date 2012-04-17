@@ -41,7 +41,15 @@ public class Board {
     public boolean isValidPosition(long x, long y) {
         return x >= 0 && x <= WIDTH && y >= 0 && y <= HEIGHT;
     }
-
+    
+    public boolean isOccupiedPosition(Position position){
+        return occupiedPositions.contains(position);
+    }
+    
+    public void removePosition(Position position){
+        occupiedPositions.remove(position);
+    }
+    
     public void terminate() {
         this.isTerminated = true;
     }
