@@ -1,11 +1,13 @@
 package roborally.model;
 
-// TODO: Mass may never exceed Integer.MAX_VALUE, do we need to check?
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
 
 public class Weight {
     
     public Weight(int mass, unitOfMass unit){
         this.mass = mass * unit.getConversionFactor(unitOfMass.g);
+        this.isTerminated = false;
     }
 
     public enum unitOfMass {
@@ -42,6 +44,19 @@ public class Weight {
     public void removeWeight(Weight weight) {
         mass -= weight.mass;
     }
+    
+    public void terminate() {
+        mass = 0;
+        this.isTerminated = true;
+    }
+
+    @Raw
+    @Basic
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+    
+    private boolean isTerminated;
     
     private int mass;
 }

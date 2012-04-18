@@ -32,6 +32,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must return <code>null</code> if the given <code>width</code> and <code>height</code> are invalid. 
      */
+    // TODO: Implementatie
     public Board createBoard(long width, long height) {
         return null;
     }
@@ -39,6 +40,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Merge <code>board1</code> and <code>board2</code>. 
      */
+    // TODO: Implementatie
     public void merge(Board board1, Board board2) {
 
     }
@@ -48,6 +50,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must return <code>null</code> if the given parameters are invalid (e.g. negative weight). 
      */
+    // TODO: Implementatie
     public Battery createBattery(double initialEnergy, int weight) {
         return null;
     }
@@ -55,6 +58,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Put <code>battery</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
      */
+    // TODO: Implementatie
     public void putBattery(Board board, long x, long y, Battery battery) {
 
     }
@@ -64,6 +68,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must throw <code>IllegalStateException</code> if <code>battery</code> is not placed on a board.
      */
+    // TODO: Implementatie
     public long getBatteryX(Battery battery) throws IllegalStateException {
         return 0;
     }
@@ -73,6 +78,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must throw <code>IllegalStateException</code> if <code>battery</code> is not placed on a board.
      */
+    // TODO: Implementatie
     public long getBatteryY(Battery battery) throws IllegalStateException {
         return 0;
     }
@@ -84,6 +90,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      *  
      * <p>0, 1, 2, 3 respectively represent up, right, down and left.</p>
      */
+    // TODO: Implementatie
     public Robot createRobot(int orientation, double initialEnergy) {
         return null;
     }
@@ -91,6 +98,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
      */
+    // TODO: Implementatie
     public void putRobot(Board board, long x, long y, Robot robot) {
 
     }
@@ -100,6 +108,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
+    // TODO: Implementatie
     public long getRobotX(Robot robot) throws IllegalStateException {
         return 0;
     }
@@ -109,6 +118,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
+    // TODO: Implementatie
     public long getRobotY(Robot robot) throws IllegalStateException {
         return 0;
     }
@@ -118,6 +128,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * <p>0, 1, 2, 3 respectively represent up, right, down and left.</p>
      */
+    // TODO: Implementatie
     public int getOrientation(Robot robot) {
         return 0;
     }
@@ -125,6 +136,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Return the current energy in watt-second of <code>robot</code>.
      */
+    // TODO: Implementatie
     public double getEnergy(Robot robot) {
         return 0;
     }
@@ -133,6 +145,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * Move <code>robot</code> one step in its current direction if the robot has sufficient energy. Do not modify the state of the robot
      * if it has insufficient energy.
      */
+    // TODO: Implementatie
     public void move(Robot robot) {
 
     }
@@ -141,6 +154,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * Turn <code>robot</code> 90 degrees in clockwise direction if the robot has sufficient energy. Do not modify the state of the robot
      * if it has insufficient energy.
      */
+    // TODO: Implementatie
     public void turn(Robot robot) {
 
     }
@@ -148,6 +162,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Return the set of batteries that <code>robot</code> is carrying.
      */
+    // TODO: Implementatie
     public Set<Battery> getPossessions(Robot robot) {
         return null;
     }
@@ -155,6 +170,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Make <code>robot</code> pick up <code>battery</code> (if possible).
      */
+    // TODO: Implementatie
     public void pickUp(Robot robot, Battery battery) {
 
     }
@@ -162,6 +178,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Make <code>robot</code> use <code>battery</code> (if possible).
      */
+    // TODO: Implementatie
     public void use(Robot robot, Battery battery) {
 
     }
@@ -169,6 +186,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Make <code>robot</code> drop <code>battery</code> (if possible).
      */
+    // TODO: Implementatie
     public void drop(Robot robot, Battery battery) {
 
     }
@@ -179,6 +197,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must return either 0 or 1.
      */
+    // TODO: Implementatie
     public int isMinimalCostToReach17Plus() {
         return 0;
     }
@@ -198,6 +217,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * In any case, this method must return <code>-1</code> if <code>robot</code> is not placed on a board. Moreover, this method must return <code>-2</code> if <code>robot</code> has
      * insufficient energy to reach (<code>x</code>, <code>y</code>).
      */
+    // TODO: Implementatie
     public double getMinimalCostToReach(Robot robot, long x, long y) {
         return 0;
     }
@@ -208,6 +228,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * This method must return either 0 or 1.
      */
+    // TODO: Implementatie
     public int isMoveNextTo18Plus() {
         return 0;
     }
@@ -227,6 +248,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * </p>
      * Do not change the state if <code>robot</code> and <code>other</code> are not located on the same board.
      */
+    // TODO: Implementatie
     public void moveNextTo(Robot robot, Robot other) {
         
     }
@@ -236,6 +258,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public void shoot(Robot robot) throws UnsupportedOperationException {
 
     }
@@ -245,6 +268,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public Wall createWall() throws UnsupportedOperationException {
         return null;
     }
@@ -254,6 +278,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public void putWall(Board board, long x, long y, Wall wall)
             throws UnsupportedOperationException {
 
@@ -266,6 +291,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public long getWallX(Wall wall) throws IllegalStateException,
             UnsupportedOperationException {
         return 0;
@@ -278,6 +304,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public long getWallY(Wall wall) throws IllegalStateException,
             UnsupportedOperationException {
         return 0;
@@ -286,6 +313,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Return a set containing all robots on <code>board</code>.
      */
+    // TODO: Implementatie
     public Set<Robot> getRobots(Board board) {
         return null;
     }
@@ -293,6 +321,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Return a set containing all batteries on <code>board</code>.
      */
+    // TODO: Implementatie
     public Set<Battery> getBatteries(Board board) {
         return null;
     }
@@ -302,6 +331,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    // TODO: Implementatie
     public Set<Wall> getWalls(Board board) throws UnsupportedOperationException {
         return null;
     }

@@ -1,8 +1,12 @@
 package roborally.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
 public class Energy {
     public Energy(double amount, unitOfPower unit) {
         this.amountOfEnergy = amount * unit.getConversionFactor(unitOfPower.Ws);
+        this.isTerminated = false;
     }
 
     public enum unitOfPower {
@@ -48,6 +52,19 @@ public class Energy {
         else
             energy.amountOfEnergy = 0;
     }
+    
+    public void terminate() {
+        amountOfEnergy = 0;
+        this.isTerminated = true;
+    }
+
+    @Raw
+    @Basic
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+    
+    private boolean isTerminated;
 
     private double amountOfEnergy;
 }

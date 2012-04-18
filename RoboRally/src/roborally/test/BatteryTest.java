@@ -65,7 +65,7 @@ public class BatteryTest {
 
         battery.setPosition(position);
 
-        assertEquals(position, battery.getPosition());
+        assertTrue(battery.getPosition().equals(position));
         assertTrue(position.containsElement(battery));
     }
 

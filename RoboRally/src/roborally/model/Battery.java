@@ -1,5 +1,8 @@
 package roborally.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
 public class Battery extends Element {
 
     public Battery(){
@@ -40,6 +43,19 @@ public class Battery extends Element {
     
     public final Energy getMaxEnergy() {
         return maxEnergy;
+    }
+    
+    public void terminate() {
+        energy.terminate();
+        maxEnergy.terminate();
+        weight.terminate();
+        super.terminate();
+    }
+
+    @Raw
+    @Basic
+    public boolean isTerminated() {
+        return isTerminated;
     }
 
     private Energy energy;

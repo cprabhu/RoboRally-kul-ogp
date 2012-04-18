@@ -35,7 +35,7 @@ public class EnergyTest {
     public void testAddEnergy() {
         Energy smallEnergy = new Energy(0, unitOfPower.Ws);
         Energy testEnergy = new Energy(100, unitOfPower.Wh);
-        
+
         Energy addEnergy = new Energy(100, unitOfPower.Wh);
         smallEnergy.addEnergy(addEnergy);
 
@@ -46,33 +46,51 @@ public class EnergyTest {
     public void testRemoveEnergy() {
         Energy bigEnergy = new Energy(1000, unitOfPower.Wh);
         Energy testEnergy = new Energy(100, unitOfPower.Wh);
-        
+
         Energy removeEnergy = new Energy(900, unitOfPower.Wh);
         bigEnergy.removeEnergy(removeEnergy);
 
         assertEquals(0, bigEnergy.compareTo(testEnergy));
     }
-    
+
     @Test
-    public void testRecharge(){
+    public void testRecharge() {
         Energy testEnergy = new Energy(100, unitOfPower.Wh);
         Energy smallEnergy = new Energy(10, unitOfPower.Ws);
         Energy bigEnergy = new Energy(100, unitOfPower.Wh);
         Energy maxEnergy = new Energy(150, unitOfPower.Wh);
         Energy zeroEnergy = new Energy(0, unitOfPower.Ws);
-        
+
         assertEquals(-1, testEnergy.compareTo(maxEnergy));
-        
+
         testEnergy.recharge(smallEnergy, maxEnergy);
-        
+
         assertTrue(testEnergy.compareTo(maxEnergy) < 1);
         assertEquals(0, smallEnergy.compareTo(zeroEnergy));
-        
+
         testEnergy = bigEnergy;
         testEnergy.recharge(bigEnergy, maxEnergy);
-        
+
         assertFalse(testEnergy.compareTo(maxEnergy) > 1);
         assertFalse(bigEnergy.compareTo(zeroEnergy) < 1);
+    }
+
+    @Test
+    public void testTerminate() {
+        Energy testEnergy = new Energy(100, unitOfPower.Wh);
+        testEnergy.terminate();
+
+        assertTrue(testEnergy.isTerminated());
+    }
+
+    @Test
+    public void testIsTerminated() {
+        Energy testEnergy = new Energy(100, unitOfPower.Wh);
+        assertFalse(testEnergy.isTerminated());
+
+        testEnergy.terminate();
+
+        assertTrue(testEnergy.isTerminated());
     }
 
 }

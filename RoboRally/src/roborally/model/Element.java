@@ -6,16 +6,20 @@ import be.kuleuven.cs.som.annotate.Raw;
 public abstract class Element {
     
     Element(){
-        
+        this.isTerminated = false;
+
     }
     
+    //TODO: isValidPosition (wall)?
     Element(Position position){
-        this.position = position;
+        setPosition(position);
+        this.isTerminated = false;
+
     }
 
     public void setPosition(Position position) {
         if(this.position != null)
-            this.position.removeElement(this);
+            removePosition();
         position.addElement(this);
         this.position = position;
     }
@@ -24,9 +28,16 @@ public abstract class Element {
         return position;
     }
     
+    public void removePosition() {
+        if (position != null && position.getElements().contains(this))
+            this.position.removeElement(this);
+        position = null;
+    }
+    
     public void terminate() {
         if(position != null)
             position.removeElement(this);
+        position = null;
         this.isTerminated = true;
     }
 
@@ -36,6 +47,6 @@ public abstract class Element {
         return isTerminated;
     }
     
-    private boolean isTerminated;
+    protected boolean isTerminated;
     protected Position position;
 }
