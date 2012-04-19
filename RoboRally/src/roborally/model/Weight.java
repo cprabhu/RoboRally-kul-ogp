@@ -4,8 +4,8 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 public class Weight {
-    
-    public Weight(int mass, unitOfMass unit){
+
+    public Weight(int mass, unitOfMass unit) {
         this.mass = mass * unit.getConversionFactor(unitOfMass.g);
         this.isTerminated = false;
     }
@@ -13,17 +13,17 @@ public class Weight {
     public enum unitOfMass {
         g(1), kg(1000), tonne(1000000);
 
-        private final int GRAMS;
+        private final double GRAMS;
 
-        unitOfMass(int grams) {
+        unitOfMass(double grams) {
             this.GRAMS = grams;
         }
 
-        public int getConversionFactor(unitOfMass to) {
+        public double getConversionFactor(unitOfMass to) {
             return this.GRAMS / to.GRAMS;
         }
     }
-    
+
     public int compareTo(Weight weight) {
         final int BEFORE = -1;
         final int EQUAL = 0;
@@ -44,7 +44,11 @@ public class Weight {
     public void removeWeight(Weight weight) {
         mass -= weight.mass;
     }
-    
+
+    public int getMassIn(unitOfMass unit) {
+        return (int) (mass * unitOfMass.g.getConversionFactor(unit));
+    }
+
     public void terminate() {
         mass = 0;
         this.isTerminated = true;
@@ -55,8 +59,8 @@ public class Weight {
     public boolean isTerminated() {
         return isTerminated;
     }
-    
+
     private boolean isTerminated;
-    
-    private int mass;
+
+    private double mass;
 }

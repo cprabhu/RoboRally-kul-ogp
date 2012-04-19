@@ -66,6 +66,21 @@ public class OrientationTest {
                         energyToTurn).compareTo(halfTurnEnergy));
 
     }
+    
+    @Test
+    public void testNextPosition() {
+        Board board = new Board(5, 7);
+        Position currentPosition = new Position(3, 4, board);
+        Position testPosition1 = new Position(3, 3, board);
+        Position testPosition2 = new Position(4, 4, board);
+        Position testPosition3 = new Position(3, 5, board);
+        Position testPosition4 = new Position(2, 4, board);
+        
+        assertTrue(testPosition1.equals(up.nextPosition(currentPosition)));
+        assertTrue(testPosition2.equals(right.nextPosition(currentPosition)));
+        assertTrue(testPosition3.equals(down.nextPosition(currentPosition)));
+        assertTrue(testPosition4.equals(left.nextPosition(currentPosition)));
+    }
 
     private Orientation up;
     private Orientation right;

@@ -64,4 +64,23 @@ public enum Orientation {
 
         return turnEnergy;
     }
+    
+    public Position nextPosition(Position currentPosition) {
+        long x = currentPosition.X;
+        long y = currentPosition.Y;
+        Board board = currentPosition.BOARD;
+        
+        switch (this) {
+        case UP:
+            return new Position(x, y - 1, board);
+        case RIGHT:
+            return new Position(x + 1, y, board);
+        case DOWN:
+            return new Position(x, y + 1, board);
+        case LEFT:
+            return new Position(x - 1, y, board);
+        default:
+            return currentPosition;
+        }
+    }
 }

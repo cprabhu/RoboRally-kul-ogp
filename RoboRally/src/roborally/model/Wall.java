@@ -1,20 +1,22 @@
 package roborally.model;
 
 public class Wall extends Element {
-    
-    public Wall(){
+
+    public Wall() {
         super();
     }
-    
-    public Wall(Position position){
+
+    public Wall(Position position) {
         super(position);
     }
-    
-    public boolean equals(Object o){
+
+    @Override
+    public boolean equals(Object o) {
         return hashCode() == o.hashCode();
     }
-    
-    public int hashCode(){
+
+    @Override
+    public int hashCode() {
         return 0;
     }
 }

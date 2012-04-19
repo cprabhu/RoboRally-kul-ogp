@@ -49,14 +49,10 @@ public class BatteryTest {
 
     @Test
     public void testGetMaxEnergy() {
-        assertEquals(0,
-                battery.getMaxEnergy().compareTo(new Energy(5000, unitOfPower.Ws)));
-        assertEquals(0,
-                battery2.getMaxEnergy()
-                        .compareTo(new Energy(5000, unitOfPower.Ws)));
-        assertEquals(0,
-                battery3.getMaxEnergy()
-                        .compareTo(new Energy(5000, unitOfPower.Ws)));
+        Energy maxEnergy = new Energy(5000, unitOfPower.Ws);
+        assertEquals(0, battery.getMaxEnergy().compareTo(maxEnergy));
+        assertEquals(0, battery2.getMaxEnergy().compareTo(maxEnergy));
+        assertEquals(0, battery3.getMaxEnergy().compareTo(maxEnergy));
     }
 
     @Test
@@ -73,6 +69,28 @@ public class BatteryTest {
     public void testGetPosition() {
         assertFalse(battery.getPosition() == POSITION);
         assertEquals(POSITION, battery2.getPosition());
+    }
+    
+    @Test
+    public void testCharge() {
+        Energy zeroEnergy = new Energy(0, unitOfPower.Ws);
+        Energy emptyEnergy = new Energy(0, unitOfPower.Ws);
+        Energy hundredEnergy = new Energy(100, unitOfPower.Ws);
+        Energy rechargedEnergy = new Energy(400, unitOfPower.Ws);
+        Energy rechargedMaxEnergy = new Energy(300, unitOfPower.Ws);
+        Battery battery4 = new Battery(POSITION, rechargedEnergy);
+        
+        battery2.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
+        
+        assertEquals(0, zeroEnergy.compareTo(battery2.getEnergy()));
+        
+        battery2.charge(zeroEnergy, rechargedMaxEnergy);
+        
+        assertEquals(0, zeroEnergy.compareTo(emptyEnergy));
+        
+        battery4.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
+        
+        assertEquals(0, hundredEnergy.compareTo(battery4.getEnergy()));
     }
 
     @Test

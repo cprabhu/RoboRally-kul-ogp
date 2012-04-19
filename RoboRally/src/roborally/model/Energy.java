@@ -44,15 +44,20 @@ public class Energy {
     public void removeEnergy(Energy energy) {
         amountOfEnergy -= energy.amountOfEnergy;
     }
-    
-    public void recharge(Energy energy, Energy maxEnergy){
+
+    public void recharge(Energy energy, Energy maxEnergy) {
         this.addEnergy(energy);
-        if(this.compareTo(maxEnergy) == 1)
+        if (this.compareTo(maxEnergy) == 1) {
             energy.amountOfEnergy = amountOfEnergy - maxEnergy.amountOfEnergy;
-        else
+            amountOfEnergy = maxEnergy.amountOfEnergy;
+        } else
             energy.amountOfEnergy = 0;
     }
-    
+
+    public double getAmountOfEnergy() {
+        return amountOfEnergy;
+    }
+
     public void terminate() {
         amountOfEnergy = 0;
         this.isTerminated = true;
@@ -63,7 +68,7 @@ public class Energy {
     public boolean isTerminated() {
         return isTerminated;
     }
-    
+
     private boolean isTerminated;
 
     private double amountOfEnergy;

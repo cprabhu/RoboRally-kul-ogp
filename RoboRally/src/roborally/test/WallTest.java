@@ -46,7 +46,7 @@ public class WallTest {
     @Test
     public void testSetPosition() {
         Position position = new Position(3, 2, BOARD);
-        
+
         wall.setPosition(position);
 
         assertEquals(position, wall.getPosition());
@@ -58,13 +58,13 @@ public class WallTest {
         assertFalse(wall.getPosition() == POSITION);
         assertEquals(POSITION, wall2.getPosition());
     }
-    
+
     @Test
     public void testRemovePosition() {
         assertNotNull(wall2.getPosition());
-        
+
         wall2.removePosition();
-        
+
         assertNull(wall2.getPosition());
     }
 

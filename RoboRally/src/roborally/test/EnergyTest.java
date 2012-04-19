@@ -74,6 +74,11 @@ public class EnergyTest {
         assertFalse(testEnergy.compareTo(maxEnergy) > 1);
         assertFalse(bigEnergy.compareTo(zeroEnergy) < 1);
     }
+    
+    @Test
+    public void testGetAmountOfEnergy() {
+        assertEquals(2500, new Energy(2500, unitOfPower.Ws).getAmountOfEnergy(), 0.01);
+    }
 
     @Test
     public void testTerminate() {
