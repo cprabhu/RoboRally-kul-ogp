@@ -39,6 +39,15 @@ public class Robot extends Element {
         return energy.getAmountOfEnergy() / maxEnergy.getAmountOfEnergy();
     }
 
+    public double getEnergyToMove() {
+        Energy weightEnergy = new Energy(50 * getCarriedWeight(unitOfMass.kg),
+                unitOfPower.Ws);
+        Energy moveEnergy = new Energy(0, unitOfPower.Ws);
+        moveEnergy.addEnergy(weightEnergy);
+        moveEnergy.addEnergy(energyToMove);
+        return moveEnergy.getAmountOfEnergy();
+    }
+
     public void turnClockwise90() {
         if (energyToTurn.compareTo(energy) < 1) {
             orientation.turnClockwise90();
@@ -62,17 +71,19 @@ public class Robot extends Element {
     }
 
     public void move() {
-        Energy energyToMove = new Energy(500, unitOfPower.Ws);
-        Energy weightEnergy = new Energy(50 * getCarriedWeight(unitOfMass.kg),
-                unitOfPower.Ws);
-        energyToMove.addEnergy(weightEnergy);
-        if (energyToMove.compareTo(energy) < 1) {
+        if (getEnergyToMove() < energy.getAmountOfEnergy()) {
             Position nextPosition = orientation.nextPosition(position);
             setPosition(nextPosition);
             energy.removeEnergy(energyToMove);
         }
     }
 
+    public void moveTo(Position position, Energy energyToReach) {
+        position.BOARD.putElement(position, this);
+        energy.removeEnergy(energyToReach);
+    }
+
+    // TODO: Implementatie moveNextTo
     public void moveNextTo(Robot robot2) {
 
     }
@@ -99,7 +110,7 @@ public class Robot extends Element {
     }
 
     public void pickup(Battery battery) {
-        if (battery != null)
+        if (battery != null && carryWeight.compareTo(battery.getWeight()) > -1)
             if (position.equals(battery.getPosition())) {
                 for (int i = 0; i < batteries.size(); i++) {
                     if (battery.getWeight().compareTo(
@@ -109,6 +120,7 @@ public class Robot extends Element {
                     }
                 }
                 battery.removePosition();
+                carryWeight.removeWeight(battery.getWeight());
             }
     }
 
@@ -125,13 +137,14 @@ public class Robot extends Element {
         if (battery != null) {
             batteries.remove(battery);
             battery.setPosition(position);
+            carryWeight.addWeight(battery.getWeight());
         }
     }
 
     public Battery ithHeaviestElement(int ordinal) {
         return batteries.get(ordinal - 1);
     }
-    
+
     public Set<Battery> getPossesions() {
         Set<Battery> possesions = new HashSet<Battery>();
         possesions.addAll(batteries);
@@ -145,9 +158,12 @@ public class Robot extends Element {
         return carriedWeight;
     }
 
+    public final Energy energyToMove = new Energy(500, unitOfPower.Ws);
+
+    public static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
+
     private final Energy energy;
     private final Energy maxEnergy;
-    private static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
     private final Orientation orientation;
     private Position position;
     private final Weight carryWeight;

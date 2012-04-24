@@ -2,6 +2,8 @@ package roborally.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Set;
+
 import org.junit.*;
 
 import roborally.model.*;
@@ -84,6 +86,7 @@ public class BoardTest {
         Element element1 = new Battery(position, energy);
         Element element2 = new Battery(position, energy);
         Position newPosition = new Position(15, 254, board);
+        Position illegalPosition = new Position(516, 457, new Board(600, 500));
 
         board.putElement(newPosition, element1);
 
@@ -98,6 +101,14 @@ public class BoardTest {
         assertFalse(position.containsElement(element2));
         assertTrue(element2.getPosition().equals(newPosition));
         assertTrue(position.isTerminated());
+
+        board.putElement(illegalPosition, element2);
+
+        assertFalse(illegalPosition.containsElement(element2));
+        assertFalse(element2.getPosition().equals(illegalPosition));
+        assertTrue(element2.getPosition().equals(newPosition));
+        assertTrue(position.isTerminated());
+        assertEquals(0, illegalPosition.getElements().size());
     }
 
     @Test
@@ -130,6 +141,51 @@ public class BoardTest {
 
         assertFalse(element.equals(board.getElementsAt(position)));
         assertEquals(0, board.getElementsAt(position).size());
+    }
+
+    @Test
+    public void testGetElementsOf() {
+        Position occupied1 = new Position(3, 6, board);
+        Position occupied2 = new Position(4, 14, board);
+        Position occupied3 = new Position(5, 25, board);
+
+        Element wall = new Wall();
+        Element battery1 = new Battery();
+        Element battery2 = new Battery();
+        Element robot = new Robot(new Energy(100, unitOfPower.Ws),
+                Orientation.UP);
+
+        board.putElement(occupied1, wall);
+        board.putElement(occupied2, battery1);
+        board.putElement(occupied3, battery2);
+        board.putElement(occupied3, robot);
+
+        Set<Element> walls = board.getElementsOf(Wall.class);
+        assertEquals(1, walls.size());
+        assertTrue(walls.contains(wall));
+
+        Set<Element> batteries = board.getElementsOf(Battery.class);
+        assertEquals(2, batteries.size());
+        assertTrue(batteries.contains(battery1));
+        assertTrue(batteries.contains(battery2));
+
+        Set<Element> robots = board.getElementsOf(Robot.class);
+        assertEquals(1, robots.size());
+        assertTrue(robots.contains(robot));
+    }
+
+    @Test
+    public void testAddOccupiedPosition() {
+        Position position = new Position(33, 57, board);
+        Position illegalPosition = new Position(516, 457, new Board(600, 500));
+
+        board.addOccupiedPosition(position);
+
+        assertTrue(board.isOccupiedPosition(position));
+
+        board.addOccupiedPosition(illegalPosition);
+
+        assertFalse(board.isOccupiedPosition(illegalPosition));
     }
 
     @Test

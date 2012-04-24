@@ -1,6 +1,7 @@
 package roborally.test;
 
 import roborally.model.*;
+import roborally.model.Energy.unitOfPower;
 
 import static org.junit.Assert.*;
 
@@ -53,6 +54,25 @@ public class PositionTest {
     }
 
     @Test
+    public void testManhattanDistance() {
+        double epsilon = 0.01;
+        assertEquals(0, position1Board1.manhattanDistance(position1Board1),
+                epsilon);
+        assertEquals(1, position1Board1.manhattanDistance(position2Board1),
+                epsilon);
+        assertEquals(2, position1Board1.manhattanDistance(position3Board1),
+                epsilon);
+
+        Position illegalPosition = new Position(1, 6, board2);
+        try {
+            position1Board1.manhattanDistance(illegalPosition);
+        } catch (IllegalArgumentException exc) {
+            System.err
+                    .println("testManhattanDistance: This exception is expected");
+        }
+    }
+
+    @Test
     public void testGetElements() {
         Wall element1 = new Wall(position1Board1);
         Wall element2 = new Wall(position2Board1);
@@ -74,11 +94,11 @@ public class PositionTest {
 
         position1Board1.addElement(new Wall(position1Board1));
         position2Board1.addElement(new Wall(position2Board1));
-        position3Board1.addElement(new Wall(position3Board1));
+        position3Board1.addElement(null);
 
         assertEquals(1, position1Board1.getElements().size());
         assertEquals(1, position2Board1.getElements().size());
-        assertEquals(1, position3Board1.getElements().size());
+        assertEquals(0, position3Board1.getElements().size());
 
         position1Board1.terminate();
         position1Board1.addElement(new Wall(position1Board1));
@@ -107,18 +127,98 @@ public class PositionTest {
 
     @Test
     public void testCanContainElement() {
-        Wall element1 = new Wall();
+        Element wall = new Wall();
+        Element battery1 = new Battery();
+        Element battery2 = new Battery();
+        Element robot1 = new Robot(new Energy(100, unitOfPower.Ws),
+                Orientation.RIGHT);
+        Element robot2 = new Robot(new Energy(100, unitOfPower.Ws),
+                Orientation.RIGHT);
 
-        assertTrue(position1Board1.canContainElement(element1));
-        assertTrue(position2Board1.canContainElement(element1));
+        assertTrue(position1Board1.canContainElement(wall));
+        assertTrue(position1Board1.canContainElement(battery1));
+        assertTrue(position1Board1.canContainElement(robot1));
 
-        element1.setPosition(position1Board1);
+        assertTrue(position2Board1.canContainElement(wall));
+        assertTrue(position2Board1.canContainElement(battery1));
+        assertTrue(position2Board1.canContainElement(robot1));
 
-        assertFalse(position1Board1.canContainElement(element1));
+        assertTrue(position3Board1.canContainElement(wall));
+        assertTrue(position3Board1.canContainElement(battery1));
+        assertTrue(position3Board1.canContainElement(robot1));
 
-        position2Board1.terminate();
+        wall.setPosition(position1Board1);
 
-        assertFalse(position1Board1.canContainElement(element1));
+        assertTrue(position1Board1.canContainElement(wall));
+        assertFalse(position1Board1.canContainElement(battery1));
+        assertFalse(position1Board1.canContainElement(robot1));
+
+        robot2.setPosition(position2Board1);
+
+        assertTrue(position2Board1.canContainElement(battery1));
+        assertTrue(position2Board1.canContainElement(robot2));
+
+        assertFalse(position2Board1.canContainElement(wall));
+        assertFalse(position2Board1.canContainElement(robot1));
+
+        battery2.setPosition(position3Board1);
+
+        assertTrue(position3Board1.canContainElement(battery1));
+        assertTrue(position3Board1.canContainElement(battery2));
+        assertTrue(position3Board1.canContainElement(robot1));
+        assertTrue(position3Board1.canContainElement(robot2));
+
+        assertFalse(position3Board1.canContainElement(wall));
+
+        position3Board1.terminate();
+
+        assertFalse(position3Board1.canContainElement(wall));
+        assertFalse(position3Board1.canContainElement(battery1));
+        assertFalse(position3Board1.canContainElement(battery2));
+        assertFalse(position3Board1.canContainElement(robot1));
+        assertFalse(position3Board1.canContainElement(robot2));
+    }
+
+    @Test
+    public void testCanContainType() {
+        Element wall = new Wall();
+        Element battery = new Battery();
+        Element robot = new Robot(new Energy(100, unitOfPower.Ws),
+                Orientation.RIGHT);
+
+        assertTrue(position1Board1.canContainType(Wall.class));
+        assertTrue(position1Board1.canContainType(Battery.class));
+        assertTrue(position1Board1.canContainType(Robot.class));
+
+        assertTrue(position2Board1.canContainType(Wall.class));
+        assertTrue(position2Board1.canContainType(Battery.class));
+        assertTrue(position2Board1.canContainType(Robot.class));
+
+        assertTrue(position3Board1.canContainType(Wall.class));
+        assertTrue(position3Board1.canContainType(Battery.class));
+        assertTrue(position3Board1.canContainType(Robot.class));
+
+        wall.setPosition(position1Board1);
+        battery.setPosition(position2Board1);
+        robot.setPosition(position3Board1);
+
+        assertTrue(position1Board1.canContainType(Wall.class));
+        assertFalse(position1Board1.canContainType(Battery.class));
+        assertFalse(position1Board1.canContainType(Robot.class));
+
+        assertFalse(position2Board1.canContainType(Wall.class));
+        assertTrue(position2Board1.canContainType(Battery.class));
+        assertTrue(position2Board1.canContainType(Robot.class));
+
+        assertFalse(position3Board1.canContainType(Wall.class));
+        assertTrue(position3Board1.canContainType(Battery.class));
+        assertFalse(position3Board1.canContainType(Robot.class));
+
+        position1Board1.terminate();
+
+        assertFalse(position1Board1.canContainType(Wall.class));
+        assertFalse(position1Board1.canContainType(Battery.class));
+        assertFalse(position1Board1.canContainType(Robot.class));
     }
 
     @Test

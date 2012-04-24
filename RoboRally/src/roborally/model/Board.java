@@ -3,6 +3,7 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
+// TODO: check ?opvragen? constant time?
 public class Board {
 
     public Board(long width, long height) {
@@ -50,7 +51,6 @@ public class Board {
         return new HashSet<Element>();
     }
 
-    // TODO: Testen getelementsof
     public Set<Element> getElementsOf(Class<?> type) {
         Set<Element> elements = new HashSet<Element>();
         for (Position occupiedPosition : occupiedPositions) {

@@ -23,6 +23,43 @@ public class BatteryTest {
         assertEquals(0, battery.getEnergy().compareTo(battery.getMaxEnergy()));
         assertEquals(0,
                 battery.getWeight().compareTo(new Weight(100, unitOfMass.g)));
+
+        assertNotNull(battery2);
+        assertEquals(0, battery2.getEnergy().compareTo(ENERGY));
+        assertEquals(0,
+                battery2.getWeight().compareTo(new Weight(100, unitOfMass.g)));
+
+        assertNotNull(battery3);
+        assertEquals(0, battery3.getEnergy().compareTo(ENERGY));
+        assertEquals(0,
+                battery3.getWeight().compareTo(new Weight(200, unitOfMass.g)));
+    }
+
+    @Test
+    public void testFalseBattery() {
+        Energy negEnergy = new Energy(-500, unitOfPower.Ws);
+        Energy exceedMaxEnergy = new Energy(500, unitOfPower.foe);
+        try {
+            new Battery(POSITION, null);
+        } catch (AssertionError err) {
+            System.err.println("testFalseBattery 1: "
+                    + "This is expected behaviour, "
+                    + "it means the assert energy != null has failed");
+        }
+        try {
+            new Battery(POSITION, negEnergy);
+        } catch (AssertionError err) {
+            System.err.println("testFalseBattery 2: "
+                    + "This is expected behaviour, "
+                    + "it means the assert energy != null has failed");
+        }
+        try {
+            new Battery(POSITION, exceedMaxEnergy);
+        } catch (AssertionError err) {
+            System.err.println("testFalseBattery 3: "
+                    + "This is expected behaviour, "
+                    + "it means the assert energy != null has failed");
+        }
     }
 
     @Test
@@ -37,7 +74,8 @@ public class BatteryTest {
     public void testBatteryPositionEnergyWeight() {
         assertNotNull(battery2);
         assertEquals(0, battery2.getEnergy().compareTo(ENERGY));
-        assertEquals(0, battery.getWeight().compareTo(WEIGHT));
+        assertEquals(0,
+                battery.getWeight().compareTo(new Weight(100, unitOfMass.g)));
     }
 
     @Test
@@ -70,7 +108,7 @@ public class BatteryTest {
         assertFalse(battery.getPosition() == POSITION);
         assertEquals(POSITION, battery2.getPosition());
     }
-    
+
     @Test
     public void testCharge() {
         Energy zeroEnergy = new Energy(0, unitOfPower.Ws);
@@ -79,17 +117,17 @@ public class BatteryTest {
         Energy rechargedEnergy = new Energy(400, unitOfPower.Ws);
         Energy rechargedMaxEnergy = new Energy(300, unitOfPower.Ws);
         Battery battery4 = new Battery(POSITION, rechargedEnergy);
-        
+
         battery2.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
-        
+
         assertEquals(0, zeroEnergy.compareTo(battery2.getEnergy()));
-        
+
         battery2.charge(zeroEnergy, rechargedMaxEnergy);
-        
+
         assertEquals(0, zeroEnergy.compareTo(emptyEnergy));
-        
+
         battery4.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
-        
+
         assertEquals(0, hundredEnergy.compareTo(battery4.getEnergy()));
     }
 
@@ -122,7 +160,7 @@ public class BatteryTest {
     private Battery battery2;
     private Battery battery3;
     private final Energy ENERGY = new Energy(100, Energy.unitOfPower.Ws);
-    private final Weight WEIGHT = new Weight(100, Weight.unitOfMass.g);
+    private final Weight WEIGHT = new Weight(200, Weight.unitOfMass.g);
     private final Board BOARD = new Board(4, 5);
     private final Position POSITION = new Position(2, 3, BOARD);
 }

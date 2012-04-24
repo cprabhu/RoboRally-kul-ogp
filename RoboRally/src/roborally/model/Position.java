@@ -10,9 +10,9 @@ public class Position {
 
     public Position(long x, long y, Board board)
             throws IllegalArgumentException {
-        this.BOARD = board;
         if (!board.isValidPosition(x, y))
             throw new IllegalArgumentException();
+        this.BOARD = board;
         this.X = x;
         this.Y = y;
         elements = new HashSet<Element>();
@@ -59,15 +59,13 @@ public class Position {
             return false;
 
         if (elements.contains(new Wall())) {
-            boolean elementsContainsOtherWall = true;
             for (Element elem : elements)
-                if (element == elem)
-                    elementsContainsOtherWall = false;
-            if (elementsContainsOtherWall)
-                return false;
+                if (element != elem)
+                    return false;
         }
 
-        if (element instanceof Wall && elements.size() != 0)
+        if (element instanceof Wall && !elements.contains(new Wall())
+                && elements.size() != 0)
             return false;
 
         boolean elementsContainsOtherRobot = false;
@@ -80,8 +78,35 @@ public class Position {
         return true;
     }
 
+    public boolean canContainType(Class<?> type) {
+        if (isTerminated())
+            return false;
+
+        if (elements.contains(new Wall()) && Wall.class != type)
+            return false;
+
+        if (!elements.contains(new Wall()) && elements.size() != 0
+                && Wall.class == type)
+            return false;
+
+        boolean elementsContainsOtherRobot = false;
+        for (Element elem : elements)
+            if (elem instanceof Robot)
+                elementsContainsOtherRobot = true;
+        if (elementsContainsOtherRobot && Robot.class == type)
+            return false;
+        return true;
+    }
+
     public boolean hasSameCoordinates(Position position) {
         return (X == position.X && Y == position.Y);
+    }
+
+    public double manhattanDistance(Position position)
+            throws IllegalArgumentException {
+        if (BOARD != position.BOARD)
+            throw new IllegalArgumentException();
+        return Math.abs(position.X - X) + Math.abs(position.Y - Y);
     }
 
     public boolean equals(Object o) {
