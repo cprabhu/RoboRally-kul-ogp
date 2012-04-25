@@ -65,14 +65,14 @@ public class Robot extends Element {
 
     public void turnClockwise90() {
         if (energyToTurn.compareTo(energy) < 1) {
-            orientation.turnClockwise90();
+            orientation = orientation.turnClockwise90();
             energy.removeEnergy(energyToTurn);
         }
     }
 
     public void turnCounterClockwise90() {
         if (energyToTurn.compareTo(energy) < 1) {
-            orientation.turnCounterClockwise90();
+            orientation = orientation.turnCounterClockwise90();
             energy.removeEnergy(energyToTurn);
         }
     }
@@ -255,7 +255,7 @@ public class Robot extends Element {
 
     private final Energy energy;
     private final Energy maxEnergy;
-    private final Orientation orientation;
+    private Orientation orientation;
     private Position position;
     private final Weight carryWeight;
     private final List<Battery> batteries = new ArrayList<Battery>();

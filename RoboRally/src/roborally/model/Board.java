@@ -4,6 +4,8 @@ import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
 // TODO: check ?opvragen? constant time?
+// TODO: all aspects related to placement of walls, robots, batteries on
+// boards: defensively
 public class Board {
 
     public Board(long width, long height) {
@@ -12,7 +14,6 @@ public class Board {
         this.HEIGHT = height;
     }
 
-    // TODO: merge else testen.
     public void merge(Board board2) {
         Set<Position> occupiedPositionsBoard2 = new HashSet<Position>();
         occupiedPositionsBoard2.addAll(board2.occupiedPositions);
@@ -22,12 +23,13 @@ public class Board {
                         occupiedPosition2.Y, this);
                 for (Element elem : occupiedPosition2.getElements()) {
                     if (!position.canContainElement(elem)) {
+                        // NOTE: while(it.hasNext()) komt niet aan het einde.
                         for (Position neighbour : occupiedPosition2
-                                .getNeighbours())
-                            if (isValidPosition(neighbour)) {
-                                putElement(position, elem);
-                                break;
-                            }
+                                .getNeighbours()) {
+                            putElement(neighbour, elem);
+                            break;
+                        }
+
                     } else
                         putElement(position, elem);
                 }
@@ -40,9 +42,10 @@ public class Board {
         if (isValidPosition(position))
             if (occupiedPositions.contains(position)) {
                 for (Position occupiedPosition : occupiedPositions)
-                    if (position.equals(occupiedPosition))
-                        position = occupiedPosition;
-                position.addElement(element);
+                    if (position.equals(occupiedPosition)) {
+                        occupiedPosition.addElement(element);
+                        break;
+                    }
             } else {
                 addOccupiedPosition(position);
                 putElement(position, element);

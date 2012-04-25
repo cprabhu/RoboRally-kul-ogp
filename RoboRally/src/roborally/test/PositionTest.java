@@ -46,11 +46,15 @@ public class PositionTest {
     public void testHasSameCoordinates() {
         Position position4Board1 = new Position(2, 1, board1);
         Position position5Board1 = new Position(2, 4, board1);
+        Position position1Board2 = new Position(2, 4, board2);
+        Position position2Board2 = new Position(3, 4, board2);
 
         assertFalse(position1Board1.hasSameCoordinates(position2Board1));
         assertFalse(position1Board1.hasSameCoordinates(position3Board1));
         assertFalse(position1Board1.hasSameCoordinates(position4Board1));
         assertTrue(position1Board1.hasSameCoordinates(position5Board1));
+        assertTrue(position1Board1.hasSameCoordinates(position1Board2));
+        assertFalse(position1Board1.hasSameCoordinates(position2Board2));
     }
 
     @Test

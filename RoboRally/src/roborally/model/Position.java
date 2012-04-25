@@ -18,6 +18,18 @@ public class Position {
         this.isTerminated = false;
     }
 
+    public static Position newPosition(long x, long y, Board board) {
+        Position position = new Position(x, y, board);
+        if (positionInstances.contains(position))
+            for (Position instance : positionInstances)
+                if (instance.equals(position)) {
+                    position = instance;
+                    break;
+                }
+        positionInstances.add(position);
+        return position;
+    }
+
     public void addElement(Element element) {
         if (!isTerminated() && canContainElement(element)
                 && !elements.contains(element) && element != null) {
@@ -54,9 +66,9 @@ public class Position {
     }
 
     public boolean canContainElement(Element element) {
-        if (!BOARD.getOccupiedPositions().contains(this))
+        if (BOARD.getOccupiedPositions().contains(this))
             for (Position position : BOARD.getOccupiedPositions())
-                if (position.hasSameCoordinates(this))
+                if (position.hasSameCoordinates(this) && this != position)
                     return position.canContainElement(element);
 
         if (isTerminated())
@@ -157,4 +169,5 @@ public class Position {
 
     private Set<Element> elements;
     private boolean isTerminated;
+    private static final Set<Position> positionInstances = new HashSet<Position>();
 }
