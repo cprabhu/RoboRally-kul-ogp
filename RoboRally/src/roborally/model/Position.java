@@ -5,7 +5,6 @@ import java.util.*;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
-// TODO: Maak van Position een "Value klasse"
 public class Position {
 
     public Position(long x, long y, Board board)
@@ -55,6 +54,11 @@ public class Position {
     }
 
     public boolean canContainElement(Element element) {
+        if (!BOARD.getOccupiedPositions().contains(this))
+            for (Position position : BOARD.getOccupiedPositions())
+                if (position.hasSameCoordinates(this))
+                    return position.canContainElement(element);
+
         if (isTerminated())
             return false;
 
@@ -130,6 +134,21 @@ public class Position {
     @Basic
     public boolean isTerminated() {
         return isTerminated;
+    }
+
+    public Set<Position> getNeighbours() {
+        Set<Position> neighbours = new HashSet<Position>();
+
+        if (BOARD.isValidPosition(X, Y - 1))
+            neighbours.add(new Position(X, Y - 1, BOARD));
+        if (BOARD.isValidPosition(X + 1, Y))
+            neighbours.add(new Position(X + 1, Y, BOARD));
+        if (BOARD.isValidPosition(X, Y + 1))
+            neighbours.add(new Position(X, Y + 1, BOARD));
+        if (BOARD.isValidPosition(X - 1, Y))
+            neighbours.add(new Position(X - 1, Y, BOARD));
+
+        return neighbours;
     }
 
     public final long X;

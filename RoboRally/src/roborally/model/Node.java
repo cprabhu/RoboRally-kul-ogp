@@ -16,14 +16,21 @@ public class Node {
     }
 
     public Node shortestPath() {
+        double energyAmount = getOriginRobot().getAmountOfEnergy();
         Queue<Node> open = new PriorityQueue<Node>();
         Set<Node> closed = new HashSet<Node>();
         Node targetNode = new Node(null, null, 0, TARGET_POSITION, null);
-        Node current = null;
+        Node current = this;
+        boolean sufficientEnergy = energyAmount > getOriginRobot()
+                .getEnergyToMove();
 
         open.add(this);
         while (!targetNode.equals(open.peek())) {
             current = open.poll();
+            sufficientEnergy = energyAmount - current.parent.cost > getOriginRobot()
+                    .getEnergyToMove();
+            if (!sufficientEnergy)
+                continue;
             closed.add(current);
 
             Set<Node> neighbours = getNeighbours();
@@ -45,6 +52,7 @@ public class Node {
         return current;
     }
 
+    //TODO: test of allshortestpaths de beginnode geeft als te weinig energy.
     public Set<Node> allShortestPaths() {
         double energyAmount = getOriginRobot().getAmountOfEnergy();
         double minimumPathEnergy = Double.POSITIVE_INFINITY;
@@ -111,6 +119,30 @@ public class Node {
             shortestPaths.addAll(closed);
 
         return shortestPaths;
+    }
+
+    public Node bestNodeAlongPaths(Set<Node> paths) {
+        Node bestNode = null;
+        double bestNodeCost = Double.POSITIVE_INFINITY;
+        Node bestAlongPath;
+        double currentCost;
+
+        for (Node path : paths) {
+            bestAlongPath = path.bestNodeAlongPath();
+            for (Node neighbour : bestAlongPath.getNeighbours()) {
+                double minimumEnergyRequiredToReachNeighbour = getTargetRobot()
+                        .getEnergyRequiredToReachWs(neighbour.getPosition());
+                if (minimumEnergyRequiredToReachNeighbour < 0)
+                    break;
+                currentCost = path.cost + minimumEnergyRequiredToReachNeighbour;
+                if (currentCost < bestNodeCost) {
+                    bestNodeCost = currentCost;
+                    bestNode = neighbour;
+                }
+            }
+        }
+
+        return bestNode;
     }
 
     public int compareTo(Node node) {
@@ -183,7 +215,36 @@ public class Node {
     }
 
     private double heuristic() {
-        return POSITION.manhattanDistance(TARGET_POSITION);
+        return POSITION.manhattanDistance(TARGET_POSITION)
+                * getOriginRobot().getEnergyToMove();
+    }
+
+    private Node bestNodeAlongPath() {
+        Node bestNode = null;
+        double bestNodeCost = Double.POSITIVE_INFINITY;
+        Node bestParentNode;
+        Set<Node> candidates = new HashSet<Node>();
+
+        if (getParent() != null) {
+            bestParentNode = getParent().bestNodeAlongPath();
+            candidates.add(bestParentNode);
+        }
+
+        candidates.addAll(getNeighbours());
+        double currentCost;
+        for (Node candidate : candidates) {
+            double minimumEnergyRequiredToReachNeighbour = getTargetRobot()
+                    .getEnergyRequiredToReachWs(candidate.getPosition());
+            if (minimumEnergyRequiredToReachNeighbour < 0)
+                break;
+            currentCost = cost + minimumEnergyRequiredToReachNeighbour;
+            if (currentCost < bestNodeCost) {
+                bestNodeCost = currentCost;
+                bestNode = this;
+            }
+        }
+
+        return bestNode;
     }
 
     private Node parent;

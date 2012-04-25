@@ -46,6 +46,11 @@ public class BoardTest {
         board.putElement(occupied2Board, new Battery(occupied2Board, energy));
         Position obstacleBoard = new Position(5, 25, board);
         board.putElement(obstacleBoard, new Wall(obstacleBoard));
+        Position surroundedBoard = new Position(423, 0, board);
+        board.putElement(surroundedBoard, new Wall());
+        board.putElement(new Position(424, 0, board), new Wall());
+        board.putElement(new Position(423, 1, board), new Wall());
+        board.putElement(new Position(422, 0, board), new Wall());
 
         Board board2 = new Board(600, 234);
         Position overlapEmptyBoard2 = new Position(2, 4, board2);
@@ -60,6 +65,8 @@ public class BoardTest {
         Position overlapObstacleBoard2 = new Position(5, 25, board2);
         board2.putElement(overlapObstacleBoard2, new Battery(
                 overlapObstacleBoard2, energy));
+        Position surroundedBoard2 = new Position(423, 0, board2);
+        board2.putElement(surroundedBoard2, new Battery());
         Position noOverlapBoard2 = new Position(586, 215, board2);
         board2.putElement(noOverlapBoard2, new Battery(noOverlapBoard2, energy));
 
@@ -69,12 +76,14 @@ public class BoardTest {
         assertEquals(1, board.getElementsAt(occupiedBoard).size());
         assertEquals(2, board.getElementsAt(occupied2Board).size());
         assertEquals(1, board.getElementsAt(obstacleBoard).size());
+        assertEquals(1, board.getElementsAt(surroundedBoard).size());
         assertFalse(board.isOccupiedPosition(noOverlapBoard2));
         assertTrue(board2.isTerminated());
         assertTrue(overlapEmptyBoard2.isTerminated());
         assertTrue(overlapOccupiedBoard2.isTerminated());
         assertTrue(overlapOccupied2Board2.isTerminated());
         assertTrue(overlapObstacleBoard2.isTerminated());
+        assertTrue(surroundedBoard2.isTerminated());
         assertTrue(noOverlapBoard2.isTerminated());
 
     }
@@ -132,6 +141,10 @@ public class BoardTest {
     public void testGetElementsAt() {
         Position position = new Position(33, 57, board);
         Element element = new Battery();
+
+        assertFalse(element.equals(board.getElementsAt(position)));
+        assertEquals(0, board.getElementsAt(position).size());
+
         board.putElement(position, element);
 
         assertTrue(board.getElementsAt(position).contains(element));

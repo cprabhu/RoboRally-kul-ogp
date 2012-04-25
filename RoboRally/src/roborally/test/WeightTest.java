@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
+import roborally.model.Orientation;
 import roborally.model.Weight;
 import roborally.model.Weight.unitOfMass;
 
@@ -53,11 +54,11 @@ public class WeightTest {
 
         assertEquals(0, weight.compareTo(weight3));
     }
-    
+
     @Test
     public void testGetMassIn() {
         Weight testWeight = new Weight(1, unitOfMass.tonne);
-        
+
         assertEquals(1, testWeight.getMassIn(unitOfMass.tonne));
         assertEquals(1000, testWeight.getMassIn(unitOfMass.kg));
         assertEquals(1000000, testWeight.getMassIn(unitOfMass.g));

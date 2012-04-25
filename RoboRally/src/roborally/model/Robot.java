@@ -22,13 +22,28 @@ public class Robot extends Element {
         energy.recharge(chargeEnergy, maxEnergy);
     }
 
-    // TODO: Implementatie getEnergyRequiredToReach
     public Energy getEnergyRequiredToReach(Position destination) {
-        return energy;
+        Node node = new Node(null, getOrientation(), 0, getPosition(),
+                destination);
+        Node shortestPath = node.shortestPath();
+        Energy energyRequiredToReach = shortestPath.getEnergy();
+
+        if (shortestPath.getPosition().getNeighbours().contains(destination))
+            return energyRequiredToReach;
+        return null;
     }
 
     public double getEnergyRequiredToReachWs(Position destination) {
-        return getEnergyRequiredToReach(destination).getAmountOfEnergy();
+        Node node = new Node(null, getOrientation(), 0, getPosition(),
+                destination);
+        Node shortestPath = node.shortestPath();
+        Energy energyRequiredToReach = shortestPath.getEnergy();
+
+        if (shortestPath.getPosition().getNeighbours().contains(destination))
+            return energyRequiredToReach.getAmountOfEnergy();
+        if (getAmountOfEnergy() - energyRequiredToReach.getAmountOfEnergy() < getEnergyToMove())
+            return -2;
+        return -1;
     }
 
     public double getAmountOfEnergy() {
@@ -78,14 +93,90 @@ public class Robot extends Element {
         }
     }
 
-    public void moveTo(Position position, Energy energyToReach) {
+    public void moveTo(Position position) {
         position.BOARD.putElement(position, this);
-        energy.removeEnergy(energyToReach);
+        energy.removeEnergy(getEnergyRequiredToReach(position));
     }
 
-    // TODO: Implementatie moveNextTo
     public void moveNextTo(Robot robot2) {
+        Node robot1Node = new Node(null, getOrientation(), 0, getPosition(),
+                robot2.getPosition());
+        Node robot2Node = new Node(null, getOrientation(), 0,
+                robot2.getPosition(), getPosition());
+        Node robot1BestNode;
+        Node robot2BestNode;
+        Position robot1BestPosition = getPosition();
+        Position robot2BestPosition = robot2.getPosition();
+        double minimumEnergy = Double.POSITIVE_INFINITY;
 
+        Node robot1ShortestPath = robot1Node.shortestPath();
+        Node robot2ShortestPath = robot2Node.shortestPath();
+
+        Set<Node> robot1AllShortestPaths = new HashSet<Node>();
+        Set<Node> robot2AllShortestPaths = new HashSet<Node>();
+
+        if (robot1ShortestPath.getPosition().getNeighbours()
+                .contains(robot2.getPosition()))
+            robot1AllShortestPaths = robot1Node.allShortestPaths();
+        if (robot2ShortestPath.getPosition().getNeighbours()
+                .contains(getPosition()))
+            robot2AllShortestPaths = robot2Node.allShortestPaths();
+        if (robot1AllShortestPaths.size() != 0
+                || robot2AllShortestPaths.size() != 0) {
+            robot1BestNode = robot1Node
+                    .bestNodeAlongPaths(robot1AllShortestPaths);
+            robot2BestNode = robot2Node
+                    .bestNodeAlongPaths(robot2AllShortestPaths);
+
+            robot1BestPosition = robot1BestNode.getPosition();
+            for (Position neighbour : robot1BestPosition.getNeighbours())
+                if (getEnergyRequiredToReachWs(robot1BestPosition)
+                        + robot2.getEnergyRequiredToReachWs(neighbour) < minimumEnergy)
+                    robot2BestPosition = neighbour;
+            for (Position neighbour : robot2BestNode.getPosition()
+                    .getNeighbours()) {
+                if (robot2.getEnergyRequiredToReachWs(robot2BestNode
+                        .getPosition()) + getEnergyRequiredToReachWs(neighbour) < minimumEnergy) {
+                    robot1BestPosition = neighbour;
+                    robot2BestPosition = robot2BestNode.getPosition();
+                }
+            }
+        } else {
+            robot1AllShortestPaths = robot1Node.allShortestPaths();
+            robot2AllShortestPaths = robot2Node.allShortestPaths();
+            List<Node> robot1BestNodes = new ArrayList<Node>();
+            List<Node> robot2BestNodes = new ArrayList<Node>();
+            double minManhattanDistance = getPosition().manhattanDistance(
+                    robot2.getPosition());
+
+            for (Node node1 : robot1AllShortestPaths) {
+                for (Node node2 : robot2AllShortestPaths) {
+                    if (node1.getPosition().manhattanDistance(
+                            node2.getPosition()) == minManhattanDistance) {
+                        robot1BestNodes.add(node1);
+                        robot2BestNodes.add(node2);
+                    } else if (node1.getPosition().manhattanDistance(
+                            node2.getPosition()) < minManhattanDistance) {
+                        robot1BestNodes.clear();
+                        robot2BestNodes.clear();
+                        robot1BestNodes.add(node1);
+                        robot2BestNodes.add(node2);
+                    }
+                }
+            }
+
+            Iterator<Node> robot2BestNodeIt = robot2BestNodes.iterator();
+            for (Node node1 : robot1BestNodes) {
+                Node node2 = robot2BestNodeIt.next();
+                if (getEnergyRequiredToReachWs(node1.getPosition())
+                        + robot2.getEnergyRequiredToReachWs(node2.getPosition()) < minimumEnergy) {
+                    robot1BestPosition = node1.getPosition();
+                    robot2BestPosition = node2.getPosition();
+                }
+            }
+        }
+        moveTo(robot1BestPosition);
+        robot2.moveTo(robot2BestPosition);
     }
 
     public Position getPosition() {

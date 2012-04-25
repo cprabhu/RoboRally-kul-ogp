@@ -12,6 +12,7 @@ public class Board {
         this.HEIGHT = height;
     }
 
+    // TODO: merge else testen.
     public void merge(Board board2) {
         Set<Position> occupiedPositionsBoard2 = new HashSet<Position>();
         occupiedPositionsBoard2.addAll(board2.occupiedPositions);
@@ -20,7 +21,15 @@ public class Board {
                 Position position = new Position(occupiedPosition2.X,
                         occupiedPosition2.Y, this);
                 for (Element elem : occupiedPosition2.getElements()) {
-                    putElement(position, elem);
+                    if (!position.canContainElement(elem)) {
+                        for (Position neighbour : occupiedPosition2
+                                .getNeighbours())
+                            if (isValidPosition(neighbour)) {
+                                putElement(position, elem);
+                                break;
+                            }
+                    } else
+                        putElement(position, elem);
                 }
             }
         }

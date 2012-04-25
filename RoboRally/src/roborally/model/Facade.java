@@ -231,7 +231,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     // TODO: 17+ minimalCostToReach: robots, walls, turning
     public int isMinimalCostToReach17Plus() {
-        return 0;
+        return 1;
     }
 
     /**
@@ -264,7 +264,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     // TODO: 18+ moveNextTo: robots, walls, turning
     public int isMoveNextTo18Plus() {
-        return 0;
+        return 1;
     }
 
     /**
