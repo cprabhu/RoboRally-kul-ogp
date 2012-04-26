@@ -103,7 +103,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     public Robot createRobot(int orientation, double initialEnergy) {
         if (orientation >= 0 && orientation <= 3 && initialEnergy >= 0
                 && initialEnergy <= 20000) {
-            Orientation initialOrienation = Orientation.UP;
+            Orientation initialOrienation;
             switch (orientation) {
             case 0:
                 initialOrienation = Orientation.UP;
@@ -117,6 +117,8 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
             case 3:
                 initialOrienation = Orientation.LEFT;
                 break;
+            default:
+                initialOrienation = Orientation.UP;
             }
             return new Robot(new Energy(initialEnergy, unitOfPower.Ws),
                     initialOrienation);
@@ -251,8 +253,8 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     public double getMinimalCostToReach(Robot robot, long x, long y) {
         if (robot != null)
-            return robot.getEnergyRequiredToReachWs(Position.newPosition(x, y, robot
-                    .getPosition().BOARD));
+            return robot.getEnergyRequiredToReachWs(Position.newPosition(x, y,
+                    robot.getPosition().BOARD));
         return 0;
     }
 

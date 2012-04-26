@@ -58,6 +58,13 @@ public class Energy {
         return amountOfEnergy;
     }
 
+    public boolean isValidEnergy(Energy maxEnergy) {
+        if (compareTo(new Energy(0, Energy.unitOfPower.Ws)) >= 0
+                && compareTo(maxEnergy) <= 0)
+            return true;
+        return false;
+    }
+
     public void terminate() {
         amountOfEnergy = 0;
         this.isTerminated = true;

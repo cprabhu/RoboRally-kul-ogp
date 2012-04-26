@@ -24,8 +24,7 @@ public class Battery extends Element {
         super(position);
         this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
         assert (energy != null);
-        assert (energy.compareTo(new Energy(0, Energy.unitOfPower.Ws)) >= 0);
-        assert (energy.compareTo(maxEnergy) <= 0);
+        assert energy.isValidEnergy(maxEnergy);
         this.energy = energy;
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }

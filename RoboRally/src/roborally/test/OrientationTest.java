@@ -66,7 +66,7 @@ public class OrientationTest {
                         energyToTurn).compareTo(halfTurnEnergy));
 
     }
-    
+
     @Test
     public void testNextPosition() {
         Board board = new Board(5, 7);
@@ -75,11 +75,26 @@ public class OrientationTest {
         Position testPosition2 = Position.newPosition(4, 4, board);
         Position testPosition3 = Position.newPosition(3, 5, board);
         Position testPosition4 = Position.newPosition(2, 4, board);
-        
+        Position testUpEdgePosition = Position.newPosition(3, 0, board);
+        Position testRightEdgePosition = Position.newPosition(5, 3, board);
+        Position testDownEdgePosition = Position.newPosition(3, 7, board);
+        Position testLeftEdgePosition = Position.newPosition(0, 4, board);
+
         assertTrue(testPosition1.equals(up.nextPosition(currentPosition)));
         assertTrue(testPosition2.equals(right.nextPosition(currentPosition)));
         assertTrue(testPosition3.equals(down.nextPosition(currentPosition)));
         assertTrue(testPosition4.equals(left.nextPosition(currentPosition)));
+
+        try {
+            assertNull(up.nextPosition(testUpEdgePosition));
+            assertNull(right.nextPosition(testRightEdgePosition));
+            assertNull(down.nextPosition(testDownEdgePosition));
+            assertNull(left.nextPosition(testLeftEdgePosition));
+        } catch (IllegalArgumentException e) {
+            System.err.println("testNextPosition: This is to be expected a"
+                    + "position not on the board cannot be contstructed."
+                    + " No worries.");
+        }
     }
 
     private Orientation up;

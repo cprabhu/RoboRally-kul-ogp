@@ -19,24 +19,58 @@ public class Node implements Comparable<Node> {
         if (POSITION == null)
             return null;
         double energyAmount = getOriginRobot().getAmountOfEnergy();
+        if (getEstimatedCost() > energyAmount)
+            return null;
         Queue<Node> open = new PriorityQueue<Node>();
         Set<Node> closed = new HashSet<Node>();
         Node current = this;
-        // boolean sufficientEnergy = energyAmount > getOriginRobot()
-        // .getEnergyToMove();
         double criterion = getTargetRobot() != null ? getOriginRobot()
                 .getEnergyToMove() : 0;
 
         open.add(this);
         while (open.size() != 0 && current.heuristic() != criterion) {
             current = open.poll();
-            System.out.println(current.getPosition() + " -- " + current.cost
-                    + " -- " + open.size());
-            // sufficientEnergy = current.cost < energyAmount;
-            // if (!sufficientEnergy)
-            // continue;
+            Set<Node> neighbours = current.getNeighbours();
+            Set<Node> neighbourSet = new HashSet<Node>();
+            for (Node neighbour : neighbours) {
+                neighbourSet.clear();
+                neighbourSet.addAll(open);
+                for (Node openNeighbour : neighbourSet)
+                    if (neighbour.equals(openNeighbour)
+                            && neighbour.cost < openNeighbour.cost) {
+                        open.remove(openNeighbour);
+                    }
+                neighbourSet.clear();
+                neighbourSet.addAll(closed);
+                for (Node closedNeighbour : neighbourSet)
+                    if (neighbour.equals(closedNeighbour)
+                            && neighbour.cost < closedNeighbour.cost)
+                        closed.remove(closedNeighbour);
+                if (!open.contains(neighbour) && !closed.contains(neighbour)
+                        && neighbour.getEstimatedCost() <= energyAmount)
+                    open.add(neighbour);
+            }
             closed.add(current);
+        }
 
+        if (!current.getPosition().equals(TARGET_POSITION))
+            return null;
+        return current;
+    }
+
+    // TODO: test of allshortestpaths de beginnode geeft als te weinig energy.
+    public Set<Node> allShortestPaths() {
+        if (POSITION == null)
+            return null;
+        double energyAmount = getOriginRobot().getAmountOfEnergy();
+        Queue<Node> open = new PriorityQueue<Node>();
+        List<Node> closed = new ArrayList<Node>();
+        Set<Node> shortestPaths = new HashSet<Node>();
+        Node current = this;
+
+        open.add(this);
+        while (open.size() != 0) {
+            current = open.poll();
             Set<Node> neighbours = current.getNeighbours();
             Set<Node> neighbourSet = new HashSet<Node>();
             for (Node neighbour : neighbours) {
@@ -57,71 +91,18 @@ public class Node implements Comparable<Node> {
                         && neighbour.cost <= energyAmount)
                     open.add(neighbour);
             }
-        }
-
-        return current;
-    }
-
-    // TODO: test of allshortestpaths de beginnode geeft als te weinig energy.
-    public Set<Node> allShortestPaths() {
-        if (POSITION == null)
-            return null;
-        double energyAmount = getOriginRobot().getAmountOfEnergy();
-        double minimumPathEnergy = Double.POSITIVE_INFINITY;
-        Queue<Node> open = new PriorityQueue<Node>();
-        List<Node> closed = new ArrayList<Node>();
-        Set<Node> shortestPaths = new HashSet<Node>();
-        Node targetNode = new Node(null, null, 0, TARGET_POSITION, null);
-        Node current = this;
-        boolean sufficientEnergy = energyAmount > getOriginRobot()
-                .getEnergyToMove();
-        double criterion = getTargetRobot() != null ? getOriginRobot()
-                .getEnergyToMove() : 0;
-
-        open.add(this);
-        while (open.size() != 0 && current.heuristic() != criterion) {
-            current = open.poll();
-            if (targetNode.equals(open.peek()))
-                minimumPathEnergy = Math.min(minimumPathEnergy, current.cost);
-            sufficientEnergy = current.cost < energyAmount;
-            if (!sufficientEnergy)
-                continue;
-            if (current.cost > minimumPathEnergy)
-                continue;
             closed.add(current);
-
-            Set<Node> neighbours = getNeighbours();
-            for (Node neighbour : neighbours) {
-                for (Node openNeighbour : open)
-                    if (neighbour.equals(openNeighbour)
-                            && neighbour.compareTo(openNeighbour) <= 0) {
-                        open.remove(openNeighbour);
-                    }
-                for (Node closedNeighbour : closed)
-                    if (neighbour.compareTo(closedNeighbour) <= 0) {
-                        closed.remove(closedNeighbour);
-                    }
-                if (!open.contains(neighbour) && !closed.contains(neighbour))
-                    open.add(neighbour);
-            }
         }
 
-        if (minimumPathEnergy < Double.POSITIVE_INFINITY) {
-            List<Node> it = new ArrayList<Node>();
-            it.addAll(closed);
-
-            for (Node node : it)
-                if (!targetNode.getNeighbours().contains(node))
-                    closed.remove(node);
-        }
-
-        double energyToReachLowerBound = POSITION
-                .manhattanDistance(TARGET_POSITION)
+        double energyToReachLowerBound = (POSITION
+                .manhattanDistance(TARGET_POSITION) - 1)
                 * Math.min(getOriginRobot().getEnergyToMove(), getTargetRobot()
                         .getEnergyToMove());
         energyAmount = getOriginRobot().getAmountOfEnergy()
                 + getTargetRobot().getAmountOfEnergy();
-        if (energyToReachLowerBound > energyAmount) {
+        // Robots can never reach each other if their combined energy is less
+        // than the lower bound for the energy required to move.
+        if (energyToReachLowerBound >= energyAmount) {
             List<Node> it = new ArrayList<Node>();
             it.addAll(closed);
             for (Node node : it)
@@ -134,28 +115,37 @@ public class Node implements Comparable<Node> {
         return shortestPaths;
     }
 
-    public Node bestNodeAlongPaths(Set<Node> paths) {
-        Node bestNode = null;
-        double bestNodeCost = Double.POSITIVE_INFINITY;
-        Node bestAlongPath;
-        double currentCost;
+    public static List<Node[]> bestNodePairs(Set<Node> robot1Nodes,
+            Set<Node> robot2Nodes) {
+        double minManhattanDistance = Double.POSITIVE_INFINITY;
+        double minCost = Double.POSITIVE_INFINITY;
+        List<Node[]> bestNodePairs = new ArrayList<Node[]>();
 
-        for (Node path : paths) {
-            bestAlongPath = path.bestNodeAlongPath();
-            for (Node neighbour : bestAlongPath.getNeighbours()) {
-                double minimumEnergyRequiredToReachNeighbour = getTargetRobot()
-                        .getEnergyRequiredToReachWs(neighbour.getPosition());
-                if (minimumEnergyRequiredToReachNeighbour < 0)
-                    break;
-                currentCost = path.cost + minimumEnergyRequiredToReachNeighbour;
-                if (currentCost < bestNodeCost) {
-                    bestNodeCost = currentCost;
-                    bestNode = neighbour;
+        for (Node robot1Node : robot1Nodes) {
+            for (Node robot2Node : robot2Nodes) {
+                double manhattanDistance = robot1Node.getPosition()
+                        .manhattanDistance(robot2Node.getPosition());
+                if (manhattanDistance < minManhattanDistance
+                        && manhattanDistance > 0) {
+                    minManhattanDistance = manhattanDistance;
+                    minCost = robot1Node.cost + robot2Node.cost;
+                    bestNodePairs.clear();
+                    bestNodePairs.add(new Node[] { robot1Node, robot2Node });
+                } else if (manhattanDistance == minManhattanDistance) {
+                    if (robot1Node.cost + robot2Node.cost < minCost) {
+                        minCost = robot1Node.cost + robot2Node.cost;
+                        bestNodePairs.clear();
+                        bestNodePairs
+                                .add(new Node[] { robot1Node, robot2Node });
+                    } else if (robot1Node.cost + robot2Node.cost == minCost) {
+                        bestNodePairs
+                                .add(new Node[] { robot1Node, robot2Node });
+                    }
                 }
             }
         }
 
-        return bestNode;
+        return bestNodePairs;
     }
 
     public int compareTo(Node node) {
@@ -171,9 +161,15 @@ public class Node implements Comparable<Node> {
             return AFTER;
     }
 
+    @Override
     public boolean equals(Object o) {
-        Position otherPosition = ((Node) o).POSITION;
-        return POSITION.equals(otherPosition);
+        Position otherPosition = ((Node) o).getPosition();
+        return getPosition().equals(otherPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return getPosition().hashCode();
     }
 
     public double getEstimatedCost() {
@@ -212,19 +208,22 @@ public class Node implements Comparable<Node> {
 
     private Set<Node> getNeighbours() {
         Set<Node> neighbours = new HashSet<Node>();
-
+        Position nextPosition;
         for (int i = 0; i < 4; i++) {
+            nextPosition = orientation.nextPosition(POSITION);
+            if (nextPosition != null
+                    && nextPosition.canContainElement(getOriginRobot())) {
+                double stepCost = getOriginRobot().getEnergyToTurn() * i;
+                if (stepCost == 300)
+                    stepCost = 100;
+                stepCost += getOriginRobot().getEnergyToMove();
+                double costToReach = cost + stepCost;
+                Node neighbour = new Node(this, orientation, costToReach,
+                        nextPosition, TARGET_POSITION);
 
-            if (!orientation.nextPosition(POSITION).canContainElement(
-                    getOriginRobot()))
-                continue;
-            double stepCost = 100 * i;
-            if (stepCost == 300)
-                stepCost = 100;
-            stepCost += 500;
-            double costToReach = cost + stepCost;
-            neighbours.add(new Node(this, orientation, costToReach, orientation
-                    .nextPosition(POSITION), TARGET_POSITION));
+                if (!(getParent() != null && neighbour.equals(getParent())))
+                    neighbours.add(neighbour);
+            }
             orientation = orientation.turnClockwise90();
         }
 
@@ -234,34 +233,6 @@ public class Node implements Comparable<Node> {
     private double heuristic() {
         return POSITION.manhattanDistance(TARGET_POSITION)
                 * getOriginRobot().getEnergyToMove();
-    }
-
-    private Node bestNodeAlongPath() {
-        Node bestNode = null;
-        double bestNodeCost = Double.POSITIVE_INFINITY;
-        Node bestParentNode;
-        Set<Node> candidates = new HashSet<Node>();
-
-        if (getParent() != null) {
-            bestParentNode = getParent().bestNodeAlongPath();
-            candidates.add(bestParentNode);
-        }
-
-        candidates.addAll(getNeighbours());
-        double currentCost;
-        for (Node candidate : candidates) {
-            double minimumEnergyRequiredToReachNeighbour = getTargetRobot()
-                    .getEnergyRequiredToReachWs(candidate.getPosition());
-            if (minimumEnergyRequiredToReachNeighbour < 0)
-                break;
-            currentCost = cost + minimumEnergyRequiredToReachNeighbour;
-            if (currentCost < bestNodeCost) {
-                bestNodeCost = currentCost;
-                bestNode = this;
-            }
-        }
-
-        return bestNode;
     }
 
     private Node parent;

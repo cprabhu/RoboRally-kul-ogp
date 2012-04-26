@@ -270,7 +270,7 @@ public class RoboRally<Board, Robot, Wall, Battery> extends JFrame {
             out.println("\tuse <rname> <bname>");
             out.println("\tdrop <rname> <bname>");
             out.println("\tcanreach <rname> <long> <long>");
-            out.println("\tmoveto <rname> <long> <long>");
+            out.println("\tmoveto <rname> <rname>");
             out.println("\texit");
         } else {
             out.println("unknown command");

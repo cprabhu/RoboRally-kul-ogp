@@ -64,23 +64,36 @@ public enum Orientation {
 
         return turnEnergy;
     }
-    
+
+    // TODO: check defensief new Position
     public Position nextPosition(Position currentPosition) {
         long x = currentPosition.X;
         long y = currentPosition.Y;
         Board board = currentPosition.BOARD;
-        
-        switch (this) {
-        case UP:
-            return Position.newPosition(x, y - 1, board);
-        case RIGHT:
-            return Position.newPosition(x + 1, y, board);
-        case DOWN:
-            return Position.newPosition(x, y + 1, board);
-        case LEFT:
-            return Position.newPosition(x - 1, y, board);
-        default:
-            return currentPosition;
+
+        try {
+            switch (this) {
+            case UP:
+                return Position.newPosition(x, y - 1, board);
+            case RIGHT:
+                return Position.newPosition(x + 1, y, board);
+            case DOWN:
+                return Position.newPosition(x, y + 1, board);
+            case LEFT:
+                return Position.newPosition(x - 1, y, board);
+            default:
+                return currentPosition;
+            }
+        } catch (IllegalArgumentException exc) {
+            /*
+             * System.err.print("nextPosition is off the board: ("); switch
+             * (this) { case UP: System.err.println(x + ", " + (y - 1) + ")");
+             * break; case RIGHT: System.err.println((x + 1) + ", " + y + ")");
+             * break; case DOWN: System.err.println(x + ", " + (y + 1) + ")");
+             * break; case LEFT: System.err.println((x - 1) + ", " + y + ")");
+             * break; }
+             */
         }
+        return null;
     }
 }

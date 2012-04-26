@@ -26,7 +26,8 @@ public class Position {
                     position = instance;
                     break;
                 }
-        positionInstances.add(position);
+        if (position != null)
+            positionInstances.add(position);
         return position;
     }
 
@@ -115,7 +116,7 @@ public class Position {
 
     public double manhattanDistance(Position position)
             throws IllegalArgumentException {
-        if (BOARD != position.BOARD)
+        if (position == null || BOARD != position.BOARD)
             throw new IllegalArgumentException();
         return Math.abs(position.X - X) + Math.abs(position.Y - Y);
     }
@@ -158,7 +159,7 @@ public class Position {
 
         return neighbours;
     }
-    
+
     public String toString() {
         return "(" + X + ", " + Y + ")";
     }

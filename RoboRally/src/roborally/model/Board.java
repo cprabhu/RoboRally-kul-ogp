@@ -3,7 +3,6 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
-// TODO: check ?opvragen? constant time?
 // TODO: all aspects related to placement of walls, robots, batteries on
 // boards: defensively
 public class Board {

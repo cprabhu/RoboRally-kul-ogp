@@ -5,20 +5,24 @@ import roborally.model.Weight.unitOfMass;
 import java.util.*;
 
 // TODO: energy nominally
-// TODO: orientation totally
+// TODO: orientation totally: CHECK
 // TODO: position defensively
 
 public class Robot extends Element {
 
     public Robot(Energy initialEnergy, Orientation initialOrienation) {
-        energy = initialEnergy;
         maxEnergy = new Energy(20000, unitOfPower.Ws);
+        assert (initialEnergy != null);
+        assert (initialEnergy.isValidEnergy(maxEnergy));
+        energy = initialEnergy;
         orientation = initialOrienation;
         position = null;
         carryWeight = null;
     }
 
     public void recharge(Energy chargeEnergy) {
+        assert (chargeEnergy != null);
+        assert (chargeEnergy.isValidEnergy(chargeEnergy));
         energy.recharge(chargeEnergy, maxEnergy);
     }
 
@@ -38,6 +42,7 @@ public class Robot extends Element {
         return null;
     }
 
+    // TODO: floodfill implementeren voor -2
     public double getEnergyRequiredToReachWs(Position destination) {
         if (!destination.canContainElement(this))
             return -1;
@@ -51,8 +56,6 @@ public class Robot extends Element {
 
         if (shortestPath.getPosition().equals(destination))
             return energyRequiredToReach.getAmountOfEnergy();
-        if (getAmountOfEnergy() - energyRequiredToReach.getAmountOfEnergy() < getEnergyToMove())
-            return -2;
         return -1;
     }
 
@@ -73,15 +76,19 @@ public class Robot extends Element {
         return moveEnergy.getAmountOfEnergy();
     }
 
+    public double getEnergyToTurn() {
+        return energyToTurn.getAmountOfEnergy();
+    }
+
     public void turnClockwise90() {
-        if (energyToTurn.compareTo(energy) < 1) {
+        if (energyToTurn.compareTo(energy) <= 0) {
             orientation = orientation.turnClockwise90();
             energy.removeEnergy(energyToTurn);
         }
     }
 
     public void turnCounterClockwise90() {
-        if (energyToTurn.compareTo(energy) < 1) {
+        if (energyToTurn.compareTo(energy) <= 0) {
             orientation = orientation.turnCounterClockwise90();
             energy.removeEnergy(energyToTurn);
         }
@@ -95,165 +102,113 @@ public class Robot extends Element {
         return orientation.ordinal();
     }
 
-    public double getEnergyToTurn() {
-        return energyToTurn.getAmountOfEnergy();
-    }
+    public void move() throws IllegalArgumentException {
+        assert (getEnergyToMove() < energy.getAmountOfEnergy());
+        Position nextPosition = orientation.nextPosition(position);
+        setPosition(nextPosition);
+        energy.removeEnergy(energyToMove);
 
-    public void move() {
-        if (getEnergyToMove() < energy.getAmountOfEnergy()) {
-            Position nextPosition = orientation.nextPosition(position);
-            setPosition(nextPosition);
-            energy.removeEnergy(energyToMove);
-        }
     }
 
     public void moveTo(Position position) {
-        energy.removeEnergy(getEnergyRequiredToReach(position));
+        Energy energyRequiredToReach = getEnergyRequiredToReach(position);
+        assert (energyRequiredToReach != null);
+        assert (energyRequiredToReach.isValidEnergy(maxEnergy));
+        energy.removeEnergy(energyRequiredToReach);
         position.BOARD.putElement(position, this);
     }
 
     public void moveNextTo(Robot robot2) {
         Node robot1Node = new Node(null, getOrientation(), 0, getPosition(),
                 robot2.getPosition());
-        Node robot2Node = new Node(null, getOrientation(), 0,
+        Node robot2Node = new Node(null, robot2.getOrientation(), 0,
                 robot2.getPosition(), getPosition());
-        Node robot1BestNode;
-        Node robot2BestNode;
-        Position robot1BestPosition = getPosition();
-        Position robot2BestPosition = robot2.getPosition();
-        double minimumEnergy = Double.POSITIVE_INFINITY;
-
-        Node robot1ShortestPath = robot1Node.shortestPath();
-        Node robot2ShortestPath = robot2Node.shortestPath();
 
         Set<Node> robot1AllShortestPaths = new HashSet<Node>();
         Set<Node> robot2AllShortestPaths = new HashSet<Node>();
 
-        if (robot1ShortestPath.getPosition().getNeighbours()
-                .contains(robot2.getPosition()))
-            robot1AllShortestPaths = robot1Node.allShortestPaths();
-        if (robot2ShortestPath.getPosition().getNeighbours()
-                .contains(getPosition()))
-            robot2AllShortestPaths = robot2Node.allShortestPaths();
-        if (robot1AllShortestPaths.size() != 0
-                || robot2AllShortestPaths.size() != 0) {
-            robot1BestNode = robot1Node
-                    .bestNodeAlongPaths(robot1AllShortestPaths);
-            robot2BestNode = robot2Node
-                    .bestNodeAlongPaths(robot2AllShortestPaths);
-
-            robot1BestPosition = robot1BestNode.getPosition();
-            for (Position neighbour : robot1BestPosition.getNeighbours())
-                if (getEnergyRequiredToReachWs(robot1BestPosition)
-                        + robot2.getEnergyRequiredToReachWs(neighbour) < minimumEnergy)
-                    robot2BestPosition = neighbour;
-            for (Position neighbour : robot2BestNode.getPosition()
-                    .getNeighbours()) {
-                if (robot2.getEnergyRequiredToReachWs(robot2BestNode
-                        .getPosition()) + getEnergyRequiredToReachWs(neighbour) < minimumEnergy) {
-                    robot1BestPosition = neighbour;
-                    robot2BestPosition = robot2BestNode.getPosition();
-                }
-            }
-        } else {
+        try {
             robot1AllShortestPaths = robot1Node.allShortestPaths();
             robot2AllShortestPaths = robot2Node.allShortestPaths();
-            List<Node> robot1BestNodes = new ArrayList<Node>();
-            List<Node> robot2BestNodes = new ArrayList<Node>();
-            double minManhattanDistance = getPosition().manhattanDistance(
-                    robot2.getPosition());
 
-            for (Node node1 : robot1AllShortestPaths) {
-                for (Node node2 : robot2AllShortestPaths) {
-                    if (node1.getPosition().manhattanDistance(
-                            node2.getPosition()) == minManhattanDistance) {
-                        robot1BestNodes.add(node1);
-                        robot2BestNodes.add(node2);
-                    } else if (node1.getPosition().manhattanDistance(
-                            node2.getPosition()) < minManhattanDistance) {
-                        robot1BestNodes.clear();
-                        robot2BestNodes.clear();
-                        robot1BestNodes.add(node1);
-                        robot2BestNodes.add(node2);
-                    }
-                }
-            }
+            List<Node[]> bestNodePairs = Node.bestNodePairs(
+                    robot1AllShortestPaths, robot2AllShortestPaths);
 
-            Iterator<Node> robot2BestNodeIt = robot2BestNodes.iterator();
-            for (Node node1 : robot1BestNodes) {
-                Node node2 = robot2BestNodeIt.next();
-                if (getEnergyRequiredToReachWs(node1.getPosition())
-                        + robot2.getEnergyRequiredToReachWs(node2.getPosition()) < minimumEnergy) {
-                    robot1BestPosition = node1.getPosition();
-                    robot2BestPosition = node2.getPosition();
-                }
-            }
+            moveTo(bestNodePairs.get(0)[0].getPosition());
+            robot2.moveTo(bestNodePairs.get(0)[1].getPosition());
+        } catch (IllegalArgumentException e) {
+            System.err
+                    .println("Een van de twee robots heeft een position null.");
+        } catch (AssertionError ae) {
+            System.err
+                    .println("moveNextTo: This assertionerror is to be expected.");
         }
-        moveTo(robot1BestPosition);
-        robot2.moveTo(robot2BestPosition);
     }
 
     public void shoot() {
-        if (energy.compareTo(new Energy(1000, unitOfPower.Ws)) >= 0) {
-            energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
-            Position bulletPosition = orientation.nextPosition(position);
-            while (position.BOARD.isValidPosition(bulletPosition)
-                    && !position.BOARD.isOccupiedPosition(bulletPosition)) {
-                bulletPosition = orientation.nextPosition(bulletPosition);
-            }
+        assert (energy.compareTo(new Energy(1000, unitOfPower.Ws)) >= 0);
+        energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
+        Position bulletPosition = orientation.nextPosition(position);
+        while (position.BOARD.isValidPosition(bulletPosition)
+                && !position.BOARD.isOccupiedPosition(bulletPosition)) {
+            bulletPosition = orientation.nextPosition(bulletPosition);
+        }
 
-            int item = new Random()
-                    .nextInt(bulletPosition.getElements().size());
-            int i = 0;
-            for (Element elem : bulletPosition.getElements()) {
-                if (i == item)
-                    elem.terminate();
-                i = i + 1;
-            }
+        int item = new Random().nextInt(bulletPosition.getElements().size());
+        int i = 0;
+        for (Element elem : bulletPosition.getElements()) {
+            if (i == item)
+                elem.terminate();
+            i = i + 1;
         }
     }
 
-    public void pickup(Battery battery) {
-        if (battery != null
-                && (carryWeight == null || carryWeight.compareTo(battery
-                        .getWeight()) >= 0))
-            if (position.equals(battery.getPosition())) {
-                if (batteries.size() != 0)
-                    for (Battery compBattery : batteries) {
-                        if (battery.getWeight().compareTo(
-                                compBattery.getWeight()) >= 0) {
-                            batteries.add(batteries.indexOf(compBattery),
-                                    battery);
-                            break;
-                        }
+    public void pickup(Battery battery) throws IllegalStateException {
+        if (battery == null
+                || (carryWeight != null && carryWeight.compareTo(battery
+                        .getWeight()) < 0))
+            throw new IllegalStateException();
+        if (position.equals(battery.getPosition())) {
+            if (batteries.size() != 0)
+                for (Battery compBattery : batteries) {
+                    if (battery.getWeight().compareTo(compBattery.getWeight()) >= 0) {
+                        batteries.add(batteries.indexOf(compBattery), battery);
+                        break;
                     }
-                if (!batteries.contains(battery))
-                    batteries.add(battery);
-                battery.removePosition();
-                if (carryWeight != null)
-                    carryWeight.removeWeight(battery.getWeight());
-            }
-    }
-
-    public void use(Battery battery) {
-        if (battery != null) {
-            if (battery.isTerminated())
-                batteries.remove(battery);
-            if (batteries.contains(battery))
-                battery.charge(energy, maxEnergy);
-        }
-    }
-
-    public void drop(Battery battery) {
-        if (battery != null) {
-            batteries.remove(battery);
-            battery.setPosition(position);
+                }
+            if (!batteries.contains(battery))
+                batteries.add(battery);
+            battery.removePosition();
             if (carryWeight != null)
-                carryWeight.addWeight(battery.getWeight());
+                carryWeight.removeWeight(battery.getWeight());
         }
     }
 
-    public Battery ithHeaviestElement(int ordinal) {
+    public void use(Battery battery) throws IllegalStateException {
+        if (battery == null)
+            throw new IllegalStateException();
+
+        if (battery.isTerminated())
+            batteries.remove(battery);
+        if (batteries.contains(battery))
+            battery.charge(energy, maxEnergy);
+
+    }
+
+    public void drop(Battery battery) throws IllegalStateException {
+        if (battery == null)
+            throw new IllegalStateException();
+        batteries.remove(battery);
+        battery.setPosition(position);
+        if (carryWeight != null)
+            carryWeight.addWeight(battery.getWeight());
+
+    }
+
+    public Battery ithHeaviestElement(int ordinal)
+            throws IndexOutOfBoundsException {
+        if (ordinal > batteries.size())
+            throw new IndexOutOfBoundsException();
         return batteries.get(ordinal - 1);
     }
 
@@ -261,13 +216,6 @@ public class Robot extends Element {
         Set<Battery> possesions = new HashSet<Battery>();
         possesions.addAll(batteries);
         return possesions;
-    }
-
-    public int getCarriedWeight(unitOfMass unit) {
-        int carriedWeight = 0;
-        for (Battery battery : batteries)
-            carriedWeight += battery.getWeight().getMassIn(unit);
-        return carriedWeight;
     }
 
     public void terminate() {
@@ -279,13 +227,20 @@ public class Robot extends Element {
         this.isTerminated = true;
     }
 
+    private int getCarriedWeight(unitOfMass unit) {
+        int carriedWeight = 0;
+        for (Battery battery : batteries)
+            carriedWeight += battery.getWeight().getMassIn(unit);
+        return carriedWeight;
+    }
+
     private final Energy energyToMove = new Energy(500, unitOfPower.Ws);
     private static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
-
     private final Energy energy;
     private final Energy maxEnergy;
-    private Orientation orientation;
     private final Weight carryWeight;
     private final List<Battery> batteries = new ArrayList<Battery>();
+
+    private Orientation orientation;
 
 }
