@@ -20,7 +20,8 @@ public class BatteryTest {
     @Test
     public void testBattery() {
         assertNotNull(battery);
-        assertEquals(0, battery.getEnergy().compareTo(battery.getMaxEnergy()));
+        assertEquals(0,
+                battery.getEnergy().compareTo(new Energy(1000, unitOfPower.Ws)));
         assertEquals(0,
                 battery.getWeight().compareTo(new Weight(100, unitOfMass.g)));
 
@@ -80,7 +81,8 @@ public class BatteryTest {
 
     @Test
     public void testGetEnergy() {
-        assertEquals(0, battery.getEnergy().compareTo(battery.getMaxEnergy()));
+        assertEquals(0,
+                battery.getEnergy().compareTo(new Energy(1000, unitOfPower.Ws)));
         assertEquals(0, battery2.getEnergy().compareTo(ENERGY));
         assertEquals(0, battery3.getEnergy().compareTo(ENERGY));
     }
@@ -95,7 +97,7 @@ public class BatteryTest {
 
     @Test
     public void testSetPosition() {
-        Position position = new Position(3, 2, BOARD);
+        Position position = Position.newPosition(3, 2, BOARD);
 
         battery.setPosition(position);
 
@@ -162,5 +164,5 @@ public class BatteryTest {
     private final Energy ENERGY = new Energy(100, Energy.unitOfPower.Ws);
     private final Weight WEIGHT = new Weight(200, Weight.unitOfMass.g);
     private final Board BOARD = new Board(4, 5);
-    private final Position POSITION = new Position(2, 3, BOARD);
+    private final Position POSITION = Position.newPosition(2, 3, BOARD);
 }

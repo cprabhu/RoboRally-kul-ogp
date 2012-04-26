@@ -68,7 +68,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     public void putBattery(Board board, long x, long y, Battery battery) {
         if (board != null && board.isValidPosition(x, y))
-            board.putElement(new Position(x, y, board), battery);
+            board.putElement(Position.newPosition(x, y, board), battery);
     }
 
     /**
@@ -129,7 +129,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     public void putRobot(Board board, long x, long y, Robot robot) {
         if (board != null && board.isValidPosition(x, y))
-            board.putElement(new Position(x, y, board), robot);
+            board.putElement(Position.newPosition(x, y, board), robot);
     }
 
     /**
@@ -251,7 +251,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     public double getMinimalCostToReach(Robot robot, long x, long y) {
         if (robot != null)
-            return robot.getEnergyRequiredToReachWs(new Position(x, y, robot
+            return robot.getEnergyRequiredToReachWs(Position.newPosition(x, y, robot
                     .getPosition().BOARD));
         return 0;
     }
@@ -314,7 +314,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     public void putWall(Board board, long x, long y, Wall wall)
             throws UnsupportedOperationException {
         if (board != null && board.isValidPosition(x, y))
-            board.putElement(new Position(x, y, board), wall);
+            board.putElement(Position.newPosition(x, y, board), wall);
     }
 
     /**

@@ -7,7 +7,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 
 public class Position {
 
-    public Position(long x, long y, Board board)
+    private Position(long x, long y, Board board)
             throws IllegalArgumentException {
         if (!board.isValidPosition(x, y))
             throw new IllegalArgumentException();
@@ -66,11 +66,6 @@ public class Position {
     }
 
     public boolean canContainElement(Element element) {
-        if (BOARD.getOccupiedPositions().contains(this))
-            for (Position position : BOARD.getOccupiedPositions())
-                if (position.hasSameCoordinates(this) && this != position)
-                    return position.canContainElement(element);
-
         if (isTerminated())
             return false;
 
@@ -139,6 +134,7 @@ public class Position {
         for (Element elem : elements)
             elem.terminate();
         elements = null;
+        positionInstances.remove(this);
         this.isTerminated = true;
     }
 
@@ -152,15 +148,19 @@ public class Position {
         Set<Position> neighbours = new HashSet<Position>();
 
         if (BOARD.isValidPosition(X, Y - 1))
-            neighbours.add(new Position(X, Y - 1, BOARD));
+            neighbours.add(Position.newPosition(X, Y - 1, BOARD));
         if (BOARD.isValidPosition(X + 1, Y))
-            neighbours.add(new Position(X + 1, Y, BOARD));
+            neighbours.add(Position.newPosition(X + 1, Y, BOARD));
         if (BOARD.isValidPosition(X, Y + 1))
-            neighbours.add(new Position(X, Y + 1, BOARD));
+            neighbours.add(Position.newPosition(X, Y + 1, BOARD));
         if (BOARD.isValidPosition(X - 1, Y))
-            neighbours.add(new Position(X - 1, Y, BOARD));
+            neighbours.add(Position.newPosition(X - 1, Y, BOARD));
 
         return neighbours;
+    }
+    
+    public String toString() {
+        return "(" + X + ", " + Y + ")";
     }
 
     public final long X;

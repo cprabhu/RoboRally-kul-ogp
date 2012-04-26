@@ -20,54 +20,54 @@ public class BoardTest {
     public void testBoard() {
         assertNotNull(board);
 
-        Position legalPosition = new Position(346, 210, board);
+        Position legalPosition = Position.newPosition(346, 210, board);
         assertTrue(board.isValidPosition(legalPosition));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBoardFail() {
-        Position illegalPositionUp = new Position(236, -17, board);
+        Position illegalPositionUp = Position.newPosition(236, -17, board);
         assertFalse(board.isValidPosition(illegalPositionUp));
-        Position illegalPositionRight = new Position(714, 156, board);
+        Position illegalPositionRight = Position.newPosition(714, 156, board);
         assertFalse(board.isValidPosition(illegalPositionRight));
-        Position illegalPositionDown = new Position(524, 425, board);
+        Position illegalPositionDown = Position.newPosition(524, 425, board);
         assertFalse(board.isValidPosition(illegalPositionDown));
-        Position illegalPositionLeft = new Position(-42, 357, board);
+        Position illegalPositionLeft = Position.newPosition(-42, 357, board);
         assertFalse(board.isValidPosition(illegalPositionLeft));
     }
 
     @Test
     public void testMerge() {
         Energy energy = new Energy(100, unitOfPower.Ws);
-        Position emptyBoard = new Position(2, 4, board);
-        Position occupiedBoard = new Position(3, 6, board);
+        Position emptyBoard = Position.newPosition(2, 4, board);
+        Position occupiedBoard = Position.newPosition(3, 6, board);
         board.putElement(occupiedBoard, new Battery(occupiedBoard, energy));
-        Position occupied2Board = new Position(4, 14, board);
+        Position occupied2Board = Position.newPosition(4, 14, board);
         board.putElement(occupied2Board, new Battery(occupied2Board, energy));
-        Position obstacleBoard = new Position(5, 25, board);
+        Position obstacleBoard = Position.newPosition(5, 25, board);
         board.putElement(obstacleBoard, new Wall(obstacleBoard));
-        Position surroundedBoard = new Position(423, 0, board);
+        Position surroundedBoard = Position.newPosition(423, 0, board);
         board.putElement(surroundedBoard, new Wall());
-        board.putElement(new Position(424, 0, board), new Wall());
-        board.putElement(new Position(423, 1, board), new Wall());
-        board.putElement(new Position(422, 0, board), new Wall());
+        board.putElement(Position.newPosition(424, 0, board), new Wall());
+        board.putElement(Position.newPosition(423, 1, board), new Wall());
+        board.putElement(Position.newPosition(422, 0, board), new Wall());
 
         Board board2 = new Board(600, 234);
-        Position overlapEmptyBoard2 = new Position(2, 4, board2);
+        Position overlapEmptyBoard2 = Position.newPosition(2, 4, board2);
         board2.putElement(overlapEmptyBoard2, new Battery(overlapEmptyBoard2,
                 energy));
-        Position overlapOccupiedBoard2 = new Position(3, 6, board2);
+        Position overlapOccupiedBoard2 = Position.newPosition(3, 6, board2);
         board2.putElement(overlapOccupiedBoard2,
                 new Wall(overlapOccupiedBoard2));
-        Position overlapOccupied2Board2 = new Position(4, 14, board2);
+        Position overlapOccupied2Board2 = Position.newPosition(4, 14, board2);
         board2.putElement(overlapOccupied2Board2, new Battery(
                 overlapOccupied2Board2, energy));
-        Position overlapObstacleBoard2 = new Position(5, 25, board2);
+        Position overlapObstacleBoard2 = Position.newPosition(5, 25, board2);
         board2.putElement(overlapObstacleBoard2, new Battery(
                 overlapObstacleBoard2, energy));
-        Position surroundedBoard2 = new Position(423, 0, board2);
+        Position surroundedBoard2 = Position.newPosition(423, 0, board2);
         board2.putElement(surroundedBoard2, new Battery());
-        Position noOverlapBoard2 = new Position(586, 215, board2);
+        Position noOverlapBoard2 = Position.newPosition(586, 215, board2);
         board2.putElement(noOverlapBoard2, new Battery(noOverlapBoard2, energy));
 
         board.merge(board2);
@@ -90,12 +90,12 @@ public class BoardTest {
 
     @Test
     public void testPutElement() {
-        Position position = new Position(33, 57, board);
+        Position position = Position.newPosition(33, 57, board);
         Energy energy = new Energy(100, unitOfPower.Ws);
         Element element1 = new Battery(position, energy);
         Element element2 = new Battery(position, energy);
-        Position newPosition = new Position(15, 254, board);
-        Position illegalPosition = new Position(516, 457, new Board(600, 500));
+        Position newPosition = Position.newPosition(15, 254, board);
+        Position illegalPosition = Position.newPosition(516, 457, new Board(600, 500));
 
         board.putElement(newPosition, element1);
 
@@ -122,7 +122,7 @@ public class BoardTest {
 
     @Test
     public void testRemoveElement() {
-        Position position = new Position(33, 57, board);
+        Position position = Position.newPosition(33, 57, board);
         Element element = new Battery();
         board.putElement(position, element);
 
@@ -139,7 +139,7 @@ public class BoardTest {
 
     @Test
     public void testGetElementsAt() {
-        Position position = new Position(33, 57, board);
+        Position position = Position.newPosition(33, 57, board);
         Element element = new Battery();
 
         assertFalse(element.equals(board.getElementsAt(position)));
@@ -158,9 +158,9 @@ public class BoardTest {
 
     @Test
     public void testGetElementsOf() {
-        Position occupied1 = new Position(3, 6, board);
-        Position occupied2 = new Position(4, 14, board);
-        Position occupied3 = new Position(5, 25, board);
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
 
         Element wall = new Wall();
         Element battery1 = new Battery();
@@ -189,8 +189,8 @@ public class BoardTest {
 
     @Test
     public void testAddOccupiedPosition() {
-        Position position = new Position(33, 57, board);
-        Position illegalPosition = new Position(516, 457, new Board(600, 500));
+        Position position = Position.newPosition(33, 57, board);
+        Position illegalPosition = Position.newPosition(516, 457, new Board(600, 500));
 
         board.addOccupiedPosition(position);
 
@@ -203,9 +203,9 @@ public class BoardTest {
 
     @Test
     public void testGetNumberOfOccupiedPositions() {
-        Position occupied1 = new Position(3, 6, board);
-        Position occupied2 = new Position(4, 14, board);
-        Position occupied3 = new Position(5, 25, board);
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
 
         assertEquals(0, board.getNumberOfOccupiedPositions());
 
@@ -224,9 +224,9 @@ public class BoardTest {
 
     @Test
     public void testGetOccupiedPositions() {
-        Position occupied1 = new Position(3, 6, board);
-        Position occupied2 = new Position(4, 14, board);
-        Position occupied3 = new Position(5, 25, board);
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
 
         assertEquals(0, board.getOccupiedPositions().size());
 
@@ -251,7 +251,7 @@ public class BoardTest {
 
     @Test
     public void testIsValidPosition() {
-        Position position = new Position(33, 57, board);
+        Position position = Position.newPosition(33, 57, board);
 
         assertTrue(board.isValidPosition(position));
         assertFalse(board.isValidPosition(null));
@@ -270,7 +270,7 @@ public class BoardTest {
     @Test
     public void testTerminate() {
         Energy energy = new Energy(100, unitOfPower.Ws);
-        Position position = new Position(3, 6, board);
+        Position position = Position.newPosition(3, 6, board);
         board.putElement(position, new Battery(position, energy));
 
         assertFalse(board.isTerminated());

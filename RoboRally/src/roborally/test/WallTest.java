@@ -20,7 +20,7 @@ public class WallTest {
     @Test
     public void testEqualsObject() {
         Element wall3 = new Wall();
-        Element wall4 = new Wall(new Position(4, 1, BOARD));
+        Element wall4 = new Wall(Position.newPosition(4, 1, BOARD));
         Element battery = new Battery();
 
         assertTrue(wall.equals(wall2));
@@ -28,7 +28,7 @@ public class WallTest {
         assertTrue(wall.equals(wall4));
         assertTrue(wall2.equals(wall3));
         assertTrue(wall2.equals(wall4));
-        
+
         assertFalse(wall.equals(battery));
     }
 
@@ -48,7 +48,7 @@ public class WallTest {
 
     @Test
     public void testSetPosition() {
-        Position position = new Position(3, 2, BOARD);
+        Position position = Position.newPosition(3, 2, BOARD);
 
         wall.setPosition(position);
 
@@ -64,11 +64,14 @@ public class WallTest {
 
     @Test
     public void testRemovePosition() {
+        Position wallPosition = wall2.getPosition();
+
         assertNotNull(wall2.getPosition());
 
         wall2.removePosition();
 
         assertNull(wall2.getPosition());
+        assertNull(wallPosition.getElements());
     }
 
     @Test
@@ -82,8 +85,7 @@ public class WallTest {
         assertTrue(wall.isTerminated());
         assertTrue(wall2.isTerminated());
         assertFalse(POSITION.containsElement(wall2));
-        assertFalse(BOARD.isOccupiedPosition(POSITION)
-                && POSITION.getElements().isEmpty());
+        assertFalse(BOARD.isOccupiedPosition(POSITION));
     }
 
     @Test
@@ -97,5 +99,5 @@ public class WallTest {
     private Wall wall;
     private Wall wall2;
     private final Board BOARD = new Board(4, 5);
-    private final Position POSITION = new Position(2, 3, BOARD);
+    private final Position POSITION = Position.newPosition(2, 3, BOARD);
 }

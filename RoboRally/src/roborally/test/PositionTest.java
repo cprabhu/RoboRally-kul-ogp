@@ -14,20 +14,20 @@ public class PositionTest {
     public void setUp() {
         board1 = new Board(7, 4);
         board2 = new Board(15, 6);
-        position1Board1 = new Position(2, 4, board1);
-        position2Board1 = new Position(3, 4, board1);
-        position3Board1 = new Position(3, 3, board1);
+        position1Board1 = Position.newPosition(2, 4, board1);
+        position2Board1 = Position.newPosition(3, 4, board1);
+        position3Board1 = Position.newPosition(3, 3, board1);
     }
 
     @Test
     public void testHashCode() {
-        Position position = new Position(4, 2, board1);
+        Position position = Position.newPosition(4, 2, board1);
         assertEquals(board1.hashCode() + 11, position.hashCode());
     }
 
     @Test
     public void testPosition() {
-        Position position = new Position(3, 2, board1);
+        Position position = Position.newPosition(3, 2, board1);
 
         assertNotNull(position);
         assertEquals(3, position.X);
@@ -38,16 +38,16 @@ public class PositionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalPosition() {
-        Position illegalPosition = new Position(687, 16654, board1);
+        Position illegalPosition = Position.newPosition(687, 16654, board1);
         assertNull(illegalPosition);
     }
 
     @Test
     public void testHasSameCoordinates() {
-        Position position4Board1 = new Position(2, 1, board1);
-        Position position5Board1 = new Position(2, 4, board1);
-        Position position1Board2 = new Position(2, 4, board2);
-        Position position2Board2 = new Position(3, 4, board2);
+        Position position4Board1 = Position.newPosition(2, 1, board1);
+        Position position5Board1 = Position.newPosition(2, 4, board1);
+        Position position1Board2 = Position.newPosition(2, 4, board2);
+        Position position2Board2 = Position.newPosition(3, 4, board2);
 
         assertFalse(position1Board1.hasSameCoordinates(position2Board1));
         assertFalse(position1Board1.hasSameCoordinates(position3Board1));
@@ -67,7 +67,7 @@ public class PositionTest {
         assertEquals(2, position1Board1.manhattanDistance(position3Board1),
                 epsilon);
 
-        Position illegalPosition = new Position(1, 6, board2);
+        Position illegalPosition = Position.newPosition(1, 6, board2);
         try {
             position1Board1.manhattanDistance(illegalPosition);
         } catch (IllegalArgumentException exc) {
@@ -227,11 +227,11 @@ public class PositionTest {
 
     @Test
     public void testEqualsObject() {
-        Position position1Board1 = new Position(2, 4, board1);
-        Position position2Board1 = new Position(2, 4, board1);
-        Position position3Board1 = new Position(3, 3, board1);
-        Position position1Board2 = new Position(2, 4, board2);
-        Position position2Board2 = new Position(7, 6, board2);
+        Position position1Board1 = Position.newPosition(2, 4, board1);
+        Position position2Board1 = Position.newPosition(2, 4, board1);
+        Position position3Board1 = Position.newPosition(3, 3, board1);
+        Position position1Board2 = Position.newPosition(2, 4, board2);
+        Position position2Board2 = Position.newPosition(7, 6, board2);
 
         assertTrue(position1Board1.equals(position1Board1));
         assertTrue(position1Board1.equals(position2Board1));

@@ -1,5 +1,6 @@
 package roborally.model;
 
+import roborally.model.Energy.unitOfPower;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -8,16 +9,23 @@ public class Battery extends Element {
     public Battery() {
         super();
         this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
-        this.energy = maxEnergy;
+        this.energy = new Energy(1000, unitOfPower.Ws);
+        this.weight = new Weight(100, Weight.unitOfMass.g);
+    }
+
+    public Battery(Position position) {
+        super(position);
+        this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
+        this.energy = new Energy(1000, unitOfPower.Ws);
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }
 
     public Battery(Position position, Energy energy) {
         super(position);
-        maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
+        this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
         assert (energy != null);
-        assert (energy.compareTo(new Energy(0, Energy.unitOfPower.Ws)) > -1);
-        assert (energy.compareTo(maxEnergy) < 1);
+        assert (energy.compareTo(new Energy(0, Energy.unitOfPower.Ws)) >= 0);
+        assert (energy.compareTo(maxEnergy) <= 0);
         this.energy = energy;
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }
@@ -46,9 +54,11 @@ public class Battery extends Element {
     }
 
     public void terminate() {
-        energy.terminate();
+        if (energy != null)
+            energy.terminate();
         maxEnergy.terminate();
-        weight.terminate();
+        if (weight != null)
+            weight.terminate();
         super.terminate();
     }
 

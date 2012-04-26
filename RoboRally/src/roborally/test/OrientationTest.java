@@ -70,11 +70,11 @@ public class OrientationTest {
     @Test
     public void testNextPosition() {
         Board board = new Board(5, 7);
-        Position currentPosition = new Position(3, 4, board);
-        Position testPosition1 = new Position(3, 3, board);
-        Position testPosition2 = new Position(4, 4, board);
-        Position testPosition3 = new Position(3, 5, board);
-        Position testPosition4 = new Position(2, 4, board);
+        Position currentPosition = Position.newPosition(3, 4, board);
+        Position testPosition1 = Position.newPosition(3, 3, board);
+        Position testPosition2 = Position.newPosition(4, 4, board);
+        Position testPosition3 = Position.newPosition(3, 5, board);
+        Position testPosition4 = Position.newPosition(2, 4, board);
         
         assertTrue(testPosition1.equals(up.nextPosition(currentPosition)));
         assertTrue(testPosition2.equals(right.nextPosition(currentPosition)));

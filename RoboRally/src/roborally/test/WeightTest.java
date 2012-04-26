@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import roborally.model.Orientation;
 import roborally.model.Weight;
 import roborally.model.Weight.unitOfMass;
 

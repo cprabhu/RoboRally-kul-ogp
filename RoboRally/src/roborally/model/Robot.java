@@ -23,23 +23,33 @@ public class Robot extends Element {
     }
 
     public Energy getEnergyRequiredToReach(Position destination) {
+        if (!destination.canContainElement(this))
+            return null;
         Node node = new Node(null, getOrientation(), 0, getPosition(),
                 destination);
         Node shortestPath = node.shortestPath();
+        if (shortestPath == null)
+            return null; // Robot staat niet op een position dus niet op een
+                         // board.
         Energy energyRequiredToReach = shortestPath.getEnergy();
 
-        if (shortestPath.getPosition().getNeighbours().contains(destination))
+        if (shortestPath.getPosition().equals(destination))
             return energyRequiredToReach;
         return null;
     }
 
     public double getEnergyRequiredToReachWs(Position destination) {
+        if (!destination.canContainElement(this))
+            return -1;
         Node node = new Node(null, getOrientation(), 0, getPosition(),
                 destination);
         Node shortestPath = node.shortestPath();
+        if (shortestPath == null)
+            return -1; // Robot staat niet op een position dus niet op een
+                       // board.
         Energy energyRequiredToReach = shortestPath.getEnergy();
 
-        if (shortestPath.getPosition().getNeighbours().contains(destination))
+        if (shortestPath.getPosition().equals(destination))
             return energyRequiredToReach.getAmountOfEnergy();
         if (getAmountOfEnergy() - energyRequiredToReach.getAmountOfEnergy() < getEnergyToMove())
             return -2;
@@ -85,6 +95,10 @@ public class Robot extends Element {
         return orientation.ordinal();
     }
 
+    public double getEnergyToTurn() {
+        return energyToTurn.getAmountOfEnergy();
+    }
+
     public void move() {
         if (getEnergyToMove() < energy.getAmountOfEnergy()) {
             Position nextPosition = orientation.nextPosition(position);
@@ -94,8 +108,8 @@ public class Robot extends Element {
     }
 
     public void moveTo(Position position) {
-        position.BOARD.putElement(position, this);
         energy.removeEnergy(getEnergyRequiredToReach(position));
+        position.BOARD.putElement(position, this);
     }
 
     public void moveNextTo(Robot robot2) {
@@ -179,39 +193,45 @@ public class Robot extends Element {
         robot2.moveTo(robot2BestPosition);
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
     public void shoot() {
-        energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
-        Position bulletPosition = position;
-        while (position.BOARD.isValidPosition(bulletPosition)
-                && !position.BOARD.isOccupiedPosition(bulletPosition)) {
-            bulletPosition = orientation.nextPosition(bulletPosition);
-        }
+        if (energy.compareTo(new Energy(1000, unitOfPower.Ws)) >= 0) {
+            energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
+            Position bulletPosition = orientation.nextPosition(position);
+            while (position.BOARD.isValidPosition(bulletPosition)
+                    && !position.BOARD.isOccupiedPosition(bulletPosition)) {
+                bulletPosition = orientation.nextPosition(bulletPosition);
+            }
 
-        int item = new Random().nextInt(bulletPosition.getElements().size());
-        int i = 0;
-        for (Element elem : bulletPosition.getElements()) {
-            if (i == item)
-                elem.terminate();
-            i = i + 1;
+            int item = new Random()
+                    .nextInt(bulletPosition.getElements().size());
+            int i = 0;
+            for (Element elem : bulletPosition.getElements()) {
+                if (i == item)
+                    elem.terminate();
+                i = i + 1;
+            }
         }
     }
 
     public void pickup(Battery battery) {
-        if (battery != null && carryWeight.compareTo(battery.getWeight()) > -1)
+        if (battery != null
+                && (carryWeight == null || carryWeight.compareTo(battery
+                        .getWeight()) >= 0))
             if (position.equals(battery.getPosition())) {
-                for (int i = 0; i < batteries.size(); i++) {
-                    if (battery.getWeight().compareTo(
-                            batteries.get(i).getWeight()) > -1) {
-                        batteries.add(i, battery);
-                        break;
+                if (batteries.size() != 0)
+                    for (Battery compBattery : batteries) {
+                        if (battery.getWeight().compareTo(
+                                compBattery.getWeight()) >= 0) {
+                            batteries.add(batteries.indexOf(compBattery),
+                                    battery);
+                            break;
+                        }
                     }
-                }
+                if (!batteries.contains(battery))
+                    batteries.add(battery);
                 battery.removePosition();
-                carryWeight.removeWeight(battery.getWeight());
+                if (carryWeight != null)
+                    carryWeight.removeWeight(battery.getWeight());
             }
     }
 
@@ -228,7 +248,8 @@ public class Robot extends Element {
         if (battery != null) {
             batteries.remove(battery);
             battery.setPosition(position);
-            carryWeight.addWeight(battery.getWeight());
+            if (carryWeight != null)
+                carryWeight.addWeight(battery.getWeight());
         }
     }
 
@@ -249,14 +270,21 @@ public class Robot extends Element {
         return carriedWeight;
     }
 
-    public final Energy energyToMove = new Energy(500, unitOfPower.Ws);
+    public void terminate() {
+        if (position != null)
+            position.removeElement(this);
+        position = null;
+        for (Battery battery : getPossesions())
+            battery.terminate();
+        this.isTerminated = true;
+    }
 
-    public static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
+    private final Energy energyToMove = new Energy(500, unitOfPower.Ws);
+    private static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
 
     private final Energy energy;
     private final Energy maxEnergy;
     private Orientation orientation;
-    private Position position;
     private final Weight carryWeight;
     private final List<Battery> batteries = new ArrayList<Battery>();
 

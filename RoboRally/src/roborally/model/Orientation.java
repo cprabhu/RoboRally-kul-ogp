@@ -72,13 +72,13 @@ public enum Orientation {
         
         switch (this) {
         case UP:
-            return new Position(x, y - 1, board);
+            return Position.newPosition(x, y - 1, board);
         case RIGHT:
-            return new Position(x + 1, y, board);
+            return Position.newPosition(x + 1, y, board);
         case DOWN:
-            return new Position(x, y + 1, board);
+            return Position.newPosition(x, y + 1, board);
         case LEFT:
-            return new Position(x - 1, y, board);
+            return Position.newPosition(x - 1, y, board);
         default:
             return currentPosition;
         }

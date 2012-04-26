@@ -19,7 +19,7 @@ public class Board {
         occupiedPositionsBoard2.addAll(board2.occupiedPositions);
         for (Position occupiedPosition2 : occupiedPositionsBoard2) {
             if (isValidPosition(occupiedPosition2)) {
-                Position position = new Position(occupiedPosition2.X,
+                Position position = Position.newPosition(occupiedPosition2.X,
                         occupiedPosition2.Y, this);
                 for (Element elem : occupiedPosition2.getElements()) {
                     if (!position.canContainElement(elem)) {
@@ -41,11 +41,7 @@ public class Board {
     public void putElement(Position position, Element element) {
         if (isValidPosition(position))
             if (occupiedPositions.contains(position)) {
-                for (Position occupiedPosition : occupiedPositions)
-                    if (position.equals(occupiedPosition)) {
-                        occupiedPosition.addElement(element);
-                        break;
-                    }
+                position.addElement(element);
             } else {
                 addOccupiedPosition(position);
                 putElement(position, element);
@@ -57,9 +53,8 @@ public class Board {
     }
 
     public Set<Element> getElementsAt(Position position) {
-        for (Position occupiedPosition : occupiedPositions)
-            if (position.equals(occupiedPosition))
-                return occupiedPosition.getElements();
+        if (isOccupiedPosition(position))
+            return position.getElements();
         return new HashSet<Element>();
     }
 
