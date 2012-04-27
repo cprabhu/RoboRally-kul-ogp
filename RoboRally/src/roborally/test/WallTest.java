@@ -9,6 +9,9 @@ import roborally.model.Battery;
 import roborally.model.Element;
 import roborally.model.Position;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class WallTest {
 
     @Before

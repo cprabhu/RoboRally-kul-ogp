@@ -7,25 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Implement this interface to connect your code to the user interface.
- * 
- * <ul>
- * <li>Connect your classes to the user interface by creating a class named <code>Facade</code> that implements <code>IFacade</code>. The header
- *     of the class <code>Facade</code> should look as follows:
- *     <p><code>class Facade implements IFacade&ltBoardImpl, RobotImpl, WallImpl, BatteryImpl&gt { ... }</code></p>
- *     The code snippet shown above assumes that your classes representing boards, robots, walls and batteries are respectively named
- *     <code>BoardImpl</code>, <code>RobotImpl</code>, <code>WallImpl</code> and <code>BatteryImpl</code>. Consult the
- *     <a href="http://docs.oracle.com/javase/tutorial/java/IandI/createinterface.html">Java tutorial</a> for more information on interfaces.</li>
- * <li>Modify the code between <code>&ltbegin&gt</code> and <code>&ltend&gt</code> in RoboRally.java: instantiate the generic arguments with
- *     your own classes and replace <code>new roborally.model.Facade()</code> with <code>new yourpackage.Facade()</code>.
- * <li>You may assume that only non-null objects returned by <code>createBoard</code>, <code>createRobot</code>, <code>createWall</code> and <code>createBattery</code>
- *     are passed to <code>putRobot</code>, <code>getBatteryX</code>, <code>getWallY</code>, <code>move</code>, etc.</li>
- * <li>The methods in this interface should not throw exceptions (unless specified otherwise in the documentation of a method). Prevent precondition violations for nominal methods (by checking before calling a method that its precondition holds)
- *   and catch exceptions for defensive methods. If a problem occurs (e.g. insufficient energy to move, trying to use a battery not held by the robot, ...), do not modify the program state and print an error message on standard error (<code>System.err</code>).</li>
- * <li>The rules described above and the documentation described below for each method apply only to the class implementing IFacade. Your classes for representing boards, robots, walls and batteries should follow the rules described in the assignment.</li>
- * <li>Do not modify the signatures of the methods defined in this interface. You can however add additional methods, as long as these additional methods do not overload the existing ones. Each additional method should of course
- *     be implemented in your class <code>Facade</code>.</li>
- * </ul> 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class Facade implements IFacade<Board, Robot, Wall, Battery> {
 

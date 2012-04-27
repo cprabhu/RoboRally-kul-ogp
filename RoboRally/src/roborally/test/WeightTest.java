@@ -7,6 +7,9 @@ import org.junit.*;
 import roborally.model.Weight;
 import roborally.model.Weight.unitOfMass;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class WeightTest {
 
     @Before

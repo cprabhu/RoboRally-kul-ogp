@@ -3,6 +3,9 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class Energy {
     public Energy(double amount, unitOfPower unit) {
         this.amountOfEnergy = amount * unit.getConversionFactor(unitOfPower.Ws);

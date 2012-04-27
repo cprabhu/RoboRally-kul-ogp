@@ -9,6 +9,9 @@ import org.junit.*;
 import roborally.model.*;
 import roborally.model.Energy.unitOfPower;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class BoardTest {
 
     @Before
@@ -95,7 +98,8 @@ public class BoardTest {
         Element element1 = new Battery(position, energy);
         Element element2 = new Battery(position, energy);
         Position newPosition = Position.newPosition(15, 254, board);
-        Position illegalPosition = Position.newPosition(516, 457, new Board(600, 500));
+        Position illegalPosition = Position.newPosition(516, 457, new Board(
+                600, 500));
 
         board.putElement(newPosition, element1);
 
@@ -190,7 +194,8 @@ public class BoardTest {
     @Test
     public void testAddOccupiedPosition() {
         Position position = Position.newPosition(33, 57, board);
-        Position illegalPosition = Position.newPosition(516, 457, new Board(600, 500));
+        Position illegalPosition = Position.newPosition(516, 457, new Board(
+                600, 500));
 
         board.addOccupiedPosition(position);
 

@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class OrientationTest {
 
     @Before

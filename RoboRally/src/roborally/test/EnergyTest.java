@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class EnergyTest {
 
     @Test
@@ -74,10 +77,11 @@ public class EnergyTest {
         assertFalse(testEnergy.compareTo(maxEnergy) > 1);
         assertFalse(bigEnergy.compareTo(zeroEnergy) < 1);
     }
-    
+
     @Test
     public void testGetAmountOfEnergy() {
-        assertEquals(2500, new Energy(2500, unitOfPower.Ws).getAmountOfEnergy(), 0.01);
+        assertEquals(2500,
+                new Energy(2500, unitOfPower.Ws).getAmountOfEnergy(), 0.01);
     }
 
     @Test

@@ -3,6 +3,9 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public abstract class Element {
 
     Element() {
@@ -17,7 +20,7 @@ public abstract class Element {
     }
 
     public void setPosition(Position position) {
-        if(position.canContainElement(this)) {
+        if (position != null && position.canContainElement(this)) {
             if (this.position != null)
                 removePosition();
             position.addElement(this);

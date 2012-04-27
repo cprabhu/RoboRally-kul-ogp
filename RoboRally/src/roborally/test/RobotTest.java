@@ -11,6 +11,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class RobotTest {
 
     @Before
@@ -93,8 +96,8 @@ public class RobotTest {
         board.putElement(Position.newPosition(7, 42, board), new Wall());
         board.putElement(Position.newPosition(8, 43, board), new Wall());
         Position robotPosition = Position.newPosition(14, 36, board);
-        Position insufficientEnergyPosition = Position.newPosition(117, 256,
-                board);
+        // Position insufficientEnergyPosition = Position.newPosition(117, 256,
+        // board);
         Position surroundedByWallPosition = Position.newPosition(18, 29, board);
         for (Position neighbour : surroundedByWallPosition.getNeighbours())
             board.putElement(neighbour, new Wall());

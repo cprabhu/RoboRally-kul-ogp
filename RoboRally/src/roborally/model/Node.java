@@ -4,6 +4,9 @@ import java.util.*;
 
 import roborally.model.Energy.unitOfPower;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class Node implements Comparable<Node> {
 
     public Node(Node parent, Orientation orientation, double cost,

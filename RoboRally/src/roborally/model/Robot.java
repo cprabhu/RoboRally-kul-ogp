@@ -8,6 +8,9 @@ import java.util.*;
 // TODO: orientation totally: CHECK
 // TODO: position defensively
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class Robot extends Element {
 
     public Robot(Energy initialEnergy, Orientation initialOrienation) {
@@ -155,12 +158,13 @@ public class Robot extends Element {
         }
 
         int item = new Random().nextInt(bulletPosition.getElements().size());
-        int i = 0;
-        for (Element elem : bulletPosition.getElements()) {
-            if (i == item)
-                elem.terminate();
-            i = i + 1;
+
+        Iterator<Element> elementsAtBulletPositionIt = bulletPosition
+                .getElements().iterator();
+        for (int i = 0; i < item; i++) {
+            elementsAtBulletPositionIt.next();
         }
+        elementsAtBulletPositionIt.next().terminate();
     }
 
     public void pickup(Battery battery) throws IllegalStateException {

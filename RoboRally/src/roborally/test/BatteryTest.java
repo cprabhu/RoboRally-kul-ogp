@@ -8,6 +8,9 @@ import roborally.model.*;
 import roborally.model.Energy.unitOfPower;
 import roborally.model.Weight.unitOfMass;
 
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class BatteryTest {
 
     @Before

@@ -5,6 +5,10 @@ import java.util.*;
 
 // TODO: all aspects related to placement of walls, robots, batteries on
 // boards: defensively
+
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
 public class Board {
 
     public Board(long width, long height) {
