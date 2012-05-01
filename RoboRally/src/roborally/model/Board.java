@@ -11,34 +11,39 @@ import java.util.*;
  */
 public class Board {
 
-    public Board(long width, long height) {
+    public Board(long width, long height) throws IllegalArgumentException {
         this.isTerminated = false;
+        if (width < 0 || height < 0)
+            throw new IllegalArgumentException();
         this.WIDTH = width;
         this.HEIGHT = height;
     }
 
     public void merge(Board board2) {
-        Set<Position> occupiedPositionsBoard2 = new HashSet<Position>();
-        occupiedPositionsBoard2.addAll(board2.occupiedPositions);
-        for (Position occupiedPosition2 : occupiedPositionsBoard2) {
-            if (isValidPosition(occupiedPosition2)) {
-                Position position = Position.newPosition(occupiedPosition2.X,
-                        occupiedPosition2.Y, this);
-                for (Element elem : occupiedPosition2.getElements()) {
-                    if (!position.canContainElement(elem)) {
-                        // NOTE: while(it.hasNext()) komt niet aan het einde.
-                        for (Position neighbour : occupiedPosition2
-                                .getNeighbours()) {
-                            putElement(neighbour, elem);
-                            break;
-                        }
+        if (board2 != null) {
+            Set<Position> occupiedPositionsBoard2 = new HashSet<Position>();
+            occupiedPositionsBoard2.addAll(board2.occupiedPositions);
+            for (Position occupiedPosition2 : occupiedPositionsBoard2) {
+                if (isValidPosition(occupiedPosition2)) {
+                    Position position = Position.newPosition(
+                            occupiedPosition2.X, occupiedPosition2.Y, this);
+                    for (Element elem : occupiedPosition2.getElements()) {
+                        if (!position.canContainElement(elem)) {
+                            // NOTE: while(it.hasNext()) komt niet aan het
+                            // einde.
+                            for (Position neighbour : occupiedPosition2
+                                    .getNeighbours()) {
+                                putElement(neighbour, elem);
+                                break;
+                            }
 
-                    } else
-                        putElement(position, elem);
+                        } else
+                            putElement(position, elem);
+                    }
                 }
             }
+            board2.terminate();
         }
-        board2.terminate();
     }
 
     public void putElement(Position position, Element element) {
@@ -64,10 +69,7 @@ public class Board {
     public Set<Element> getElementsOf(Class<?> type) {
         Set<Element> elements = new HashSet<Element>();
         for (Position occupiedPosition : occupiedPositions) {
-            for (Element element : occupiedPosition.getElements()) {
-                if (type.isAssignableFrom(element.getClass()))
-                    elements.add(element);
-            }
+            elements.addAll(occupiedPosition.getElementsOf(type));
         }
         return elements;
     }

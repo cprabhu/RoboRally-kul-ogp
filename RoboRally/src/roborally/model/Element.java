@@ -10,13 +10,11 @@ public abstract class Element {
 
     Element() {
         this.isTerminated = false;
-
     }
 
     Element(Position position) {
         setPosition(position);
         this.isTerminated = false;
-
     }
 
     public void setPosition(Position position) {
@@ -37,6 +35,8 @@ public abstract class Element {
             this.position.removeElement(this);
         position = null;
     }
+
+    public abstract void hit();
 
     public void terminate() {
         if (position != null)

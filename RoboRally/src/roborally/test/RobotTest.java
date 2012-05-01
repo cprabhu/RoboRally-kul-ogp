@@ -226,16 +226,19 @@ public class RobotTest {
     @Test
     public void testMoveTo() {
         Position originalPosition = Position.newPosition(50, 50, board);
-        Position moveablePosition = Position.newPosition(60, 55, board);
-        Position unReachablePosition = Position.newPosition(200, 300, board);
-        Position occupiedPosition = Position.newPosition(61, 56, board);
-        board.putElement(occupiedPosition, new Wall());
+        Node moveablePosition = new Node(null, null, 0, Position.newPosition(
+                60, 55, board), null);
+        Node unReachablePosition = new Node(null, null, 0,
+                Position.newPosition(200, 300, board), null);
+        Node occupiedPosition = new Node(null, null, 0, Position.newPosition(
+                61, 56, board), null);
+        board.putElement(occupiedPosition.getPosition(), new Wall());
 
         robot.recharge(new Energy(15000, unitOfPower.Ws));
         robot.setPosition(originalPosition);
         robot.moveTo(moveablePosition);
 
-        assertTrue(moveablePosition.equals(robot.getPosition()));
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
         assertEquals(
                 18000 - (2 * robot.getEnergyToTurn() + 15 * robot
                         .getEnergyToMove()),
@@ -252,7 +255,7 @@ public class RobotTest {
            * hier een error moeten geven van "je raakt er niet"
            */
 
-        assertTrue(moveablePosition.equals(robot.getPosition()));
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
 
         try {
             robot.moveTo(occupiedPosition);
@@ -261,7 +264,7 @@ public class RobotTest {
                     .println("testMoveTo: This assertionerror is to be expected.");
         }
 
-        assertTrue(moveablePosition.equals(robot.getPosition()));
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
     }
 
     @Test
@@ -281,7 +284,7 @@ public class RobotTest {
                         Position.newPosition(9, 13, board)));
     }
 
-    // Deze test duurt lang. (2 seconden)
+    // // Deze test duurt lang. (2 seconden)
     // @Test
     // public void testMoveNextToNoObstaclesLongDistance() {
     // Robot robot2 = new Robot(energy, Orientation.LEFT);
@@ -482,16 +485,21 @@ public class RobotTest {
     @Test
     public void testShoot() {
         Energy enoughEnergy = new Energy(5000, unitOfPower.Ws);
+        Energy enoughEnergy2 = new Energy(5000, unitOfPower.Ws);
         Energy notEnoughEnergy = new Energy(500, unitOfPower.Ws);
         Robot robotEnoughEnergy = new Robot(enoughEnergy, Orientation.RIGHT);
         Robot robotNotEnoughEnergy = new Robot(notEnoughEnergy,
                 Orientation.LEFT);
+        Robot robotShootAtBoardEdge = new Robot(enoughEnergy2, Orientation.LEFT);
         Position positionRobotEnoughEnergy = Position.newPosition(0, 0, board);
         Position positionRobotNotEnoughEnergy = Position.newPosition(20, 0,
+                board);
+        Position positionRobotShootAtBoardEdge = Position.newPosition(3, 2,
                 board);
 
         robotEnoughEnergy.setPosition(positionRobotEnoughEnergy);
         robotNotEnoughEnergy.setPosition(positionRobotNotEnoughEnergy);
+        robotShootAtBoardEdge.setPosition(positionRobotShootAtBoardEdge);
 
         try {
             robotNotEnoughEnergy.shoot();
@@ -518,6 +526,10 @@ public class RobotTest {
         assertEquals(notEnoughEnergy.getAmountOfEnergy(),
                 robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
         assertEquals(4000, robotEnoughEnergy.getAmountOfEnergy(), epsilon);
+
+        robotShootAtBoardEdge.shoot();
+
+        assertEquals(4000, robotShootAtBoardEdge.getAmountOfEnergy(), epsilon);
     }
 
     @Test

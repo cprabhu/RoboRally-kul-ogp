@@ -89,6 +89,9 @@ public class BoardTest {
         assertTrue(surroundedBoard2.isTerminated());
         assertTrue(noOverlapBoard2.isTerminated());
 
+        board.merge(null);
+
+        assertEquals(11, board.getNumberOfOccupiedPositions());
     }
 
     @Test

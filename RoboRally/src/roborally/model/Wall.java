@@ -13,13 +13,7 @@ public class Wall extends Element {
         super(position);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return hashCode() == o.hashCode();
-    }
+    public void hit() {
 
-    @Override
-    public int hashCode() {
-        return 0;
     }
 }

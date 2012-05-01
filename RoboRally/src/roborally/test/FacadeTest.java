@@ -1,6 +1,679 @@
 package roborally.test;
 
+import static org.junit.Assert.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.*;
+
+import roborally.model.*;
+import roborally.model.Energy.unitOfPower;
+import roborally.model.Weight.unitOfMass;
 
 public class FacadeTest {
 
+    @Before
+    public void setUp() {
+        facade = new Facade();
+    }
+
+    @Test
+    public void testCreateBoard() {
+        assertNotNull(facade.createBoard(5, 27));
+        assertNull(facade.createBoard(-3, 14));
+    }
+
+    @Test
+    public void testMerge() {
+        Board board1 = facade.createBoard(4, 13);
+        Board board2 = facade.createBoard(2, 45);
+
+        facade.merge(board1, board2);
+
+        assertNotNull(board1);
+        assertTrue(board2.isTerminated());
+
+        facade.merge(board1, null);
+
+        assertNotNull(board1);
+    }
+
+    @Test
+    public void testCreateBattery() {
+        assertNotNull(facade.createBattery(1000, 50));
+        assertNull(facade.createBattery(6500, 14));
+    }
+
+    @Test
+    public void testPutBattery() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+
+        assertEquals(0, position.getElements().size());
+
+        facade.putBattery(board, 3, 5, facade.createBattery(1000, 50));
+
+        assertEquals(1, position.getElements().size());
+    }
+
+    @Test
+    public void testGetBatteryX() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Battery battery = facade.createBattery(1000, 50);
+
+        try {
+            facade.getBatteryX(battery);
+        } catch (IllegalStateException e) {
+            System.err
+                    .println("testGetBatteryX: This illegalStateException is "
+                            + "to be expected.");
+        }
+
+        facade.putBattery(board, 3, 5, battery);
+
+        assertEquals(position.X, facade.getBatteryX(battery));
+    }
+
+    @Test
+    public void testGetBatteryY() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Battery battery = facade.createBattery(1000, 50);
+
+        try {
+            facade.getBatteryY(battery);
+        } catch (IllegalStateException e) {
+            System.err
+                    .println("testGetBatteryY: This illegalStateException is "
+                            + "to be expected.");
+        }
+
+        facade.putBattery(board, 3, 5, battery);
+        assertEquals(position.Y, facade.getBatteryY(battery));
+    }
+
+    @Test
+    public void testCreateRobot() {
+        assertNotNull(facade.createRobot(0, 500));
+        assertNull(facade.createRobot(-2, 500));
+        assertNull(facade.createRobot(0, 25000));
+    }
+
+    @Test
+    public void testPutRobot() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+
+        assertEquals(0, position.getElements().size());
+
+        facade.putRobot(board, 3, 5, facade.createRobot(0, 500));
+
+        assertEquals(1, position.getElements().size());
+    }
+
+    @Test
+    public void testGetRobotX() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Robot robot = facade.createRobot(0, 500);
+
+        try {
+            facade.getRobotX(robot);
+        } catch (IllegalStateException e) {
+            System.err.println("testGetRobotX: This illegalStateException is"
+                    + "to be expected.");
+        }
+
+        facade.putRobot(board, 3, 5, robot);
+
+        assertEquals(position.X, facade.getRobotX(robot));
+    }
+
+    @Test
+    public void testGetRobotY() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Robot robot = facade.createRobot(0, 500);
+
+        try {
+            facade.getRobotY(robot);
+        } catch (IllegalStateException e) {
+            System.err.println("testGetRobotX: This illegalStateException is"
+                    + "to be expected.");
+        }
+
+        facade.putRobot(board, 3, 5, robot);
+
+        assertEquals(position.Y, facade.getRobotY(robot));
+    }
+
+    @Test
+    public void testGetOrientation() {
+        Robot robot0 = facade.createRobot(0, 500);
+        Robot robot2 = facade.createRobot(2, 500);
+
+        assertEquals(0, facade.getOrientation(robot0));
+        assertEquals(2, facade.getOrientation(robot2));
+    }
+
+    @Test
+    public void testGetEnergy() {
+        Robot robot500 = facade.createRobot(0, 500);
+        Robot robot10500 = facade.createRobot(2, 10500);
+
+        assertEquals(500, facade.getEnergy(robot500), epsilon);
+        assertEquals(10500, facade.getEnergy(robot10500), epsilon);
+    }
+
+    @Test
+    public void testMove() {
+        Board board = facade.createBoard(17, 23);
+        Position startPosition = Position.newPosition(3, 7, board);
+        Robot robotUp = facade.createRobot(0, 1500);
+        Robot robotRight = facade.createRobot(1, 1500);
+        facade.putRobot(board, 3, 7, robotUp);
+
+        assertEquals(startPosition.X, facade.getRobotX(robotUp));
+        assertEquals(startPosition.Y, facade.getRobotY(robotUp));
+
+        facade.move(robotUp);
+
+        assertEquals(Orientation.UP.nextPosition(startPosition).X,
+                facade.getRobotX(robotUp));
+        assertEquals(Orientation.UP.nextPosition(startPosition).Y,
+                facade.getRobotY(robotUp));
+
+        facade.putRobot(board, 3, 7, robotRight);
+
+        assertEquals(startPosition.X, facade.getRobotX(robotRight));
+        assertEquals(startPosition.Y, facade.getRobotY(robotRight));
+
+        facade.move(robotRight);
+
+        assertEquals(Orientation.RIGHT.nextPosition(startPosition).X,
+                facade.getRobotX(robotRight));
+        assertEquals(Orientation.RIGHT.nextPosition(startPosition).Y,
+                facade.getRobotY(robotRight));
+    }
+
+    @Test
+    public void testTurn() {
+        Robot robot = facade.createRobot(0, 500);
+
+        assertEquals(0, facade.getOrientation(robot));
+
+        facade.turn(robot);
+
+        assertEquals(1, facade.getOrientation(robot));
+
+        facade.turn(robot);
+
+        assertEquals(2, facade.getOrientation(robot));
+
+        facade.turn(robot);
+
+        assertEquals(3, facade.getOrientation(robot));
+
+        facade.turn(robot);
+
+        assertEquals(0, facade.getOrientation(robot));
+    }
+
+    @Test
+    public void testGetPossessions() {
+        Board board = facade.createBoard(16, 12);
+        Robot robot = facade.createRobot(0, 500);
+        facade.putRobot(board, 3, 6, robot);
+        Battery battery1 = facade.createBattery(1000, 50);
+        facade.putBattery(board, 3, 6, battery1);
+        Battery battery2 = facade.createBattery(1000, 50);
+        facade.putBattery(board, 3, 6, battery2);
+
+        assertEquals(0, facade.getPossessions(robot).size());
+
+        facade.pickUp(robot, battery1);
+
+        assertEquals(1, facade.getPossessions(robot).size());
+
+        facade.pickUp(robot, battery2);
+
+        assertEquals(2, facade.getPossessions(robot).size());
+    }
+
+    // TODO: testPickUp uitbreiden met verschillende items.
+    @Test
+    public void testPickUp() {
+        Board board = facade.createBoard(16, 12);
+        Robot robot = facade.createRobot(0, 500);
+        facade.putRobot(board, 3, 6, robot);
+        Battery battery = facade.createBattery(1000, 50);
+        facade.putBattery(board, 3, 6, battery);
+
+        assertEquals(0, facade.getPossessions(robot).size());
+
+        facade.pickUp(robot, battery);
+
+        assertEquals(1, facade.getPossessions(robot).size());
+    }
+
+    // TODO: testUse uitbreiden met verschillende items.
+    @Test
+    public void testUse() {
+        Board board = facade.createBoard(16, 12);
+        Robot robot = facade.createRobot(0, 500);
+        facade.putRobot(board, 3, 6, robot);
+        Battery battery = facade.createBattery(1000, 50);
+        facade.putBattery(board, 3, 6, battery);
+        facade.pickUp(robot, battery);
+
+        assertEquals(500, facade.getEnergy(robot), epsilon);
+
+        facade.use(robot, battery);
+
+        assertEquals(1500, facade.getEnergy(robot), epsilon);
+    }
+
+    @Test
+    public void testDrop() {
+        Board board = facade.createBoard(16, 12);
+        Robot robot = facade.createRobot(0, 500);
+        facade.putRobot(board, 3, 6, robot);
+        Battery battery = facade.createBattery(1000, 50);
+        facade.putBattery(board, 3, 6, battery);
+        facade.pickUp(robot, battery);
+
+        assertEquals(1, facade.getPossessions(robot).size());
+
+        facade.drop(robot, battery);
+
+        assertEquals(0, facade.getPossessions(robot).size());
+    }
+
+    @Test
+    public void testGetMinimalCostToReach() {
+        Board board = facade.createBoard(16, 12);
+        Robot robot = facade.createRobot(0, 1000);
+
+        assertEquals(-1, facade.getMinimalCostToReach(robot, 1, 1), epsilon);
+
+        facade.putRobot(board, 3, 6, robot);
+
+        assertEquals(500, facade.getMinimalCostToReach(robot, 3, 5), epsilon);
+
+        // TODO: Opgave 3, Position(insuf energy: -1, obstacle: -1, notonboard:
+        // -1)
+        assertEquals(-1, facade.getMinimalCostToReach(robot, 1, 1), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToNoObstacles() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 3000);
+        Robot robot2 = facade.createRobot(1, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 9, 12, robot2);
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().getNeighbours()
+                .contains(robot2.getPosition()));
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(8, 12, board))
+                || robot1.getPosition().equals(
+                        Position.newPosition(9, 13, board)));
+    }
+
+    @Test
+    public void testMoveNextToBestEffort() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 3000);
+        Robot robot2 = facade.createRobot(1, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 12, 23, robot2);
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertEquals(3,
+                robot1.getPosition().manhattanDistance(robot2.getPosition()),
+                epsilon);
+        assertEquals(400, robot1.getAmountOfEnergy(), epsilon);
+        assertEquals(400, robot2.getAmountOfEnergy(), epsilon);
+
+    }
+
+    @Test
+    public void testMoveNextToRobotNotOnBoard() {
+        Board board = facade.createBoard(16, 26);
+        Board board2 = facade.createBoard(35, 46);
+        Robot robot1 = facade.createRobot(0, 3000);
+        Robot robot2 = facade.createRobot(1, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(7, 15, board)));
+        assertEquals(3000, robot1.getAmountOfEnergy(), epsilon);
+
+        facade.moveNextTo(robot2, robot1);
+
+        assertNull(robot2.getPosition());
+        assertEquals(3000, robot2.getAmountOfEnergy(), epsilon);
+
+        facade.putRobot(board2, 12, 23, robot2);
+
+        robot1.moveNextTo(robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(7, 15, board)));
+        assertEquals(3000, robot1.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToBestEffortOverlap() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 3000);
+        Robot robot2 = facade.createRobot(1, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 9, 20, robot2);
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().getNeighbours()
+                .contains(robot2.getPosition()));
+    }
+
+    @Test
+    public void testMoveNextToDifferentCarriedWeight() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 6000);
+        Robot robot2 = facade.createRobot(2, 1000);
+        Battery battery = new Battery(Position.newPosition(7, 15, board),
+                new Energy(1000, unitOfPower.Ws), new Weight(10, unitOfMass.kg));
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 10, 13, robot2);
+        facade.pickUp(robot1, battery);
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(9, 15, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(10, 15, board)));
+        assertEquals(3900, robot1.getAmountOfEnergy(), epsilon);
+        assertEquals(0, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToSurroundedByWalls() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 6000);
+        Robot robot2 = facade.createRobot(0, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 12, 23, robot2);
+
+        Set<Position> wallsRoundRobot2Positions = new HashSet<Position>();
+        for (long x = 10; x < 15; x++) {
+            wallsRoundRobot2Positions.add(Position.newPosition(x, 21, board));
+            wallsRoundRobot2Positions.add(Position.newPosition(x, 26, board));
+        }
+        for (long y = 22; y < 26; y++) {
+            wallsRoundRobot2Positions.add(Position.newPosition(10, y, board));
+            wallsRoundRobot2Positions.add(Position.newPosition(14, y, board));
+        }
+        for (Position wallPosition : wallsRoundRobot2Positions)
+            board.putElement(wallPosition, new Wall());
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(12, 20, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(12, 22, board)));
+        assertEquals(800, robot1.getAmountOfEnergy(), epsilon);
+        assertEquals(2500, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToSurroundedByRobots() {
+        Board board = facade.createBoard(16, 26);
+        Robot robot1 = facade.createRobot(0, 6000);
+        Robot robot2 = facade.createRobot(0, 3000);
+
+        facade.putRobot(board, 7, 15, robot1);
+        facade.putRobot(board, 12, 23, robot2);
+
+        Set<Position> robotsRoundRobot2Positions = new HashSet<Position>();
+        for (long x = 10; x < 15; x++) {
+            robotsRoundRobot2Positions.add(Position.newPosition(x, 21, board));
+            robotsRoundRobot2Positions.add(Position.newPosition(x, 26, board));
+        }
+        for (long y = 22; y < 26; y++) {
+            robotsRoundRobot2Positions.add(Position.newPosition(10, y, board));
+            robotsRoundRobot2Positions.add(Position.newPosition(14, y, board));
+        }
+        for (Position robotPosition : robotsRoundRobot2Positions)
+            board.putElement(robotPosition, new Robot(new Energy(1000,
+                    unitOfPower.Ws), Orientation.UP));
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(12, 20, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(12, 22, board)));
+        assertEquals(800, robot1.getAmountOfEnergy(), epsilon);
+        assertEquals(2500, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToObstacles() {
+        Board board = facade.createBoard(35, 47);
+        Robot robot1 = facade.createRobot(0, 6600);
+        Robot robot2 = facade.createRobot(0, 1800);
+
+        facade.putRobot(board, 5, 5, robot1);
+        facade.putRobot(board, 15, 5, robot2);
+
+        Set<Position> maze = new HashSet<Position>();
+        for (long x = 3; x < 18; x++) {
+            maze.add(Position.newPosition(x, 3, board));
+            maze.add(Position.newPosition(x, 7, board));
+        }
+        for (long y = 4; y < 7; y++) {
+            maze.add(Position.newPosition(3, y, board));
+            maze.add(Position.newPosition(17, y, board));
+        }
+        maze.add(Position.newPosition(7, 4, board));
+        maze.add(Position.newPosition(7, 5, board));
+        maze.add(Position.newPosition(10, 5, board));
+        maze.add(Position.newPosition(10, 6, board));
+        maze.add(Position.newPosition(13, 4, board));
+        maze.add(Position.newPosition(13, 5, board));
+
+        for (Position position : maze) {
+            board.putElement(position, new Wall());
+        }
+
+        facade.moveNextTo(robot1, robot2);
+
+        assertTrue(robot1.getPosition().equals(
+                Position.newPosition(12, 6, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(13, 6, board)));
+        assertEquals(0, robot1.getAmountOfEnergy(), epsilon);
+        assertEquals(0, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testShoot() {
+        Board board = facade.createBoard(35, 47);
+        Energy enoughEnergy = new Energy(5000, unitOfPower.Ws);
+        Energy enoughEnergy2 = new Energy(5000, unitOfPower.Ws);
+        Energy notEnoughEnergy = new Energy(500, unitOfPower.Ws);
+        Robot robotEnoughEnergy = new Robot(enoughEnergy, Orientation.RIGHT);
+        Robot robotNotEnoughEnergy = new Robot(notEnoughEnergy,
+                Orientation.LEFT);
+        Robot robotShootAtBoardEdge = new Robot(enoughEnergy2, Orientation.LEFT);
+        Position positionRobotEnoughEnergy = Position.newPosition(0, 0, board);
+        Position positionRobotNotEnoughEnergy = Position.newPosition(20, 0,
+                board);
+        Position positionRobotShootAtBoardEdge = Position.newPosition(3, 2,
+                board);
+
+        robotEnoughEnergy.setPosition(positionRobotEnoughEnergy);
+        robotNotEnoughEnergy.setPosition(positionRobotNotEnoughEnergy);
+        robotShootAtBoardEdge.setPosition(positionRobotShootAtBoardEdge);
+
+        assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
+                .getPosition()));
+
+        try {
+            facade.shoot(robotNotEnoughEnergy);
+        } catch (AssertionError ae) {
+            System.err
+                    .println("testShoot(facadetest): This assertionerror is to be expected.");
+        }
+
+        assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
+                .getPosition()));
+        assertTrue(positionRobotNotEnoughEnergy.equals(robotNotEnoughEnergy
+                .getPosition()));
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+        assertEquals(enoughEnergy.getAmountOfEnergy(),
+                robotEnoughEnergy.getAmountOfEnergy(), epsilon);
+
+        facade.shoot(robotEnoughEnergy);
+
+        assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
+                .getPosition()));
+        assertNull(robotNotEnoughEnergy.getPosition());
+        assertTrue(robotNotEnoughEnergy.isTerminated());
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+        assertEquals(4000, robotEnoughEnergy.getAmountOfEnergy(), epsilon);
+
+        facade.shoot(robotShootAtBoardEdge);
+
+        assertEquals(4000, robotShootAtBoardEdge.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testCreateWall() {
+        assertNotNull(facade.createWall());
+    }
+
+    @Test
+    public void testPutWall() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+
+        assertEquals(0, position.getElements().size());
+
+        facade.putWall(board, 3, 5, facade.createWall());
+
+        assertEquals(1, position.getElements().size());
+    }
+
+    @Test
+    public void testGetWallX() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Wall wall = facade.createWall();
+
+        try {
+            facade.getWallX(wall);
+        } catch (IllegalStateException e) {
+            System.err.println("testGetWallX: This illegalStateException is "
+                    + "to be expected.");
+        }
+
+        facade.putWall(board, 3, 5, wall);
+
+        assertEquals(position.X, facade.getWallX(wall));
+    }
+
+    @Test
+    public void testGetWallY() {
+        Board board = facade.createBoard(7, 16);
+        Position position = Position.newPosition(3, 5, board);
+        Wall wall = facade.createWall();
+
+        try {
+            facade.getWallY(wall);
+        } catch (IllegalStateException e) {
+            System.err.println("testGetWallX: This illegalStateException is "
+                    + "to be expected.");
+        }
+
+        facade.putWall(board, 3, 5, wall);
+
+        assertEquals(position.Y, facade.getWallY(wall));
+    }
+
+    @Test
+    public void testGetRobots() {
+        Board board = facade.createBoard(20, 25);
+        facade.putRobot(board, 0, 0, facade.createRobot(0, 500));
+        facade.putRobot(board, 1, 0, facade.createRobot(0, 500));
+        facade.putBattery(board, 2, 0, facade.createBattery(0, 50));
+        facade.putBattery(board, 3, 0, facade.createBattery(100, 50));
+        facade.putBattery(board, 4, 0, facade.createBattery(100, 50));
+        facade.putWall(board, 5, 0, facade.createWall());
+        facade.putWall(board, 6, 0, facade.createWall());
+        facade.putWall(board, 7, 0, facade.createWall());
+        facade.putWall(board, 8, 0, facade.createWall());
+        facade.putWall(board, 9, 0, facade.createWall());
+
+        assertEquals(10, board.getNumberOfOccupiedPositions());
+        assertEquals(2, facade.getRobots(board).size());
+    }
+
+    @Test
+    public void testGetBatteries() {
+        Board board = facade.createBoard(20, 25);
+        facade.putRobot(board, 0, 0, facade.createRobot(0, 500));
+        facade.putRobot(board, 1, 0, facade.createRobot(0, 500));
+        facade.putBattery(board, 2, 0, facade.createBattery(0, 50));
+        facade.putBattery(board, 3, 0, facade.createBattery(100, 50));
+        facade.putBattery(board, 4, 0, facade.createBattery(100, 50));
+        facade.putWall(board, 5, 0, facade.createWall());
+        facade.putWall(board, 6, 0, facade.createWall());
+        facade.putWall(board, 7, 0, facade.createWall());
+        facade.putWall(board, 8, 0, facade.createWall());
+        facade.putWall(board, 9, 0, facade.createWall());
+
+        assertEquals(10, board.getNumberOfOccupiedPositions());
+        assertEquals(3, facade.getBatteries(board).size());
+    }
+
+    @Test
+    public void testGetWalls() {
+        Board board = facade.createBoard(20, 25);
+        facade.putRobot(board, 0, 0, facade.createRobot(0, 500));
+        facade.putRobot(board, 1, 0, facade.createRobot(0, 500));
+        facade.putBattery(board, 2, 0, facade.createBattery(0, 50));
+        facade.putBattery(board, 3, 0, facade.createBattery(100, 50));
+        facade.putBattery(board, 4, 0, facade.createBattery(100, 50));
+        facade.putWall(board, 5, 0, facade.createWall());
+        facade.putWall(board, 6, 0, facade.createWall());
+        facade.putWall(board, 7, 0, facade.createWall());
+        facade.putWall(board, 8, 0, facade.createWall());
+        facade.putWall(board, 9, 0, facade.createWall());
+
+        assertEquals(10, board.getNumberOfOccupiedPositions());
+        assertEquals(5, facade.getWalls(board).size());
+    }
+
+    private Facade facade;
+    private double epsilon = 0.01;
 }

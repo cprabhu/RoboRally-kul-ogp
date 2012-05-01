@@ -29,6 +29,12 @@ public class Robot extends Element {
         energy.recharge(chargeEnergy, maxEnergy);
     }
 
+    public void increaseMaxEnergy(Energy energy) {
+        assert (energy != null);
+        assert (energy.compareTo(new Energy(0, unitOfPower.Ws)) >= 0);
+        maxEnergy.recharge(energy, energyLimit);
+    }
+
     public Energy getEnergyRequiredToReach(Position destination) {
         if (!destination.canContainElement(this))
             return null;
@@ -45,7 +51,8 @@ public class Robot extends Element {
         return null;
     }
 
-    // TODO: floodfill implementeren voor -2
+    // TODO: floodfill implementeren voor -2, floodfill niet efficient genoeg
+    // TODO: Opgave 3, Position(insuf energy: -1, obstacle: -1, notonboard: -1)
     public double getEnergyRequiredToReachWs(Position destination) {
         if (!destination.canContainElement(this))
             return -1;
@@ -106,19 +113,21 @@ public class Robot extends Element {
     }
 
     public void move() throws IllegalArgumentException {
-        assert (getEnergyToMove() < energy.getAmountOfEnergy());
+        assert (getEnergyToMove() <= energy.getAmountOfEnergy());
         Position nextPosition = orientation.nextPosition(position);
         setPosition(nextPosition);
         energy.removeEnergy(energyToMove);
 
     }
 
-    public void moveTo(Position position) {
-        Energy energyRequiredToReach = getEnergyRequiredToReach(position);
+    public void moveTo(Node node) {
+        Energy energyRequiredToReach = getEnergyRequiredToReach(node
+                .getPosition());
         assert (energyRequiredToReach != null);
         assert (energyRequiredToReach.isValidEnergy(maxEnergy));
         energy.removeEnergy(energyRequiredToReach);
-        position.BOARD.putElement(position, this);
+        node.getPosition().BOARD.putElement(node.getPosition(), this);
+        orientation = node.getOrientation();
     }
 
     public void moveNextTo(Robot robot2) {
@@ -136,9 +145,22 @@ public class Robot extends Element {
 
             List<Node[]> bestNodePairs = Node.bestNodePairs(
                     robot1AllShortestPaths, robot2AllShortestPaths);
+            Node robot1Destination = bestNodePairs.get(0)[0];
+            Node robot2Destination = bestNodePairs.get(0)[1];
 
-            moveTo(bestNodePairs.get(0)[0].getPosition());
-            robot2.moveTo(bestNodePairs.get(0)[1].getPosition());
+            Energy energyRequiredToReachRobot1Destination = getEnergyRequiredToReach(robot1Destination
+                    .getPosition());
+            Energy energyRequiredToReachRobot2Destination = robot2
+                    .getEnergyRequiredToReach(robot2Destination.getPosition());
+            if (energyRequiredToReachRobot1Destination != null
+                    && energyRequiredToReachRobot1Destination
+                            .isValidEnergy(maxEnergy))
+                moveTo(robot1Destination);
+
+            if (energyRequiredToReachRobot2Destination != null
+                    && energyRequiredToReachRobot2Destination
+                            .isValidEnergy(maxEnergy))
+                robot2.moveTo(robot2Destination);
         } catch (IllegalArgumentException e) {
             System.err
                     .println("Een van de twee robots heeft een position null.");
@@ -157,14 +179,17 @@ public class Robot extends Element {
             bulletPosition = orientation.nextPosition(bulletPosition);
         }
 
-        int item = new Random().nextInt(bulletPosition.getElements().size());
+        if (bulletPosition != null) {
+            int item = new Random()
+                    .nextInt(bulletPosition.getElements().size());
 
-        Iterator<Element> elementsAtBulletPositionIt = bulletPosition
-                .getElements().iterator();
-        for (int i = 0; i < item; i++) {
-            elementsAtBulletPositionIt.next();
+            Iterator<Element> elementsAtBulletPositionIt = bulletPosition
+                    .getElements().iterator();
+            for (int i = 0; i < item; i++) {
+                elementsAtBulletPositionIt.next();
+            }
+            elementsAtBulletPositionIt.next().terminate();
         }
-        elementsAtBulletPositionIt.next().terminate();
     }
 
     public void pickup(Battery battery) throws IllegalStateException {
@@ -242,6 +267,7 @@ public class Robot extends Element {
     private static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
     private final Energy energy;
     private final Energy maxEnergy;
+    private static final Energy energyLimit = new Energy(20000, unitOfPower.Ws);
     private final Weight carryWeight;
     private final List<Battery> batteries = new ArrayList<Battery>();
 

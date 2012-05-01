@@ -55,21 +55,6 @@ public class Battery extends Element {
         return maxEnergy;
     }
 
-    public void terminate() {
-        if (energy != null)
-            energy.terminate();
-        maxEnergy.terminate();
-        if (weight != null)
-            weight.terminate();
-        super.terminate();
-    }
-
-    @Raw
-    @Basic
-    public boolean isTerminated() {
-        return isTerminated;
-    }
-
     private Energy energy;
     private final Energy maxEnergy;
     private final Weight weight;

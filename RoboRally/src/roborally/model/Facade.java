@@ -3,8 +3,7 @@ package roborally.model;
 import roborally.IFacade;
 import roborally.model.Energy.unitOfPower;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
@@ -122,7 +121,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
     public long getRobotX(Robot robot) throws IllegalStateException {
-        if (robot == null)
+        if (robot == null || robot.getPosition() == null)
             throw new IllegalStateException();
         return robot.getPosition().X;
     }
@@ -133,7 +132,7 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
     public long getRobotY(Robot robot) throws IllegalStateException {
-        if (robot == null)
+        if (robot == null || robot.getPosition() == null)
             throw new IllegalStateException();
         return robot.getPosition().Y;
     }
@@ -160,7 +159,13 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      */
     public void move(Robot robot) {
         if (robot != null)
-            robot.move();
+            try {
+                robot.move();
+            } catch (AssertionError ae) {
+                System.err
+                        .println("move: This assertionerror is to be expected"
+                                + "if the robot has insufficient energy.");
+            }
     }
 
     /**
@@ -234,10 +239,10 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
      * insufficient energy to reach (<code>x</code>, <code>y</code>).
      */
     public double getMinimalCostToReach(Robot robot, long x, long y) {
-        if (robot != null)
+        if (robot != null && robot.getPosition() != null)
             return robot.getEnergyRequiredToReachWs(Position.newPosition(x, y,
                     robot.getPosition().BOARD));
-        return 0;
+        return -1;
     }
 
     /**

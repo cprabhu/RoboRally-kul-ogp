@@ -59,6 +59,15 @@ public class Position {
         return elements;
     }
 
+    public Set<Element> getElementsOf(Class<?> type) {
+        Set<Element> elementsOfType = new HashSet<Element>();
+        for (Element element : getElements()) {
+            if (type.isAssignableFrom(element.getClass()))
+                elementsOfType.add(element);
+        }
+        return elementsOfType;
+    }
+
     public boolean containsElement(Element element) {
         if (elements != null)
             return elements.contains(element);
@@ -73,14 +82,13 @@ public class Position {
         if (isTerminated())
             return false;
 
-        if (elements.contains(new Wall())) {
-            for (Element elem : elements)
-                if (element != elem)
-                    return false;
-        }
+        if (elements.contains(element))
+            return true;
 
-        if (element instanceof Wall && !elements.contains(new Wall())
-                && elements.size() != 0)
+        if (getElementsOf(Wall.class).size() != 0)
+            return false;
+
+        if (element instanceof Wall && !elements.isEmpty())
             return false;
 
         boolean elementsContainsOtherRobot = false;
@@ -97,11 +105,10 @@ public class Position {
         if (isTerminated())
             return false;
 
-        if (elements.contains(new Wall()) && Wall.class != type)
+        if (getElementsOf(Wall.class).size() != 0)
             return false;
 
-        if (!elements.contains(new Wall()) && elements.size() != 0
-                && Wall.class == type)
+        if (elements.size() != 0 && Wall.class == type)
             return false;
 
         boolean elementsContainsOtherRobot = false;

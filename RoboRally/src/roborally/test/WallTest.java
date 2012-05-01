@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import roborally.model.Battery;
-import roborally.model.Element;
 import roborally.model.Position;
 
 /**
@@ -21,32 +19,10 @@ public class WallTest {
     }
 
     @Test
-    public void testEqualsObject() {
-        Element wall3 = new Wall();
-        Element wall4 = new Wall(Position.newPosition(4, 1, BOARD));
-        Element battery = new Battery();
-
-        assertTrue(wall.equals(wall2));
-        assertTrue(wall.equals(wall3));
-        assertTrue(wall.equals(wall4));
-        assertTrue(wall2.equals(wall3));
-        assertTrue(wall2.equals(wall4));
-
-        assertFalse(wall.equals(battery));
-    }
-
-    @Test
-    public void testHashcode() {
-        assertEquals(0, wall.hashCode());
-        assertEquals(0, wall2.hashCode());
-    }
-
-    @Test
     public void testWall() {
         assertNotNull(wall);
         assertNotNull(wall2);
-
-        testEqualsObject();
+        assertFalse(wall.equals(wall2));
     }
 
     @Test

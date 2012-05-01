@@ -115,17 +115,20 @@ public class PositionTest {
 
     @Test
     public void testRemoveElement() {
-        position1Board1.addElement(new Wall(position1Board1));
-        position2Board1.addElement(new Wall(position2Board1));
-        position3Board1.addElement(new Wall(position3Board1));
+        Wall position1Board1Wall = new Wall(position1Board1);
+        Wall position2Board1Wall = new Wall(position2Board1);
+        Wall position3Board1Wall = new Wall(position3Board1);
+        position1Board1.addElement(position1Board1Wall);
+        position2Board1.addElement(position2Board1Wall);
+        position3Board1.addElement(position3Board1Wall);
 
         assertEquals(1, position1Board1.getElements().size());
         assertEquals(1, position2Board1.getElements().size());
         assertEquals(1, position3Board1.getElements().size());
 
-        position1Board1.removeElement(new Wall(position1Board1));
-        position2Board1.removeElement(new Wall(position2Board1));
-        position3Board1.removeElement(new Wall(position3Board1));
+        position1Board1.removeElement(position1Board1Wall);
+        position2Board1.removeElement(position2Board1Wall);
+        position3Board1.removeElement(position3Board1Wall);
 
         assertNull(position1Board1.getElements());
         assertNull(position2Board1.getElements());
@@ -209,7 +212,7 @@ public class PositionTest {
         battery.setPosition(position2Board1);
         robot.setPosition(position3Board1);
 
-        assertTrue(position1Board1.canContainType(Wall.class));
+        assertFalse(position1Board1.canContainType(Wall.class));
         assertFalse(position1Board1.canContainType(Battery.class));
         assertFalse(position1Board1.canContainType(Robot.class));
 

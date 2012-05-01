@@ -191,6 +191,10 @@ public class Node implements Comparable<Node> {
         return POSITION;
     }
 
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
     private Robot getOriginRobot() {
         if (POSITION == null)
             return null;
