@@ -14,6 +14,6 @@ public class Wall extends Element {
     }
 
     public void hit() {
-
+        // This has no effect.
     }
 }

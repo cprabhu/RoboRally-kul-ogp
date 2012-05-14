@@ -6,6 +6,9 @@ import be.kuleuven.cs.som.annotate.Raw;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
+
+// TODO: NOTE "NoDoc p. 2"
+
 public class Energy {
     public Energy(double amount, unitOfPower unit) {
         this.amountOfEnergy = amount * unit.getConversionFactor(unitOfPower.Ws);
@@ -13,8 +16,8 @@ public class Energy {
     }
 
     public enum unitOfPower {
-        Ws(1), Wh(3600), kWh(3600000), foe(Math.pow(10, 44)); // foe = 10^44
-                                                              // joule
+        Ws(1), Wh(3600), kWh(3600000), J(1), kJ(1000), foe(Math.pow(10, 44));
+        // foe = 10^44
 
         private final double WATTSECONDS;
 

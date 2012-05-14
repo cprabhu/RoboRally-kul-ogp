@@ -8,7 +8,8 @@ import java.util.*;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
-public class Facade implements IFacade<Board, Robot, Wall, Battery> {
+public class Facade implements
+        IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 
     /**
      * Create a new board with the given <code>width</code> and <code>height</code>. 
@@ -180,12 +181,12 @@ public class Facade implements IFacade<Board, Robot, Wall, Battery> {
     /**
      * Return the set of batteries that <code>robot</code> is carrying.
      */
-    public Set<Battery> getPossessions(Robot robot) {
+    public Set<Item> getPossessions(Robot robot) {
         if (robot != null) {
-            Set<Battery> possesions = robot.getPossesions();
+            Set<Item> possesions = robot.getPossesions();
             return possesions;
         }
-        return new HashSet<Battery>();
+        return new HashSet<Item>();
     }
 
     /**

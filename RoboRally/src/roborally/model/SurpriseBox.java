@@ -33,7 +33,6 @@ public class SurpriseBox extends Item {
                     Integer.MAX_VALUE));
             long y = new Random().nextInt((int) Math.min(board.HEIGHT,
                     Integer.MAX_VALUE));
-            // TODO: wordt de robot verwijderd van de oude positie?
             board.putElement(Position.newPosition(x, y, board), robot);
             break;
         case 2:

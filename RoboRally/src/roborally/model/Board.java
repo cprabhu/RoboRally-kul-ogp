@@ -3,8 +3,26 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
-// TODO: all aspects related to placement of walls, robots, batteries on
+// TODO: NOTE all aspects related to placement of walls, robots, batteries on
 // boards: defensively
+// TODO: NOTE Placing robot, wall or item on a board at a position must take
+// amortized constant time.
+// TODO: NOTE Removing a particular robot, wall or item is preferably linear in
+// the
+// number of robots, walls or items located at the same position.
+// TODO: NOTE Should be possible to look up all robots, walls and items at
+// particular position in constant time.
+// TODO: NOTE The amount of memory required to store a board should be
+// proportional
+// to the number of positions in use, not to the total size of the board.
+/*
+ * TODO: The class Board must also offer a method that returns an ITERATOR that
+ * will return all the elements on the board (not including items carried by
+ * robots) that satisfy a given condition. Examples of conditions are all
+ * elements that have an energy of at least 1000 Ws (the iterator will then not
+ * return walls nor surprise boxes, because they have no known energy), all
+ * elements in some sub range of the board, all items on the board, etc.
+ */
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
@@ -28,17 +46,10 @@ public class Board {
                     Position position = Position.newPosition(
                             occupiedPosition2.X, occupiedPosition2.Y, this);
                     for (Element elem : occupiedPosition2.getElements()) {
-                        if (!position.canContainElement(elem)) {
-                            // NOTE: while(it.hasNext()) komt niet aan het
-                            // einde.
-                            for (Position neighbour : occupiedPosition2
-                                    .getNeighbours()) {
-                                putElement(neighbour, elem);
-                                break;
-                            }
-
-                        } else
+                        if (position.canContainElement(elem))
                             putElement(position, elem);
+                        else
+                            elem.terminate();
                     }
                 }
             }

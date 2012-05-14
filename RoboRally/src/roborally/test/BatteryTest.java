@@ -115,25 +115,30 @@ public class BatteryTest {
     }
 
     @Test
-    public void testCharge() {
+    public void testUse() {
         Energy zeroEnergy = new Energy(0, unitOfPower.Ws);
         Energy emptyEnergy = new Energy(0, unitOfPower.Ws);
-        Energy hundredEnergy = new Energy(100, unitOfPower.Ws);
-        Energy rechargedEnergy = new Energy(400, unitOfPower.Ws);
-        Energy rechargedMaxEnergy = new Energy(300, unitOfPower.Ws);
-        Battery battery4 = new Battery(POSITION, rechargedEnergy);
+        Energy thousandEnergy = new Energy(1000, unitOfPower.Ws);
+        Battery battery4 = new Battery(POSITION, new Energy(5000,
+                unitOfPower.Ws));
+        Robot testRobot = new Robot(new Energy(5000, unitOfPower.Ws),
+                Orientation.UP);
+        Robot emptyRobot = new Robot(emptyEnergy, Orientation.UP);
+        Robot maxRobot = new Robot(new Energy(16000, unitOfPower.Ws),
+                Orientation.UP);
 
-        battery2.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
+        battery2.use(testRobot);
 
         assertEquals(0, zeroEnergy.compareTo(battery2.getEnergy()));
 
-        battery2.charge(zeroEnergy, rechargedMaxEnergy);
+        battery2.use(emptyRobot);
 
-        assertEquals(0, zeroEnergy.compareTo(emptyEnergy));
+        assertEquals(0, emptyEnergy.compareTo(zeroEnergy));
+        assertEquals(0, battery2.getEnergy().compareTo(zeroEnergy));
 
-        battery4.charge(new Energy(0, unitOfPower.Ws), rechargedMaxEnergy);
+        battery4.use(maxRobot);
 
-        assertEquals(0, hundredEnergy.compareTo(battery4.getEnergy()));
+        assertEquals(0, thousandEnergy.compareTo(battery4.getEnergy()));
     }
 
     @Test

@@ -113,11 +113,7 @@ public class RobotTest {
 
         assertEquals(9300,
                 robot.getEnergyRequiredToReachWs(reachablePosition2), epsilon);
-
-        // TODO: Werkt enkel als we floodfill implementeren.
-        // assertEquals(-2,
-        // robot.getEnergyRequiredToReachWs(insufficientEnergyPosition),
-        // epsilon);
+        // TODO: alle gevallen voor -1?
 
         assertEquals(-1,
                 robot.getEnergyRequiredToReachWs(surroundedByWallPosition),

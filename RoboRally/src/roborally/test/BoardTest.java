@@ -91,7 +91,7 @@ public class BoardTest {
 
         board.merge(null);
 
-        assertEquals(11, board.getNumberOfOccupiedPositions());
+        assertEquals(8, board.getNumberOfOccupiedPositions());
     }
 
     @Test

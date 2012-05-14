@@ -7,6 +7,9 @@ import roborally.model.Energy.unitOfPower;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
+
+// TODO: NOTE "NoDoc p. 2"
+
 public class Node implements Comparable<Node> {
 
     public Node(Node parent, Orientation orientation, double cost,

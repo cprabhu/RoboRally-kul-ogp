@@ -4,9 +4,11 @@ import roborally.model.Energy.unitOfPower;
 import roborally.model.Weight.unitOfMass;
 import java.util.*;
 
-// TODO: energy nominally
-// TODO: orientation totally: CHECK
-// TODO: position defensively
+// TODO: NOTE Klassediagram voor verdediging
+
+// TODO: NOTE energy nominally
+// TODO: NOTE orientation totally
+// TODO: NOTE position defensively
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
@@ -25,7 +27,11 @@ public class Robot extends Element {
 
     public void recharge(Energy chargeEnergy) {
         assert (chargeEnergy != null);
-        assert (chargeEnergy.isValidEnergy(chargeEnergy));
+        assert (chargeEnergy.isValidEnergy(chargeEnergy)); // chargeEnergy als
+                                                           // argument omdat de
+                                                           // energie zo groot
+                                                           // mag zijn als ze
+                                                           // wil.
         energy.recharge(chargeEnergy, maxEnergy);
     }
 
@@ -51,8 +57,8 @@ public class Robot extends Element {
         return null;
     }
 
-    // TODO: floodfill implementeren voor -2, floodfill niet efficient genoeg
-    // TODO: Opgave 3, Position(insuf energy: -1, obstacle: -1, notonboard: -1)
+    // TODO: NOTE Opgave 3, Position(insuf energy: -1, obstacle: -1,
+    // notonboard: -1)
     public double getEnergyRequiredToReachWs(Position destination) {
         if (!destination.canContainElement(this))
             return -1;
@@ -192,74 +198,99 @@ public class Robot extends Element {
         }
     }
 
-    public void pickup(Battery battery) throws IllegalStateException {
-        if (battery == null
-                || (carryWeight != null && carryWeight.compareTo(battery
-                        .getWeight()) < 0))
-            throw new IllegalStateException();
-        if (position.equals(battery.getPosition())) {
-            if (batteries.size() != 0)
-                for (Battery compBattery : batteries) {
-                    if (battery.getWeight().compareTo(compBattery.getWeight()) >= 0) {
-                        batteries.add(batteries.indexOf(compBattery), battery);
-                        break;
-                    }
+    public void hit() {
+        maxEnergy.removeEnergy(new Energy(4000, unitOfPower.Ws));
+        if (energy.compareTo(maxEnergy) > 0)
+            energy.removeEnergy(new Energy(energy.getAmountOfEnergy()
+                    - maxEnergy.getAmountOfEnergy(), unitOfPower.Ws));
+        if (!maxEnergy.isValidEnergy(energyLimit)
+                || maxEnergy.compareTo(new Energy(0, unitOfPower.Ws)) == 0)
+            terminate();
+    }
+
+    public void addItems(Set<Item> itemsToAdd) {
+        for (Item itemToAdd : itemsToAdd) {
+            for (Item compItem : items) {
+                if (itemToAdd.getWeight().compareTo(compItem.getWeight()) >= 0) {
+                    items.add(items.indexOf(compItem), itemToAdd);
+                    break;
                 }
-            if (!batteries.contains(battery))
-                batteries.add(battery);
-            battery.removePosition();
-            if (carryWeight != null)
-                carryWeight.removeWeight(battery.getWeight());
+            }
         }
     }
 
-    public void use(Battery battery) throws IllegalStateException {
-        if (battery == null)
+    public void pickup(Item item) throws IllegalStateException {
+        if (item == null
+                || (carryWeight != null && carryWeight.compareTo(item
+                        .getWeight()) < 0))
             throw new IllegalStateException();
-
-        if (battery.isTerminated())
-            batteries.remove(battery);
-        if (batteries.contains(battery))
-            battery.charge(energy, maxEnergy);
-
+        if (position.equals(item.getPosition())) {
+            if (items.size() != 0) {
+                Set<Item> itemsToAdd = new HashSet<Item>();
+                itemsToAdd.add(item);
+                addItems(itemsToAdd);
+            }
+            if (!items.contains(item))
+                items.add(item);
+            item.removePosition();
+            if (carryWeight != null)
+                carryWeight.removeWeight(item.getWeight());
+        }
     }
 
-    public void drop(Battery battery) throws IllegalStateException {
-        if (battery == null)
-            throw new IllegalStateException();
-        batteries.remove(battery);
-        battery.setPosition(position);
+    public void use(Item item) throws IllegalArgumentException {
+        if (item == null)
+            throw new IllegalArgumentException();
+
+        if (item.isTerminated())
+            items.remove(item);
+        if (items.contains(item))
+            item.use(this);
+    }
+
+    public void drop(Item item) throws IllegalArgumentException {
+        if (item == null)
+            throw new IllegalArgumentException();
+        items.remove(item);
+        item.setPosition(position);
         if (carryWeight != null)
-            carryWeight.addWeight(battery.getWeight());
-
+            carryWeight.addWeight(item.getWeight());
     }
 
-    public Battery ithHeaviestElement(int ordinal)
+    public void transferItems(Robot robot2) {
+        for (Position neighbour : position.getNeighbours())
+            if (robot2.getPosition().equals(neighbour)) {
+                robot2.addItems(getPossesions());
+                items.clear();
+            }
+    }
+
+    public Item ithHeaviestElement(int ordinal)
             throws IndexOutOfBoundsException {
-        if (ordinal > batteries.size())
+        if (ordinal > items.size())
             throw new IndexOutOfBoundsException();
-        return batteries.get(ordinal - 1);
+        return items.get(ordinal - 1);
     }
 
-    public Set<Battery> getPossesions() {
-        Set<Battery> possesions = new HashSet<Battery>();
-        possesions.addAll(batteries);
-        return possesions;
+    public Set<Item> getPossesions() {
+        Set<Item> possessions = new HashSet<Item>();
+        possessions.addAll(items);
+        return possessions;
     }
 
     public void terminate() {
         if (position != null)
             position.removeElement(this);
         position = null;
-        for (Battery battery : getPossesions())
-            battery.terminate();
+        for (Item item : getPossesions())
+            item.terminate();
         this.isTerminated = true;
     }
 
     private int getCarriedWeight(unitOfMass unit) {
         int carriedWeight = 0;
-        for (Battery battery : batteries)
-            carriedWeight += battery.getWeight().getMassIn(unit);
+        for (Item item : items)
+            carriedWeight += item.getWeight().getMassIn(unit);
         return carriedWeight;
     }
 
@@ -269,7 +300,7 @@ public class Robot extends Element {
     private final Energy maxEnergy;
     private static final Energy energyLimit = new Energy(20000, unitOfPower.Ws);
     private final Weight carryWeight;
-    private final List<Battery> batteries = new ArrayList<Battery>();
+    private final List<Item> items = new ArrayList<Item>();
 
     private Orientation orientation;
 

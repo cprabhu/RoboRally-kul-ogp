@@ -11,14 +11,13 @@ public class RepairKit extends Item {
 
     public RepairKit(Position position, Weight weight, Energy energy) {
         super(position, weight);
-        this.energy = new Energy(1000, unitOfPower.Ws);
+        this.energy = energy;
     }
 
     @Override
     public void hit() {
-        if (energy != null)
+        if (!isTerminated())
             energy.addEnergy(new Energy(500, unitOfPower.Ws));
-        energy = new Energy(500, unitOfPower.Ws);
     }
 
     @Override

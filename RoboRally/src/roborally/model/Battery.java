@@ -1,13 +1,11 @@
 package roborally.model;
 
 import roborally.model.Energy.unitOfPower;
-import be.kuleuven.cs.som.annotate.Basic;
-import be.kuleuven.cs.som.annotate.Raw;
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
-public class Battery extends Element {
+public class Battery extends Item {
 
     public Battery() {
         super();
@@ -39,8 +37,18 @@ public class Battery extends Element {
 
     }
 
-    public void charge(Energy energy, Energy maxEnergy) {
-        energy.recharge(this.energy, maxEnergy);
+    public void use(Robot robot) {
+        if (robot != null) {
+            if (isTerminated())
+                robot.drop(this);
+            else if (!robot.isTerminated())
+                robot.recharge(energy);
+        }
+    }
+
+    public void hit() {
+        if (!isTerminated())
+            energy.addEnergy(new Energy(500, unitOfPower.Ws));
     }
 
     public Energy getEnergy() {
@@ -55,7 +63,7 @@ public class Battery extends Element {
         return maxEnergy;
     }
 
-    private Energy energy;
+    private final Energy energy;
     private final Energy maxEnergy;
     private final Weight weight;
 }

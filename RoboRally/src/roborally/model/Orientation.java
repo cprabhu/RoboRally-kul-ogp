@@ -5,6 +5,9 @@ import roborally.model.Energy.unitOfPower;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
+
+// TODO: NOTE "NoDoc p. 2"
+
 public enum Orientation {
     UP, RIGHT, DOWN, LEFT;
 
