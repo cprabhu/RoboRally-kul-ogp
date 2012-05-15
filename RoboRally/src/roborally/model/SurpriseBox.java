@@ -6,12 +6,16 @@ import roborally.model.Energy.unitOfPower;
 
 public class SurpriseBox extends Item {
 
-    SurpriseBox() {
+    public SurpriseBox() {
         super();
     }
 
-    SurpriseBox(Position position) {
+    public SurpriseBox(Position position) {
         super(position);
+    }
+
+    public SurpriseBox(Position position, Weight weight) {
+        super(position, weight);
     }
 
     @Override
@@ -19,6 +23,7 @@ public class SurpriseBox extends Item {
         for (Position neighbour : position.getNeighbours())
             for (Element elem : neighbour.getElements())
                 elem.hit();
+        terminate();
     }
 
     @Override

@@ -590,6 +590,42 @@ public class RobotTest {
     }
 
     @Test
+    public void testTransferItem() {
+        board.putElement(Position.newPosition(25, 36, board), robot);
+        Robot robot2 = new Robot(new Energy(1500, unitOfPower.Ws),
+                Orientation.LEFT);
+        board.putElement(Position.newPosition(26, 36, board), robot2);
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot2.pickup(new RepairKit(Position.newPosition(26, 36, board),
+                new Weight(100, unitOfMass.g), null));
+        robot2.pickup(new SurpriseBox(Position.newPosition(26, 36, board)));
+
+        assertEquals(3, robot.getPossesions().size());
+        assertEquals(2, robot2.getPossesions().size());
+
+        robot.transferItems(null);
+
+        assertEquals(3, robot.getPossesions().size());
+        assertEquals(2, robot2.getPossesions().size());
+
+        robot.transferItems(robot2);
+
+        assertEquals(0, robot.getPossesions().size());
+        assertEquals(5, robot2.getPossesions().size());
+
+        robot.terminate();
+        robot2.transferItems(robot);
+
+        assertEquals(0, robot.getPossesions().size());
+        assertEquals(5, robot2.getPossesions().size());
+    }
+
+    @Test
     public void testIthHeaviestElement() {
         Position position = Position.newPosition(10, 10, board);
         Weight lightWeight = new Weight(1, unitOfMass.kg);

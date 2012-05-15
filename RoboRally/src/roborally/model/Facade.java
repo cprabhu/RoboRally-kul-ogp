@@ -1,13 +1,13 @@
 package roborally.model;
 
+import java.io.Writer;
+import java.util.HashSet;
+import java.util.Set;
+
 import roborally.IFacade;
 import roborally.model.Energy.unitOfPower;
+import roborally.model.Weight.unitOfMass;
 
-import java.util.*;
-
-/**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
- */
 public class Facade implements
         IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 
@@ -16,6 +16,7 @@ public class Facade implements
      * 
      * This method must return <code>null</code> if the given <code>width</code> and <code>height</code> are invalid. 
      */
+    @Override
     public Board createBoard(long width, long height) {
         try {
             return new Board(width, height);
@@ -27,6 +28,7 @@ public class Facade implements
     /**
      * Merge <code>board1</code> and <code>board2</code>. 
      */
+    @Override
     public void merge(Board board1, Board board2) {
         if (board1 != null)
             board1.merge(board2);
@@ -37,8 +39,9 @@ public class Facade implements
      * 
      * This method must return <code>null</code> if the given parameters are invalid (e.g. negative weight). 
      */
+    @Override
     public Battery createBattery(double initialEnergy, int weight) {
-        if (initialEnergy >= 0 && initialEnergy <= 5000)
+        if (initialEnergy >= 0 && initialEnergy <= 5000 && weight >= 0)
             return new Battery(null, new Energy(initialEnergy,
                     Energy.unitOfPower.Ws), new Weight(weight,
                     Weight.unitOfMass.g));
@@ -48,6 +51,7 @@ public class Facade implements
     /**
      * Put <code>battery</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
      */
+    @Override
     public void putBattery(Board board, long x, long y, Battery battery) {
         if (board != null && board.isValidPosition(x, y))
             board.putElement(Position.newPosition(x, y, board), battery);
@@ -58,6 +62,7 @@ public class Facade implements
      * 
      * This method must throw <code>IllegalStateException</code> if <code>battery</code> is not placed on a board.
      */
+    @Override
     public long getBatteryX(Battery battery) throws IllegalStateException {
         if (battery.getPosition() == null)
             throw new IllegalStateException();
@@ -69,10 +74,105 @@ public class Facade implements
      * 
      * This method must throw <code>IllegalStateException</code> if <code>battery</code> is not placed on a board.
      */
+    @Override
     public long getBatteryY(Battery battery) throws IllegalStateException {
         if (battery.getPosition() == null)
             throw new IllegalStateException();
         return battery.getPosition().Y;
+    }
+
+    /**
+     * Create a new repair kit that repairs <code>repairAmount</code>. 
+     * 
+     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>repairAmount</code>). 
+     */
+    @Override
+    public RepairKit createRepairKit(double repairAmount, int weight) {
+        if (repairAmount >= 0 && weight >= 0)
+            return new RepairKit(null, new Weight(weight, unitOfMass.g),
+                    new Energy(repairAmount, unitOfPower.Ws));
+        return null;
+    }
+
+    /**
+     * Put <code>repairKit</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     */
+    @Override
+    public void putRepairKit(Board board, long x, long y, RepairKit repairKit) {
+        if (board != null && board.isValidPosition(x, y))
+            board.putElement(Position.newPosition(x, y, board), repairKit);
+    }
+
+    /**
+     * Return the x-coordinate of <code>repairKit</code>.
+     * 
+     * This method must throw <code>IllegalStateException</code> if <code>repairKit</code> is not placed on a board.
+     */
+    @Override
+    public long getRepairKitX(RepairKit repairKit) throws IllegalStateException {
+        if (repairKit.getPosition() == null)
+            throw new IllegalStateException();
+        return repairKit.getPosition().X;
+    }
+
+    /**
+     * Return the y-coordinate of <code>repairKit</code>.
+     * 
+     * This method must throw <code>IllegalStateException</code> if <code>repairKit</code> is not placed on a board.
+     */
+    @Override
+    public long getRepairKitY(RepairKit repairKit) throws IllegalStateException {
+        if (repairKit.getPosition() == null)
+            throw new IllegalStateException();
+        return repairKit.getPosition().Y;
+    }
+
+    /**
+     * Create a new surprise box with weighing <code>weight</code>. 
+     * 
+     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>weight</code>). 
+     */
+    @Override
+    public SurpriseBox createSurpriseBox(int weight) {
+        if (weight >= 0)
+            return new SurpriseBox(null, new Weight(weight, unitOfMass.g));
+        return null;
+    }
+
+    /**
+     * Put <code>surpriseBox</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     */
+    @Override
+    public void putSurpriseBox(Board board, long x, long y,
+            SurpriseBox surpriseBox) {
+        if (board != null && board.isValidPosition(x, y))
+            board.putElement(Position.newPosition(x, y, board), surpriseBox);
+    }
+
+    /**
+     * Return the x-coordinate of <code>surpriseBox</code>.
+     * 
+     * This method must throw <code>IllegalStateException</code> if <code>surpriseBox</code> is not placed on a board.
+     */
+    @Override
+    public long getSurpriseBoxX(SurpriseBox surpriseBox)
+            throws IllegalStateException {
+        if (surpriseBox.getPosition() == null)
+            throw new IllegalStateException();
+        return surpriseBox.getPosition().X;
+    }
+
+    /**
+     * Return the y-coordinate of <code>surpriseBox</code>.
+     * 
+     * This method must throw <code>IllegalStateException</code> if <code>surpriseBox</code> is not placed on a board.
+     */
+    @Override
+    public long getSurpriseBoxY(SurpriseBox surpriseBox)
+            throws IllegalStateException {
+        if (surpriseBox.getPosition() == null)
+            throw new IllegalStateException();
+        return surpriseBox.getPosition().Y;
     }
 
     /** 
@@ -82,6 +182,7 @@ public class Facade implements
      *  
      * <p>0, 1, 2, 3 respectively represent up, right, down and left.</p>
      */
+    @Override
     public Robot createRobot(int orientation, double initialEnergy) {
         if (orientation >= 0 && orientation <= 3 && initialEnergy >= 0
                 && initialEnergy <= 20000) {
@@ -111,6 +212,7 @@ public class Facade implements
     /**
      * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
      */
+    @Override
     public void putRobot(Board board, long x, long y, Robot robot) {
         if (board != null && board.isValidPosition(x, y))
             board.putElement(Position.newPosition(x, y, board), robot);
@@ -121,6 +223,7 @@ public class Facade implements
      * 
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
+    @Override
     public long getRobotX(Robot robot) throws IllegalStateException {
         if (robot == null || robot.getPosition() == null)
             throw new IllegalStateException();
@@ -132,6 +235,7 @@ public class Facade implements
      * 
      * This method must throw <code>IllegalStateException</code> if <code>robot</code> is not placed on a board.
      */
+    @Override
     public long getRobotY(Robot robot) throws IllegalStateException {
         if (robot == null || robot.getPosition() == null)
             throw new IllegalStateException();
@@ -143,6 +247,7 @@ public class Facade implements
      * 
      * <p>0, 1, 2, 3 respectively represent up, right, down and left.</p>
      */
+    @Override
     public int getOrientation(Robot robot) {
         return robot.getOrientationInt();
     }
@@ -150,6 +255,7 @@ public class Facade implements
     /**
      * Return the current energy in watt-second of <code>robot</code>.
      */
+    @Override
     public double getEnergy(Robot robot) {
         return robot.getAmountOfEnergy();
     }
@@ -158,6 +264,7 @@ public class Facade implements
      * Move <code>robot</code> one step in its current direction if the robot has sufficient energy. Do not modify the state of the robot
      * if it has insufficient energy.
      */
+    @Override
     public void move(Robot robot) {
         if (robot != null)
             try {
@@ -173,26 +280,17 @@ public class Facade implements
      * Turn <code>robot</code> 90 degrees in clockwise direction if the robot has sufficient energy. Do not modify the state of the robot
      * if it has insufficient energy.
      */
+    @Override
     public void turn(Robot robot) {
         if (robot != null)
             robot.turnClockwise90();
     }
 
     /**
-     * Return the set of batteries that <code>robot</code> is carrying.
-     */
-    public Set<Item> getPossessions(Robot robot) {
-        if (robot != null) {
-            Set<Item> possesions = robot.getPossesions();
-            return possesions;
-        }
-        return new HashSet<Item>();
-    }
-
-    /**
      * Make <code>robot</code> pick up <code>battery</code> (if possible).
      */
-    public void pickUp(Robot robot, Battery battery) {
+    @Override
+    public void pickUpBattery(Robot robot, Battery battery) {
         if (robot != null)
             robot.pickup(battery);
     }
@@ -200,7 +298,8 @@ public class Facade implements
     /**
      * Make <code>robot</code> use <code>battery</code> (if possible).
      */
-    public void use(Robot robot, Battery battery) {
+    @Override
+    public void useBattery(Robot robot, Battery battery) {
         if (robot != null)
             robot.use(battery);
     }
@@ -208,9 +307,73 @@ public class Facade implements
     /**
      * Make <code>robot</code> drop <code>battery</code> (if possible).
      */
-    public void drop(Robot robot, Battery battery) {
+    @Override
+    public void dropBattery(Robot robot, Battery battery) {
         if (robot != null)
             robot.drop(battery);
+    }
+
+    /**
+     * Make <code>robot</code> pick up <code>repairKit</code> (if possible).
+     */
+    @Override
+    public void pickUpRepairKit(Robot robot, RepairKit repairKit) {
+        if (robot != null)
+            robot.pickup(repairKit);
+    }
+
+    /**
+     * Make <code>robot</code> use <code>repairKit</code> (if possible).
+     */
+    @Override
+    public void useRepairKit(Robot robot, RepairKit repairKit) {
+        if (robot != null)
+            robot.use(repairKit);
+    }
+
+    /**
+     * Make <code>robot</code> drop <code>repairKit</code> (if possible).
+     */
+    @Override
+    public void dropRepairKit(Robot robot, RepairKit repairKit) {
+        if (robot != null)
+            robot.drop(repairKit);
+    }
+
+    /**
+     * Make <code>robot</code> pick up <code>surpriseBox</code> (if possible).
+     */
+    @Override
+    public void pickUpSurpriseBox(Robot robot, SurpriseBox surpriseBox) {
+        if (robot != null)
+            robot.pickup(surpriseBox);
+    }
+
+    /**
+     * Make <code>robot</code> use <code>surpriseBox</code> (if possible).
+     */
+    @Override
+    public void useSurpriseBox(Robot robot, SurpriseBox surpriseBox) {
+        if (robot != null)
+            robot.use(surpriseBox);
+    }
+
+    /**
+     * Make <code>robot</code> drop <code>surpriseBox</code> (if possible).
+     */
+    @Override
+    public void dropSurpriseBox(Robot robot, SurpriseBox surpriseBox) {
+        if (robot != null)
+            robot.drop(surpriseBox);
+    }
+
+    /**
+     * Transfer all items possessed by <code>from</code> to <code>to</code>.  
+     */
+    @Override
+    public void transferItems(Robot from, Robot to) {
+        if (from != null)
+            from.transferItems(to);
     }
 
     /**
@@ -220,6 +383,7 @@ public class Facade implements
      * This method must return either 0 or 1.
      */
     // TODO: 17+ minimalCostToReach: robots, walls, turning
+    @Override
     public int isMinimalCostToReach17Plus() {
         return 1;
     }
@@ -239,6 +403,7 @@ public class Facade implements
      * In any case, this method must return <code>-1</code> if <code>robot</code> is not placed on a board. Moreover, this method must return <code>-2</code> if <code>robot</code> has
      * insufficient energy to reach (<code>x</code>, <code>y</code>).
      */
+    @Override
     public double getMinimalCostToReach(Robot robot, long x, long y) {
         if (robot != null && robot.getPosition() != null)
             return robot.getEnergyRequiredToReachWs(Position.newPosition(x, y,
@@ -253,6 +418,7 @@ public class Facade implements
      * This method must return either 0 or 1.
      */
     // TODO: 18+ moveNextTo: robots, walls, turning
+    @Override
     public int isMoveNextTo18Plus() {
         return 1;
     }
@@ -272,6 +438,7 @@ public class Facade implements
      * </p>
      * Do not change the state if <code>robot</code> and <code>other</code> are not located on the same board.
      */
+    @Override
     public void moveNextTo(Robot robot, Robot other) {
         if (robot != null)
             robot.moveNextTo(other);
@@ -282,6 +449,7 @@ public class Facade implements
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    @Override
     public void shoot(Robot robot) throws UnsupportedOperationException {
         if (robot != null)
             robot.shoot();
@@ -292,6 +460,7 @@ public class Facade implements
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    @Override
     public Wall createWall() throws UnsupportedOperationException {
         return new Wall();
     }
@@ -301,6 +470,7 @@ public class Facade implements
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    @Override
     public void putWall(Board board, long x, long y, Wall wall)
             throws UnsupportedOperationException {
         if (board != null && board.isValidPosition(x, y))
@@ -314,6 +484,7 @@ public class Facade implements
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    @Override
     public long getWallX(Wall wall) throws IllegalStateException,
             UnsupportedOperationException {
         if (wall == null || wall.getPosition() == null)
@@ -328,6 +499,7 @@ public class Facade implements
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
+    @Override
     public long getWallY(Wall wall) throws IllegalStateException,
             UnsupportedOperationException {
         if (wall == null || wall.getPosition() == null)
@@ -338,6 +510,7 @@ public class Facade implements
     /**
      * Return a set containing all robots on <code>board</code>.
      */
+    @Override
     public Set<Robot> getRobots(Board board) {
         Set<Robot> robots = new HashSet<Robot>();
         if (board != null)
@@ -347,8 +520,47 @@ public class Facade implements
     }
 
     /**
+     * Return a set containing all walls on <code>board</code>.
+     * 
+     * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
+     */
+    @Override
+    public Set<Wall> getWalls(Board board) throws UnsupportedOperationException {
+        Set<Wall> walls = new HashSet<Wall>();
+        if (board != null)
+            for (Element elem : board.getElementsOf(Wall.class))
+                walls.add((Wall) elem);
+        return walls;
+    }
+
+    /**
+     * Return a set containing all repair kits on <code>board</code>.
+     */
+    @Override
+    public Set<RepairKit> getRepairKits(Board board) {
+        Set<RepairKit> repairKits = new HashSet<RepairKit>();
+        if (board != null)
+            for (Element elem : board.getElementsOf(RepairKit.class))
+                repairKits.add((RepairKit) elem);
+        return repairKits;
+    }
+
+    /**
+     * Return a set containing all surprise boxes on <code>board</code>.
+     */
+    @Override
+    public Set<SurpriseBox> getSurpriseBoxes(Board board) {
+        Set<SurpriseBox> surpriseBoxes = new HashSet<SurpriseBox>();
+        if (board != null)
+            for (Element elem : board.getElementsOf(SurpriseBox.class))
+                surpriseBoxes.add((SurpriseBox) elem);
+        return surpriseBoxes;
+    }
+
+    /**
      * Return a set containing all batteries on <code>board</code>.
      */
+    @Override
     public Set<Battery> getBatteries(Board board) {
         Set<Battery> batteries = new HashSet<Battery>();
         if (board != null)
@@ -358,15 +570,59 @@ public class Facade implements
     }
 
     /**
-     * Return a set containing all walls on <code>board</code>.
+     * Load the program stored at <code>path</code> and assign it to <code>robot</code>.
      * 
-     * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
+     * Return <code>0</code> if the operation completed successfully; otherwise, return a negative number.
      */
-    public Set<Wall> getWalls(Board board) throws UnsupportedOperationException {
-        Set<Wall> walls = new HashSet<Wall>();
-        if (board != null)
-            for (Element elem : board.getElementsOf(Wall.class))
-                walls.add((Wall) elem);
-        return walls;
+    @Override
+    public int loadProgramFromFile(Robot robot, String path) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /**
+     * Save the program of <code>robot</code> in a file at <code>path</code>.
+     * 
+     * Return <code>0</code> if the operation completed successfully; otherwise, return a negative number.
+     */
+    @Override
+    public int saveProgramToFile(Robot robot, String path) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /**
+     * Pretty print the program of <code>robot</code> via <code>writer</code>.
+     */
+    @Override
+    public void prettyPrintProgram(Robot robot, Writer writer) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Execute <code>n</code> basic steps in the program of <code>robot</code>.
+     * 
+     * <p>For example, consider the program (seq (move) (shoot)). The first step performs a move command,
+     * the second step performs a shoot command and all subsequent steps have no effect.</p> 
+     * 
+     * <p>Note that if n equals 1, then only the move command is executed. The next call to stepn then starts
+     * with the shoot command.</p>
+     */
+    @Override
+    public void stepn(Robot robot, int n) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Return the set of items that <code>robot</code> is carrying.
+     */
+    public Set<Item> getPossessions(Robot robot) {
+        if (robot != null) {
+            Set<Item> possesions = robot.getPossesions();
+            return possesions;
+        }
+        return new HashSet<Item>();
     }
 }

@@ -18,7 +18,8 @@ public abstract class Element {
     }
 
     public void setPosition(Position position) {
-        if (position != null && position.canContainElement(this)) {
+        if (!isTerminated() && position != null
+                && position.canContainElement(this)) {
             if (this.position != null)
                 removePosition();
             position.addElement(this);

@@ -209,14 +209,15 @@ public class Robot extends Element {
     }
 
     public void addItems(Set<Item> itemsToAdd) {
-        for (Item itemToAdd : itemsToAdd) {
-            for (Item compItem : items) {
-                if (itemToAdd.getWeight().compareTo(compItem.getWeight()) >= 0) {
-                    items.add(items.indexOf(compItem), itemToAdd);
-                    break;
+        if (!isTerminated())
+            for (Item itemToAdd : itemsToAdd) {
+                for (Item compItem : items) {
+                    if (itemToAdd.getWeight().compareTo(compItem.getWeight()) >= 0) {
+                        items.add(items.indexOf(compItem), itemToAdd);
+                        break;
+                    }
                 }
             }
-        }
     }
 
     public void pickup(Item item) throws IllegalStateException {
@@ -258,11 +259,13 @@ public class Robot extends Element {
     }
 
     public void transferItems(Robot robot2) {
-        for (Position neighbour : position.getNeighbours())
-            if (robot2.getPosition().equals(neighbour)) {
-                robot2.addItems(getPossesions());
-                items.clear();
-            }
+        if (!(isTerminated() || robot2 == null || robot2.isTerminated()))
+            if (position != null)
+                for (Position neighbour : position.getNeighbours())
+                    if (robot2.getPosition().equals(neighbour)) {
+                        robot2.addItems(getPossesions());
+                        items.clear();
+                    }
     }
 
     public Item ithHeaviestElement(int ordinal)
