@@ -2,7 +2,7 @@ package roborally.model;
 
 import roborally.model.Energy.unitOfPower;
 
-public class RepairKit extends Item {
+public class RepairKit extends Item implements EnergyElement {
 
     public RepairKit() {
         super();
@@ -27,6 +27,10 @@ public class RepairKit extends Item {
         robot.increaseMaxEnergy(increaseEnergy);
         energy = new Energy(increaseEnergy.getAmountOfEnergy() * 2,
                 unitOfPower.Ws);
+    }
+
+    public double getAmountOfEnergy() {
+        return energy.getAmountOfEnergy();
     }
 
     private Energy energy;

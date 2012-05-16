@@ -5,7 +5,7 @@ import roborally.model.Energy.unitOfPower;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
-public class Battery extends Item {
+public class Battery extends Item implements EnergyElement {
 
     public Battery() {
         super();
@@ -53,6 +53,10 @@ public class Battery extends Item {
 
     public Energy getEnergy() {
         return energy;
+    }
+
+    public double getAmountOfEnergy() {
+        return energy.getAmountOfEnergy();
     }
 
     public Weight getWeight() {

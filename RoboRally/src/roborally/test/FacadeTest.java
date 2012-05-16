@@ -489,7 +489,8 @@ public class FacadeTest {
 
         assertEquals(500, facade.getMinimalCostToReach(robot, 3, 5), epsilon);
 
-        // TODO: Opgave 3, Position(insuf energy: -1, obstacle: -1, notonboard:
+        // TODO: NOTE Opgave 3, Position(insuf energy: -1, obstacle: -1,
+        // notonboard:
         // -1)
         assertEquals(-1, facade.getMinimalCostToReach(robot, 1, 1), epsilon);
     }

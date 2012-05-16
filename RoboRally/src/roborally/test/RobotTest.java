@@ -96,27 +96,49 @@ public class RobotTest {
         board.putElement(Position.newPosition(7, 42, board), new Wall());
         board.putElement(Position.newPosition(8, 43, board), new Wall());
         Position robotPosition = Position.newPosition(14, 36, board);
-        // Position insufficientEnergyPosition = Position.newPosition(117, 256,
-        // board);
+        Position robot2Position = Position.newPosition(10, 26, board);
+        Robot robot2 = new Robot(new Energy(1500, unitOfPower.Ws),
+                Orientation.DOWN);
+        robot2.setPosition(robot2Position);
+        Position insufficientEnergyPosition = Position.newPosition(117, 256,
+                board);
         Position surroundedByWallPosition = Position.newPosition(18, 29, board);
         for (Position neighbour : surroundedByWallPosition.getNeighbours())
             board.putElement(neighbour, new Wall());
 
+        // Robot niet op het board.
         assertEquals(-1, robot.getEnergyRequiredToReachWs(reachablePosition1),
                 epsilon);
 
-        robot.recharge(new Energy(15000, unitOfPower.Ws));
         robot.setPosition(robotPosition);
+
+        // Robot te weinig energie
+        assertEquals(-1,
+                robot.getEnergyRequiredToReachWs(insufficientEnergyPosition),
+                epsilon);
+
+        robot.recharge(new Energy(15000, unitOfPower.Ws));
 
         assertEquals(14100,
                 robot.getEnergyRequiredToReachWs(reachablePosition1), epsilon);
 
         assertEquals(9300,
                 robot.getEnergyRequiredToReachWs(reachablePosition2), epsilon);
-        // TODO: alle gevallen voor -1?
 
+        assertEquals(0, robot.getEnergyRequiredToReachWs(robotPosition),
+                epsilon);
+
+        // Doelpositie omringd door muren
         assertEquals(-1,
                 robot.getEnergyRequiredToReachWs(surroundedByWallPosition),
+                epsilon);
+
+        // Doelpositie bezet door muur
+        assertEquals(-1, robot.getEnergyRequiredToReachWs(Position.newPosition(
+                5, 40, board)), epsilon);
+
+        // Doelpositie bezet door robot
+        assertEquals(-1, robot.getEnergyRequiredToReachWs(robot2Position),
                 epsilon);
     }
 
@@ -240,7 +262,7 @@ public class RobotTest {
                         .getEnergyToMove()),
                 robot.getAmountOfEnergy(), epsilon);
 
-        // TODO: Exception als moveTo er niet geraakt?
+        // TODO: NOTE Exception als moveTo er niet geraakt?
         try {
             robot.moveTo(unReachablePosition);
         } catch (AssertionError ae) {
@@ -526,6 +548,36 @@ public class RobotTest {
         robotShootAtBoardEdge.shoot();
 
         assertEquals(4000, robotShootAtBoardEdge.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testAddItems() {
+        Item battery = new Battery();
+        Item repairKit = new RepairKit();
+        Item surpriseBox = new SurpriseBox();
+        Set<Item> itemSet = new HashSet<Item>();
+
+        assertEquals(0, robot.getPossesions().size());
+
+        itemSet.add(battery);
+        robot.addItems(itemSet);
+
+        assertEquals(1, robot.getPossesions().size());
+
+        itemSet.add(repairKit);
+        robot.addItems(itemSet);
+
+        assertEquals(2, robot.getPossesions().size());
+
+        itemSet.add(surpriseBox);
+        robot.addItems(itemSet);
+
+        assertEquals(3, robot.getPossesions().size());
+
+        itemSet.add(battery);
+        robot.addItems(itemSet);
+
+        assertEquals(3, robot.getPossesions().size());
     }
 
     @Test

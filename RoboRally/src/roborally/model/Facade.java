@@ -382,7 +382,7 @@ public class Facade implements
      * 
      * This method must return either 0 or 1.
      */
-    // TODO: 17+ minimalCostToReach: robots, walls, turning
+    // TODO: NOTE 17+ minimalCostToReach: robots, walls, turning
     @Override
     public int isMinimalCostToReach17Plus() {
         return 1;
@@ -417,7 +417,7 @@ public class Facade implements
      * 
      * This method must return either 0 or 1.
      */
-    // TODO: 18+ moveNextTo: robots, walls, turning
+    // TODO: NOTE 18+ moveNextTo: robots, walls, turning
     @Override
     public int isMoveNextTo18Plus() {
         return 1;

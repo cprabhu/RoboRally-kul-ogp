@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
-public class Robot extends Element {
+public class Robot extends Element implements EnergyElement {
 
     public Robot(Energy initialEnergy, Orientation initialOrienation) {
         maxEnergy = new Energy(20000, unitOfPower.Ws);
@@ -27,11 +27,13 @@ public class Robot extends Element {
 
     public void recharge(Energy chargeEnergy) {
         assert (chargeEnergy != null);
-        assert (chargeEnergy.isValidEnergy(chargeEnergy)); // chargeEnergy als
-                                                           // argument omdat de
-                                                           // energie zo groot
-                                                           // mag zijn als ze
-                                                           // wil.
+        assert (chargeEnergy.isValidEnergy(chargeEnergy));/*
+                                                           * chargeEnergy als
+                                                           * argument omdat de
+                                                           * energie zo groot
+                                                           * mag zijn als ze
+                                                           * wil.
+                                                           */
         energy.recharge(chargeEnergy, maxEnergy);
     }
 
@@ -47,14 +49,15 @@ public class Robot extends Element {
         Node node = new Node(null, getOrientation(), 0, getPosition(),
                 destination);
         Node shortestPath = node.shortestPath();
-        if (shortestPath == null)
-            return null; // Robot staat niet op een position dus niet op een
-                         // board.
+        if (shortestPath == null /*
+                                  * Robot staat niet op een position dus niet
+                                  * op een board.
+                                  */
+                || !(shortestPath.getPosition().equals(destination)))
+            return null;
         Energy energyRequiredToReach = shortestPath.getEnergy();
 
-        if (shortestPath.getPosition().equals(destination))
-            return energyRequiredToReach;
-        return null;
+        return energyRequiredToReach;
     }
 
     // TODO: NOTE Opgave 3, Position(insuf energy: -1, obstacle: -1,
@@ -65,14 +68,15 @@ public class Robot extends Element {
         Node node = new Node(null, getOrientation(), 0, getPosition(),
                 destination);
         Node shortestPath = node.shortestPath();
-        if (shortestPath == null)
-            return -1; // Robot staat niet op een position dus niet op een
-                       // board.
+        if (shortestPath == null /*
+                                  * Robot staat niet op een position dus niet
+                                  * op een board.
+                                  */
+                || !(shortestPath.getPosition().equals(destination)))
+            return -1;
         Energy energyRequiredToReach = shortestPath.getEnergy();
 
-        if (shortestPath.getPosition().equals(destination))
-            return energyRequiredToReach.getAmountOfEnergy();
-        return -1;
+        return energyRequiredToReach.getAmountOfEnergy();
     }
 
     public double getAmountOfEnergy() {
@@ -211,12 +215,18 @@ public class Robot extends Element {
     public void addItems(Set<Item> itemsToAdd) {
         if (!isTerminated())
             for (Item itemToAdd : itemsToAdd) {
-                for (Item compItem : items) {
-                    if (itemToAdd.getWeight().compareTo(compItem.getWeight()) >= 0) {
-                        items.add(items.indexOf(compItem), itemToAdd);
-                        break;
+                if (itemToAdd != null)
+                    if (items.isEmpty()
+                            || itemToAdd.getWeight().compareTo(
+                                    items.get(items.size() - 1).getWeight()) < 0)
+                        items.add(itemToAdd);
+                    else {
+                        List<Item> compItems = new ArrayList<Item>(items);
+                        for (Item compItem : compItems)
+                            if (itemToAdd.getWeight().compareTo(
+                                    compItem.getWeight()) >= 0)
+                                items.add(items.indexOf(compItem), itemToAdd);
                     }
-                }
             }
     }
 

@@ -71,7 +71,7 @@ public enum Orientation {
         return turnEnergy;
     }
 
-    // TODO: check defensief new Position
+    // TODO: NOTE check defensief new Position
     public Position nextPosition(Position currentPosition) {
         long x = currentPosition.X;
         long y = currentPosition.Y;

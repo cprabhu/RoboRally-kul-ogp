@@ -3,6 +3,8 @@ package roborally.model;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
+import roborally.filters.BooleanExtractor;
+
 // TODO: NOTE all aspects related to placement of walls, robots, batteries on
 // boards: defensively
 // TODO: NOTE Placing robot, wall or item on a board at a position must take
@@ -15,14 +17,6 @@ import java.util.*;
 // TODO: NOTE The amount of memory required to store a board should be
 // proportional
 // to the number of positions in use, not to the total size of the board.
-/*
- * TODO: The class Board must also offer a method that returns an ITERATOR that
- * will return all the elements on the board (not including items carried by
- * robots) that satisfy a given condition. Examples of conditions are all
- * elements that have an energy of at least 1000 Ws (the iterator will then not
- * return walls nor surprise boxes, because they have no known energy), all
- * elements in some sub range of the board, all items on the board, etc.
- */
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
@@ -128,6 +122,45 @@ public class Board {
     @Basic
     public boolean isTerminated() {
         return isTerminated;
+    }
+
+    /*
+     * TODO: NOTE The class Board must also offer a method that returns an
+     * ITERATOR that will return all the elements on the board (not including
+     * items carried by robots) that satisfy a given condition. Examples of
+     * conditions are all elements that have an energy of at least 1000 Ws (the
+     * iterator will then not return walls nor surprise boxes, because they
+     * have no known energy), all elements in some sub range of the board, all
+     * items on the board, etc.
+     */
+
+    public Iterator<Element> conditionIterator(final BooleanExtractor extractor) {
+        return new Iterator<Element>() {
+            private Iterator<Element> iterator;
+
+            {
+                Set<Element> allElements = new HashSet<Element>();
+                for (Position position : occupiedPositions)
+                    allElements.addAll(position.getElements());
+                Set<Element> satisfyingElements = new HashSet<Element>();
+                for (Element element : allElements)
+                    if (extractor.isSatisfied(element))
+                        satisfyingElements.add(element);
+                iterator = satisfyingElements.iterator();
+            }
+
+            public Element next() throws NoSuchElementException {
+                return iterator.next();
+            }
+
+            public void remove() throws IllegalStateException {
+                iterator.remove();
+            }
+
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+        };
     }
 
     public final long WIDTH;

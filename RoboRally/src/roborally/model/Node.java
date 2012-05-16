@@ -27,6 +27,8 @@ public class Node implements Comparable<Node> {
         double energyAmount = getOriginRobot().getAmountOfEnergy();
         if (getEstimatedCost() > energyAmount)
             return null;
+        if (POSITION.equals(TARGET_POSITION))
+            return this;
         Queue<Node> open = new PriorityQueue<Node>();
         Set<Node> closed = new HashSet<Node>();
         Node current = this;
@@ -64,7 +66,8 @@ public class Node implements Comparable<Node> {
         return current;
     }
 
-    // TODO: test of allshortestpaths de beginnode geeft als te weinig energy.
+    // TODO: NOTE test of allshortestpaths de beginnode geeft als te weinig
+    // energy.
     public Set<Node> allShortestPaths() {
         if (POSITION == null)
             return null;

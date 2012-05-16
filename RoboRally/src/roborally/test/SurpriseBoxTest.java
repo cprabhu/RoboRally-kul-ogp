@@ -13,7 +13,6 @@ public class SurpriseBoxTest {
     @Before
     public void setUp() {
         board = new Board(15, 22);
-        testEnergy = new Energy(1500, unitOfPower.Ws);
         robot = new Robot(new Energy(1000, unitOfPower.Ws), Orientation.UP);
         surpriseBox = new SurpriseBox(Position.newPosition(3, 4, board),
                 new Weight(500, unitOfMass.g));
@@ -139,7 +138,6 @@ public class SurpriseBoxTest {
     }
 
     private Board board;
-    private Energy testEnergy;
     private Robot robot;
     private SurpriseBox surpriseBox;
     private double epsilon = 0.01;

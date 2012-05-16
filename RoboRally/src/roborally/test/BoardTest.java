@@ -2,10 +2,13 @@ package roborally.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.junit.*;
 
+import roborally.filters.EnergyAtLeastExtractor;
 import roborally.model.*;
 import roborally.model.Energy.unitOfPower;
 
@@ -297,6 +300,41 @@ public class BoardTest {
         assertFalse(board.isTerminated());
         board.terminate();
         assertTrue(board.isTerminated());
+    }
+
+    @Test
+    public void testConditionIterator() {
+
+        try {
+            board.conditionIterator(new EnergyAtLeastExtractor(200)).next();
+            fail("An NoSuchElementException should have been thrown.");
+        } catch (NoSuchElementException e) {
+            System.err.println("testConditionIterator: "
+                    + "This NoSuchElementException is to be expected.");
+        }
+
+        Energy energy = new Energy(100, unitOfPower.Ws);
+        Energy energy2 = new Energy(500, unitOfPower.Ws);
+        Position occupiedBoard = Position.newPosition(3, 6, board);
+        board.putElement(occupiedBoard, new Battery(occupiedBoard, energy));
+        Position occupied2Board = Position.newPosition(4, 14, board);
+        board.putElement(occupied2Board, new Battery(occupied2Board, energy2));
+        Position obstacleBoard = Position.newPosition(5, 25, board);
+        board.putElement(obstacleBoard, new Wall(obstacleBoard));
+        Position surroundedBoard = Position.newPosition(423, 0, board);
+        board.putElement(surroundedBoard, new Wall());
+        board.putElement(Position.newPosition(424, 0, board), new Wall());
+        board.putElement(Position.newPosition(423, 1, board), new Wall());
+        board.putElement(Position.newPosition(422, 0, board), new Wall());
+
+        Iterator<Element> iterator = board
+                .conditionIterator(new EnergyAtLeastExtractor(200));
+
+        assertTrue(iterator.hasNext());
+
+        iterator.next();
+
+        assertFalse(iterator.hasNext());
     }
 
     private Board board;
