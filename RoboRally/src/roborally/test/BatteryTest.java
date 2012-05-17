@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import roborally.model.*;
-import roborally.model.Energy.unitOfPower;
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
 
 /**
  * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>

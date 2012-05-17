@@ -2,7 +2,9 @@ package roborally.model;
 
 import java.util.Random;
 
-import roborally.model.Energy.unitOfPower;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
 
 public class SurpriseBox extends Item {
 

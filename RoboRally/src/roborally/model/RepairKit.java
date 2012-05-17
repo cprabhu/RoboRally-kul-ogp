@@ -1,6 +1,9 @@
 package roborally.model;
 
-import roborally.model.Energy.unitOfPower;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
 
 public class RepairKit extends Item implements EnergyElement {
 

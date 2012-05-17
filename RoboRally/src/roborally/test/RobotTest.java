@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import roborally.model.*;
-import roborally.model.Energy.unitOfPower;
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Node;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
 import static org.junit.Assert.*;
 
 import org.junit.Before;

@@ -1,7 +1,7 @@
 package roborally.filters;
 
 import roborally.model.Element;
-import roborally.model.EnergyElement;
+import roborally.model.auxiliary.EnergyElement;
 
 public class EnergyAtLeastExtractor implements BooleanExtractor {
 

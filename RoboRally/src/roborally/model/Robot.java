@@ -1,7 +1,13 @@
 package roborally.model;
 
-import roborally.model.Energy.unitOfPower;
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Node;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
+import roborally.program.Program;
+
 import java.util.*;
 
 // TODO: NOTE Klassediagram voor verdediging
@@ -122,9 +128,11 @@ public class Robot extends Element implements EnergyElement {
         return orientation.ordinal();
     }
 
-    public void move() throws IllegalArgumentException {
+    public void move() throws IllegalStateException {
         assert (getEnergyToMove() <= energy.getAmountOfEnergy());
         Position nextPosition = orientation.nextPosition(position);
+        if (nextPosition.equals(getPosition()))
+            throw new IllegalStateException();
         setPosition(nextPosition);
         energy.removeEnergy(energyToMove);
 
@@ -291,6 +299,10 @@ public class Robot extends Element implements EnergyElement {
         return possessions;
     }
 
+    public Program getProgram() {
+        return program;
+    }
+
     public void terminate() {
         if (position != null)
             position.removeElement(this);
@@ -315,6 +327,6 @@ public class Robot extends Element implements EnergyElement {
     private final Weight carryWeight;
     private final List<Item> items = new ArrayList<Item>();
 
+    private Program program;
     private Orientation orientation;
-
 }

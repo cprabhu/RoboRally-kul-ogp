@@ -153,8 +153,8 @@ public class Board {
                 return iterator.next();
             }
 
-            public void remove() throws IllegalStateException {
-                iterator.remove();
+            public void remove() throws UnsupportedOperationException {
+                throw new UnsupportedOperationException();
             }
 
             public boolean hasNext() {

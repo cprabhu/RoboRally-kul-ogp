@@ -1,7 +1,7 @@
 package roborally.test;
 
-import roborally.model.*;
-import roborally.model.Energy.unitOfPower;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Energy.unitOfPower;
 
 import static org.junit.Assert.*;
 

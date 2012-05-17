@@ -1,6 +1,7 @@
 package roborally.model;
 
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Weight.unitOfMass;
 
 public abstract class Item extends Element {
 

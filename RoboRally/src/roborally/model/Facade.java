@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import roborally.IFacade;
-import roborally.model.Energy.unitOfPower;
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
 
 public class Facade implements
         IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
@@ -597,7 +599,6 @@ public class Facade implements
     @Override
     public void prettyPrintProgram(Robot robot, Writer writer) {
         // TODO Auto-generated method stub
-
     }
 
     /**

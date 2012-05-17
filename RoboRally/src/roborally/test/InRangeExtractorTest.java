@@ -6,7 +6,8 @@ import org.junit.Test;
 
 import roborally.filters.InRangeExtractor;
 import roborally.model.*;
-import roborally.model.Energy.unitOfPower;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Energy.unitOfPower;
 
 public class InRangeExtractorTest {
 

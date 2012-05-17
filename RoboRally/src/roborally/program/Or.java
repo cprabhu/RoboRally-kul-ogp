@@ -1,0 +1,26 @@
+package roborally.program;
+
+import java.util.*;
+
+import roborally.model.Robot;
+
+class Or extends CombinedCondition {
+
+    Or(String conditionString, Robot robot) {
+        super(conditionString);
+
+        for (String subCondition : Program.allSubParenthesed(conditionString)) {
+            conditions.add(newCondition(subCondition, robot));
+        }
+    }
+
+    @Override
+    boolean evaluate() {
+        for (Condition condition : conditions)
+            if (condition.evaluate())
+                return true;
+        return false;
+    }
+
+    private final Set<Condition> conditions = new HashSet<Condition>();
+}

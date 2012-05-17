@@ -8,8 +8,10 @@ import java.util.Set;
 import org.junit.*;
 
 import roborally.model.*;
-import roborally.model.Energy.unitOfPower;
-import roborally.model.Weight.unitOfMass;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
 
 public class FacadeTest {
 
