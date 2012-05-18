@@ -15,6 +15,8 @@ class Move extends BasicCommand {
             try {
                 robot.move();
             } catch (IllegalStateException e) {
+                System.err.println("Move.execute():"
+                        + " robot.move() IllegalStateException.");
             }
     }
 }

@@ -1,14 +1,14 @@
 package roborally.model;
 
-import java.io.Writer;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 import roborally.IFacade;
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
+import roborally.program.Program;
 
 public class Facade implements
         IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
@@ -384,7 +384,6 @@ public class Facade implements
      * 
      * This method must return either 0 or 1.
      */
-    // TODO: NOTE 17+ minimalCostToReach: robots, walls, turning
     @Override
     public int isMinimalCostToReach17Plus() {
         return 1;
@@ -419,7 +418,6 @@ public class Facade implements
      * 
      * This method must return either 0 or 1.
      */
-    // TODO: NOTE 18+ moveNextTo: robots, walls, turning
     @Override
     public int isMoveNextTo18Plus() {
         return 1;
@@ -578,8 +576,25 @@ public class Facade implements
      */
     @Override
     public int loadProgramFromFile(Robot robot, String path) {
-        // TODO Auto-generated method stub
-        return 0;
+        StringBuilder programString = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        Scanner scanner = new Scanner("");
+        try {
+            scanner = new Scanner(new FileReader(path));
+            while (scanner.hasNextLine())
+                programString.append(scanner.nextLine() + newLine);
+        } catch (FileNotFoundException e) {
+            System.err.println("loadProgramFile: "
+                    + "The file with the provided path was not found.");
+        } finally {
+            scanner.close();
+        }
+
+        if (robot != null && programString.length() > 0) {
+            robot.setProgram(new Program(programString.toString(), robot));
+            return 0;
+        }
+        return -1;
     }
 
     /**
@@ -589,8 +604,23 @@ public class Facade implements
      */
     @Override
     public int saveProgramToFile(Robot robot, String path) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (robot != null && robot.getProgram() != null) {
+            try {
+                Writer out = new FileWriter(path);
+                out.write(robot.getProgram().toString());
+            } catch (FileNotFoundException e) {
+                System.err.println("saveProgramToFile:"
+                        + " The file with the provided path was not found.");
+                return -1;
+            } catch (IOException e) {
+                System.err.println("saveProgramToFile:"
+                        + " An I/O error occured while trying to write "
+                        + "the program to path.");
+                return -1;
+            }
+            return 0;
+        }
+        return -1;
     }
 
     /**
@@ -598,7 +628,14 @@ public class Facade implements
      */
     @Override
     public void prettyPrintProgram(Robot robot, Writer writer) {
-        // TODO Auto-generated method stub
+        if (robot != null && robot.getProgram() != null)
+            try {
+                writer.write(robot.getProgram().toString());
+            } catch (IOException e) {
+                System.err.println("prettyPrintProgram: "
+                        + "An I/O error occured while trying to write "
+                        + "the program to writer.");
+            }
     }
 
     /**
@@ -612,8 +649,8 @@ public class Facade implements
      */
     @Override
     public void stepn(Robot robot, int n) {
-        // TODO Auto-generated method stub
-
+        if (robot != null)
+            robot.stepn(n);
     }
 
     /**

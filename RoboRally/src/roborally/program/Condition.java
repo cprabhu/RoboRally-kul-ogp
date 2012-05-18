@@ -31,7 +31,8 @@ abstract class Condition {
             return new Or(conditionString, robot);
         else if (condition.equals("not"))
             return new Not(conditionString, robot);
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("newCondition: The condition '"
+                + condition + "' couldn't be interpreted.");
     }
 
     abstract boolean evaluate();

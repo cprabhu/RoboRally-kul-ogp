@@ -299,6 +299,17 @@ public class Robot extends Element implements EnergyElement {
         return possessions;
     }
 
+    public void stepn(int n) {
+        if (program != null)
+            for (int i = 0; i < n; i++) {
+                program.step();
+            }
+    }
+
+    public void setProgram(Program program) {
+        this.program = program;
+    }
+
     public Program getProgram() {
         return program;
     }
@@ -309,6 +320,7 @@ public class Robot extends Element implements EnergyElement {
         position = null;
         for (Item item : getPossesions())
             item.terminate();
+        program = null;
         this.isTerminated = true;
     }
 

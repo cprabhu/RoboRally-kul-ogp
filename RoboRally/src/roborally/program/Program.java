@@ -7,6 +7,7 @@ import roborally.model.Robot;
 public class Program {
 
     public Program(String programString, Robot executingRobot) {
+        programCounter = 0;
         this.programString = programString;
         commands = new ArrayList<Command>();
 
@@ -15,7 +16,8 @@ public class Program {
     }
 
     public void step() {
-        commands.get(programCounter).execute();
+        if (programCounter < commands.size())
+            commands.get(programCounter).execute();
         programCounter++;
     }
 
@@ -28,22 +30,27 @@ public class Program {
         programCounter--;
     }
 
-    static List<String> allSubParenthesed(String string) {
+    public static List<String> allSubParenthesed(String string) {
         List<String> allSubParenthesed = new ArrayList<String>();
-        string = string.substring(string.indexOf(" ") + 1, string.length() - 1);
 
         int parenthesesCounter = 0;
-        int beginIndex = 0;
-        for (int endIndex = 0; endIndex < string.length(); endIndex++) {
-            if ("(".equals(string.charAt(endIndex)))
+        int beginIndex = string.indexOf("(");
+
+        for (int endIndex = beginIndex; endIndex < string.length(); endIndex++) {
+            if (beginIndex < 0 || endIndex < 0)
+                break;
+            if ('(' == string.charAt(endIndex))
                 parenthesesCounter++;
-            else if (")".equals(string.charAt(endIndex)))
-                parenthesesCounter++;
+            else if (')' == string.charAt(endIndex))
+                parenthesesCounter--;
             if (parenthesesCounter == 0) {
                 allSubParenthesed.add(string
                         .substring(beginIndex, endIndex + 1));
-                beginIndex = endIndex + 2;
-                endIndex += 2;
+                int nextOpenParen = string.indexOf("(", endIndex + 1);
+                if (nextOpenParen < 0)
+                    break;
+                beginIndex = string.indexOf("(", endIndex + 1);
+                endIndex = string.indexOf("(", endIndex + 1) - 1;
             }
         }
 

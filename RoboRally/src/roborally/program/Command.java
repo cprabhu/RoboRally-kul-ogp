@@ -1,6 +1,7 @@
 package roborally.program;
 
-import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import roborally.model.Robot;
 
@@ -13,13 +14,18 @@ abstract class Command {
 
     static Command newCommand(String commandString, Robot robot)
             throws IllegalArgumentException {
-        Scanner commandScanner = new Scanner(commandString);
-        String command = commandScanner.next("[a-z-]");
+        Matcher commandMatcher = Pattern.compile("[a-z-]+").matcher(
+                commandString);
+        commandMatcher.find();
+        String command = commandString.substring(commandMatcher.start(),
+                commandMatcher.end());
         if (command.equals("move"))
             return new Move(robot);
-        else if (command.equals("turn"))
-            return new Turn(commandScanner.next(), robot);
-        else if (command.equals("shoot"))
+        else if (command.equals("turn")) {
+            commandMatcher.find(commandMatcher.end());
+            return new Turn(command.substring(commandMatcher.start(),
+                    commandMatcher.end()), robot);
+        } else if (command.equals("shoot"))
             return new Shoot(robot);
         else if (command.equals("pickup-and-use"))
             return new PickupAndUse(robot);
@@ -29,7 +35,8 @@ abstract class Command {
             return new While(commandString, robot);
         else if (command.equals("seq"))
             return new Seq(commandString, robot);
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("newCommand: The command '"
+                + command + "' couldn't be interpreted.");
     }
 
     abstract void execute();
