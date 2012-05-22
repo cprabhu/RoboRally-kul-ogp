@@ -3,6 +3,8 @@ package roborally.filters;
 import roborally.model.Element;
 import roborally.model.auxiliary.EnergyElement;
 
+// TODO: NOTE "NoDoc p. 2"
+
 public class EnergyAtLeastExtractor implements BooleanExtractor {
 
     public EnergyAtLeastExtractor(double energyAmount) {

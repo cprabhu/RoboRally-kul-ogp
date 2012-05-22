@@ -1,0 +1,7 @@
+(seq
+  (while
+    (or (and (true) (energy-at-least 1000)) (not (true)))
+    (move)
+  )
+  (turn clockwise)
+)

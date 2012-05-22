@@ -2,6 +2,7 @@ package roborally.model;
 
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 

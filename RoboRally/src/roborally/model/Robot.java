@@ -3,12 +3,17 @@ package roborally.model;
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.EnergyElement;
 import roborally.model.auxiliary.Node;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
 import roborally.program.Program;
 
 import java.util.*;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
 
 // TODO: NOTE Klassediagram voor verdediging
 
@@ -17,16 +22,16 @@ import java.util.*;
 // TODO: NOTE position defensively
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class Robot extends Element implements EnergyElement {
 
-    public Robot(Energy initialEnergy, Orientation initialOrienation) {
+    public Robot(Energy initialEnergy, Orientation initialOrientation) {
         maxEnergy = new Energy(20000, unitOfPower.Ws);
         assert (initialEnergy != null);
         assert (initialEnergy.isValidEnergy(maxEnergy));
         energy = initialEnergy;
-        orientation = initialOrienation;
+        orientation = initialOrientation;
         position = null;
         carryWeight = null;
     }
@@ -90,7 +95,15 @@ public class Robot extends Element implements EnergyElement {
     }
 
     public double getFractionOfEnergy() {
-        return energy.getAmountOfEnergy() / maxEnergy.getAmountOfEnergy();
+        return getAmountOfEnergy() / maxEnergy.getAmountOfEnergy();
+    }
+
+    /**
+     * Return this Robot's current maximum energy.
+     */
+    @Basic
+    public Energy getMaxEnergy() {
+        return maxEnergy;
     }
 
     public double getEnergyToMove() {
@@ -188,6 +201,15 @@ public class Robot extends Element implements EnergyElement {
         }
     }
 
+    /**
+     * Shoot this Robot's laser if it can hit something.
+     * 
+     * @pre This Robot has enough energy to shoot.
+     *      | getAmountOfEnergy() >= 1000
+     * @effect This Robot's energy is decreased by 1000 Ws.
+     *      | new.getAmountOfEnergy() = getAmountOfEnergy() - 1000
+     * @post One of the items the robot could hit is hit.
+     */
     public void shoot() {
         assert (energy.compareTo(new Energy(1000, unitOfPower.Ws)) >= 0);
         energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
@@ -206,7 +228,7 @@ public class Robot extends Element implements EnergyElement {
             for (int i = 0; i < item; i++) {
                 elementsAtBulletPositionIt.next();
             }
-            elementsAtBulletPositionIt.next().terminate();
+            elementsAtBulletPositionIt.next().hit();
         }
     }
 
@@ -215,8 +237,7 @@ public class Robot extends Element implements EnergyElement {
         if (energy.compareTo(maxEnergy) > 0)
             energy.removeEnergy(new Energy(energy.getAmountOfEnergy()
                     - maxEnergy.getAmountOfEnergy(), unitOfPower.Ws));
-        if (!maxEnergy.isValidEnergy(energyLimit)
-                || maxEnergy.compareTo(new Energy(0, unitOfPower.Ws)) == 0)
+        if (maxEnergy.compareTo(new Energy(0, unitOfPower.Ws)) <= 0)
             terminate();
     }
 
@@ -238,6 +259,21 @@ public class Robot extends Element implements EnergyElement {
             }
     }
 
+    /**
+     * Pickup the given item if this Robot's position is the same as the item's
+     * position.
+     * 
+     * @param item
+     *      The item to pick up.
+     * @post This Robot is carrying the given item if it was in the same
+     *      position.
+     *      | if (getPosition().equals(item.getPosition())
+     *      |   new.getPossessions().contains(item)
+     * @effect The item is picked up if it was in the same position.
+     *      | if (getPosition().equals(item.getPosition())
+     *      |   item.removPosition()
+     * @throws IllegalStateException
+     */
     public void pickup(Item item) throws IllegalStateException {
         if (item == null
                 || (carryWeight != null && carryWeight.compareTo(item
@@ -248,8 +284,7 @@ public class Robot extends Element implements EnergyElement {
                 Set<Item> itemsToAdd = new HashSet<Item>();
                 itemsToAdd.add(item);
                 addItems(itemsToAdd);
-            }
-            if (!items.contains(item))
+            } else if (!items.contains(item))
                 items.add(item);
             item.removePosition();
             if (carryWeight != null)
@@ -257,8 +292,25 @@ public class Robot extends Element implements EnergyElement {
         }
     }
 
+    /**
+     * Use the given item if this Robot can.
+     * 
+     * @param item
+     *      The item to use.
+     * @post If this Robot is carrying the item but it is terminated, the item
+     *      is discarded.
+     *      | if (item != null && item.isTerminated())
+     *      |   !new.getPossessions().contains(item)
+     * @post If this Robot is carrying the item and it has not been terminated
+     *      use it.
+     *      | if (getPossessions().contains(item))
+     *      |   item.use(this)
+     * @throws IllegalArgumentException
+     *      If this Robot isn't carrying the item it cannot use it.
+     *      | !getPossessions().contains(item)
+     */
     public void use(Item item) throws IllegalArgumentException {
-        if (item == null)
+        if (!getPossessions().contains(item))
             throw new IllegalArgumentException();
 
         if (item.isTerminated())
@@ -267,8 +319,20 @@ public class Robot extends Element implements EnergyElement {
             item.use(this);
     }
 
+    /**
+     * Drop the given item.
+     * 
+     * @param item
+     *      The item to drop.
+     * @post This Robot is no longer carrying the give item.
+     *      | !new.getPossessions().contains(item)
+     * @effect If the Robot is carrying the item, it will drop it.
+     *      | if (getPossessions().contains(item))
+     *      |   item.setPosition(getPosition())
+     * @throws IllegalArgumentException
+     */
     public void drop(Item item) throws IllegalArgumentException {
-        if (item == null)
+        if (!getPossessions().contains(item))
             throw new IllegalArgumentException();
         items.remove(item);
         item.setPosition(position);
@@ -276,29 +340,63 @@ public class Robot extends Element implements EnergyElement {
             carryWeight.addWeight(item.getWeight());
     }
 
+    /**
+     * Transfer all items from this Robot to the given robot.
+     * 
+     * @param robot2
+     *      The robot that will receive this Robot's items.
+     * @effect If the two robots are capable of transfering items, the items
+     *      from this Robot are transfered to robot2.
+     *      | if (!(isTerminated() || robot2 == null || robot2.isTerminated())
+     *      | && position == null
+     *      | && getPosition().getNeigbours().contains(robot2.getPosition()))
+     *      |   robot2.addItems(getPossessions())
+     *      |   new.getPossessions().size() == 0
+     */
     public void transferItems(Robot robot2) {
-        if (!(isTerminated() || robot2 == null || robot2.isTerminated()))
-            if (position != null)
-                for (Position neighbour : position.getNeighbours())
-                    if (robot2.getPosition().equals(neighbour)) {
-                        robot2.addItems(getPossesions());
-                        items.clear();
-                    }
+        if (!(isTerminated() || robot2 == null || robot2.isTerminated())
+                && position != null
+                && getPosition().getNeighbours().contains(robot2.getPosition())) {
+            robot2.addItems(getPossessions());
+            items.clear();
+        }
     }
 
-    public Item ithHeaviestElement(int ordinal)
-            throws IndexOutOfBoundsException {
+    /**
+     * Return the ordinal'th heaviest item this Robot is carrying.
+     * 
+     * @param ordinal
+     *      The ordinal of the item. (i.e. first == 1, second == 2, third == 3)
+     * @throws IndexOutOfBoundsException
+     *      There is no ordinal'th item.
+     *      | ordinal >= getPossessions().size()
+     */
+    public Item ithHeaviestItem(int ordinal) throws IndexOutOfBoundsException {
         if (ordinal > items.size())
             throw new IndexOutOfBoundsException();
         return items.get(ordinal - 1);
     }
 
-    public Set<Item> getPossesions() {
+    /**
+     * Returns a set of all the items carried by this Robot.
+     */
+    @Basic
+    public Set<Item> getPossessions() {
         Set<Item> possessions = new HashSet<Item>();
         possessions.addAll(items);
         return possessions;
     }
 
+    /**
+     * Execute n steps of this Robot's program if this Robot has a program.
+     * 
+     * @param n
+     *      The number of steps to execute.
+     * @effect Execute n steps of the program if this Robot has a program.
+     *      | if (program != null)
+     *      |   for i = 1..n
+     *      |       program.step()
+     */
     public void stepn(int n) {
         if (program != null)
             for (int i = 0; i < n; i++) {
@@ -306,24 +404,61 @@ public class Robot extends Element implements EnergyElement {
             }
     }
 
+    /**
+     * Set this Robot's program to the given program.
+     * 
+     * @param program
+     *      The program to give to this Robot.
+     */
+    @Basic
+    @Raw
     public void setProgram(Program program) {
         this.program = program;
     }
 
+    /**
+     * Return this Robot's program.
+     */
+    @Basic
     public Program getProgram() {
         return program;
     }
 
+    /**
+     * Terminate this Robot.
+     * 
+     * @effect If this Robot has a position remove the robot from the position.
+     *      | getPosition().removeElement(this)
+     * @effect Terminate each item this Robot is carrying.
+     *      | for item in getPossessions()
+     *      |   item.terminate()
+     * @post Forget your position.
+     *      | position = null
+     * @post Forget your program.
+     *      | program = null
+     * @post new.isTerminated() = true
+     */
+    @Override
     public void terminate() {
         if (position != null)
             position.removeElement(this);
         position = null;
-        for (Item item : getPossesions())
+        for (Item item : getPossessions())
             item.terminate();
         program = null;
         this.isTerminated = true;
     }
 
+    /**
+     * Return the total weight this Robot is carrying in the given unit.
+     * 
+     * @param unit
+     *      The unit this Robot's carried weight should be expressed in.
+     * @return The total weight this Robot is carrying in the given unit.
+     *      | for item in getPossesions()
+     *      |   result += item.getWeight().getMassIn(unit)
+     *          
+     */
     private int getCarriedWeight(unitOfMass unit) {
         int carriedWeight = 0;
         for (Item item : items)

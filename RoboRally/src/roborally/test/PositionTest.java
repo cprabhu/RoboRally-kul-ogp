@@ -2,6 +2,8 @@ package roborally.test;
 
 import roborally.model.*;
 import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 import static org.junit.Assert.*;
@@ -10,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class PositionTest {
 

@@ -6,6 +6,8 @@ import org.junit.*;
 
 import roborally.model.*;
 import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
@@ -83,7 +85,7 @@ public class SurpriseBoxTest {
             else if (!robot.getPosition().equals(
                     Position.newPosition(3, 4, board)))
                 surpriseBoxTeleport = true;
-            else if (robot.getPossesions().size() > 0)
+            else if (robot.getPossessions().size() > 0)
                 surpriseBoxChange = true;
         }
 

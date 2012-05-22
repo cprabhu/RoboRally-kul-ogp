@@ -5,6 +5,8 @@ import java.util.*;
 
 import roborally.IFacade;
 import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
@@ -51,7 +53,7 @@ public class Facade implements
     }
 
     /**
-     * Put <code>battery</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     * Put <code>battery</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
      */
     @Override
     public void putBattery(Board board, long x, long y, Battery battery) {
@@ -86,7 +88,7 @@ public class Facade implements
     /**
      * Create a new repair kit that repairs <code>repairAmount</code>. 
      * 
-     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>repairAmount</code>). 
+     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>repairAmount</code>. 
      */
     @Override
     public RepairKit createRepairKit(double repairAmount, int weight) {
@@ -97,7 +99,7 @@ public class Facade implements
     }
 
     /**
-     * Put <code>repairKit</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     * Put <code>repairKit</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
      */
     @Override
     public void putRepairKit(Board board, long x, long y, RepairKit repairKit) {
@@ -132,7 +134,7 @@ public class Facade implements
     /**
      * Create a new surprise box with weighing <code>weight</code>. 
      * 
-     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>weight</code>). 
+     * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>weight</code>. 
      */
     @Override
     public SurpriseBox createSurpriseBox(int weight) {
@@ -142,7 +144,7 @@ public class Facade implements
     }
 
     /**
-     * Put <code>surpriseBox</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     * Put <code>surpriseBox</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
      */
     @Override
     public void putSurpriseBox(Board board, long x, long y,
@@ -212,7 +214,7 @@ public class Facade implements
     }
 
     /**
-     * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     * Put <code>robot</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
      */
     @Override
     public void putRobot(Board board, long x, long y, Robot robot) {
@@ -390,7 +392,7 @@ public class Facade implements
     }
 
     /**
-     * Return the minimal amount of energy required for <code>robot</code> to reach (<code>x</code>, </code>y</code>) taking into account the robot's current load and energy level. Do not take into account
+     * Return the minimal amount of energy required for <code>robot</code> to reach <code>x</code>, </code>y</code> taking into account the robot's current load and energy level. Do not take into account
      * shooting and picking up/using/dropping batteries. 
      * <p>
      * The expected return value of this method depends on <code>isMinimalCostToReach17Plus</code>:
@@ -402,7 +404,7 @@ public class Facade implements
      * </ul>
      * </p>
      * In any case, this method must return <code>-1</code> if <code>robot</code> is not placed on a board. Moreover, this method must return <code>-2</code> if <code>robot</code> has
-     * insufficient energy to reach (<code>x</code>, <code>y</code>).
+     * insufficient energy to reach <code>x</code>, <code>y</code>.
      */
     @Override
     public double getMinimalCostToReach(Robot robot, long x, long y) {
@@ -466,7 +468,7 @@ public class Facade implements
     }
 
     /**
-     * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+     * Put <code>robot</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
      * 
      * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
      */
@@ -582,7 +584,9 @@ public class Facade implements
         try {
             scanner = new Scanner(new FileReader(path));
             while (scanner.hasNextLine())
-                programString.append(scanner.nextLine() + newLine);
+                programString.append(scanner.nextLine().replaceAll(
+                        "\\p{javaWhitespace}+$", "")
+                        + newLine);
         } catch (FileNotFoundException e) {
             System.err.println("loadProgramFile: "
                     + "The file with the provided path was not found.");
@@ -658,7 +662,7 @@ public class Facade implements
      */
     public Set<Item> getPossessions(Robot robot) {
         if (robot != null) {
-            Set<Item> possesions = robot.getPossesions();
+            Set<Item> possesions = robot.getPossessions();
             return possesions;
         }
         return new HashSet<Item>();

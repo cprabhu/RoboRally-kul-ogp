@@ -2,12 +2,27 @@ package roborally.program;
 
 import roborally.model.Robot;
 
+/**
+ * This class represents the move command.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class Move extends BasicCommand {
 
+    /**
+     * Initializes the move command with a robot.
+     * 
+     * @param robot
+     *      The robot that will execute the move command.
+     */
     Move(Robot robot) {
-        super("(move)", robot);
+        super(robot);
     }
 
+    /**
+     * Move the robot one step forward if it can.
+     */
     @Override
     void execute() {
         if (robot != null
@@ -18,5 +33,14 @@ class Move extends BasicCommand {
                 System.err.println("Move.execute():"
                         + " robot.move() IllegalStateException.");
             }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Command#toString()
+     */
+    @Override
+    public String toString() {
+        return "(move)";
     }
 }

@@ -9,6 +9,8 @@ import org.junit.*;
 
 import roborally.model.*;
 import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
@@ -746,10 +748,10 @@ public class FacadeTest {
 
         assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
                 .getPosition()));
-        assertNull(robotNotEnoughEnergy.getPosition());
-        assertTrue(robotNotEnoughEnergy.isTerminated());
         assertEquals(notEnoughEnergy.getAmountOfEnergy(),
                 robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+        assertEquals(16000, robotNotEnoughEnergy.getMaxEnergy()
+                .getAmountOfEnergy(), epsilon);
         assertEquals(4000, robotEnoughEnergy.getAmountOfEnergy(), epsilon);
 
         facade.shoot(robotShootAtBoardEdge);

@@ -5,13 +5,44 @@ import java.util.regex.Pattern;
 
 import roborally.model.Robot;
 
+/**
+ * This class represents a command with the robot that executes the command.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 abstract class Command {
 
-    protected Command(String commandString, Robot robot) {
-        this.commandString = commandString;
+    /**
+     * Initialize this command given a String and a robot.
+     * 
+     * @param commandString
+     *      The string that contains the command.
+     * @param robot
+     *      The robot that will execute the command.
+     */
+    protected Command(Robot robot) {
         this.robot = robot;
     }
 
+    /**
+     * Construct a command given a commandString and the executing robot.
+     * 
+     * @param commandString
+     *      The string that contains the command.
+     * @param robot
+     *      The robot that will execute the command.
+     * @return new Move if the first word of the commandString is "move".
+     * @return new Turn if the first word of the commandString is "turn".
+     * @return new Shoot if the first word of the commandString is "shoot".
+     * @return new PickupAndUse if first word of the commandString is
+     *         "pickup-and-use".
+     * @return new If if the first word of the commandString is "if".
+     * @return new While if the first word of the commandString is "while".
+     * @return new Seq if the first word of the commandString is "seq".
+     * @throws IllegalArgumentException
+     *      The commandString could not be interpreted.
+     */
     static Command newCommand(String commandString, Robot robot)
             throws IllegalArgumentException {
         Matcher commandMatcher = Pattern.compile("[a-z-]+").matcher(
@@ -22,8 +53,8 @@ abstract class Command {
         if (command.equals("move"))
             return new Move(robot);
         else if (command.equals("turn")) {
-            commandMatcher.find(commandMatcher.end());
-            return new Turn(command.substring(commandMatcher.start(),
+            commandMatcher.find();
+            return new Turn(commandString.substring(commandMatcher.start(),
                     commandMatcher.end()), robot);
         } else if (command.equals("shoot"))
             return new Shoot(robot);
@@ -42,10 +73,7 @@ abstract class Command {
     abstract void execute();
 
     @Override
-    public String toString() {
-        return commandString;
-    }
+    abstract public String toString();
 
-    private String commandString;
     protected Robot robot;
 }

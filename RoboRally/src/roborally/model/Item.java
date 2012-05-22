@@ -1,5 +1,6 @@
 package roborally.model;
 
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Weight.unitOfMass;
 

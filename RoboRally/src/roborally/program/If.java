@@ -4,25 +4,40 @@ import java.util.List;
 
 import roborally.model.Robot;
 
+/**
+ * This class represents the if construct.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class If extends CombinedCommand {
 
+    /**
+     * Initializes the if construct with a string and a robot.
+     * 
+     * @param commandString
+     *      The commandString contains this if's condition and commands.
+     * @param robot
+     *      The executing robot.
+     */
     If(String commandString, Robot robot) {
-        super(commandString, robot);
+        super(robot);
 
-        List<String> ifString = Program.allSubParenthesed(commandString);
+        List<String> ifString = Program.allSubParenthesed(commandString
+                .substring(4, commandString.length() - 1));
 
         condition = Condition.newCondition(ifString.get(0), robot);
         conditionSatisfiedCommand = newCommand(ifString.get(1), robot);
         conditionNotSatisfiedCommand = newCommand(ifString.get(2), robot);
     }
 
+    /**
+     * Evaluate this if's condition and execute the right command.
+     */
     @Override
     void execute() {
         if (robot != null) {
-            if (conditionSatisfiedCommand instanceof Seq
-                    && ((Seq) conditionSatisfiedCommand).isBusy()
-                    || conditionNotSatisfiedCommand instanceof Seq
-                    && ((Seq) conditionNotSatisfiedCommand).isBusy()) {
+            if (isBusy()) {
                 if (branch == 1)
                     conditionSatisfiedCommand.execute();
                 else if (branch == 2)
@@ -35,6 +50,41 @@ class If extends CombinedCommand {
                 conditionNotSatisfiedCommand.execute();
             }
         }
+    }
+
+    /**
+     * Return if one of this if's commands is still busy.
+     * (i.e. a sequence that is not done executing all it's commands)
+     */
+    @Override
+    boolean isBusy() {
+        return conditionSatisfiedCommand instanceof CombinedCommand
+                && ((CombinedCommand) conditionSatisfiedCommand).isBusy()
+                || conditionNotSatisfiedCommand instanceof CombinedCommand
+                && ((CombinedCommand) conditionNotSatisfiedCommand).isBusy();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Command#toString()
+     */
+    @Override
+    public String toString() {
+        String newLine = System.getProperty("line.separator");
+        String commandString = "(if"
+                + newLine
+                + "  "
+                + condition.toString().replace(newLine, newLine + "  ")
+                + newLine
+                + "  "
+                + conditionSatisfiedCommand.toString().replace(newLine,
+                        newLine + "  ")
+                + newLine
+                + "  "
+                + conditionNotSatisfiedCommand.toString().replace(newLine,
+                        newLine + "  ") + newLine + ")";
+
+        return commandString;
     }
 
     private final Condition condition;

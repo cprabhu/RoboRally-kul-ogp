@@ -7,6 +7,7 @@ import org.junit.Test;
 import roborally.filters.EnergyAtLeastExtractor;
 import roborally.model.*;
 import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 public class EnergyAtLeastExtractorTest {

@@ -2,13 +2,32 @@ package roborally.program;
 
 import roborally.model.Robot;
 
+/**
+ * A Class for representing the turn command.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class Turn extends BasicCommand {
 
+    /**
+     * Initializes the turn command with a robot and a string with the
+     * direction to turn.
+     * 
+     * @param direction
+     *      The direction is a string which holds the direction the robot has
+     *      to turn.
+     * @param robot
+     *      The robot that will execute the turn command.
+     */
     Turn(String direction, Robot robot) {
-        super("(turn " + direction + ")", robot);
+        super(robot);
         this.direction = direction;
     }
 
+    /**
+     * Turn the robot in this turn's direction.
+     */
     @Override
     void execute() {
         if (robot != null)
@@ -16,6 +35,15 @@ class Turn extends BasicCommand {
                 robot.turnClockwise90();
             else if (direction.equals("counter-clockwise"))
                 robot.turnCounterClockwise90();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Command#toString()
+     */
+    @Override
+    public String toString() {
+        return "(turn " + direction + ")";
     }
 
     private String direction;

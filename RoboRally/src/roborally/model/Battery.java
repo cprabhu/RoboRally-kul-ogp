@@ -2,11 +2,12 @@ package roborally.model;
 
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class Battery extends Item implements EnergyElement {
 

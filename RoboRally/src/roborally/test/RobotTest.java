@@ -6,6 +6,8 @@ import java.util.Set;
 import roborally.model.*;
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.Node;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
@@ -15,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class RobotTest {
 
@@ -542,8 +544,8 @@ public class RobotTest {
 
         assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
                 .getPosition()));
-        assertNull(robotNotEnoughEnergy.getPosition());
-        assertTrue(robotNotEnoughEnergy.isTerminated());
+        assertEquals(16000, robotNotEnoughEnergy.getMaxEnergy()
+                .getAmountOfEnergy(), epsilon);
         assertEquals(notEnoughEnergy.getAmountOfEnergy(),
                 robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
         assertEquals(4000, robotEnoughEnergy.getAmountOfEnergy(), epsilon);
@@ -560,27 +562,27 @@ public class RobotTest {
         Item surpriseBox = new SurpriseBox();
         Set<Item> itemSet = new HashSet<Item>();
 
-        assertEquals(0, robot.getPossesions().size());
+        assertEquals(0, robot.getPossessions().size());
 
         itemSet.add(battery);
         robot.addItems(itemSet);
 
-        assertEquals(1, robot.getPossesions().size());
+        assertEquals(1, robot.getPossessions().size());
 
         itemSet.add(repairKit);
         robot.addItems(itemSet);
 
-        assertEquals(2, robot.getPossesions().size());
+        assertEquals(2, robot.getPossessions().size());
 
         itemSet.add(surpriseBox);
         robot.addItems(itemSet);
 
-        assertEquals(3, robot.getPossesions().size());
+        assertEquals(3, robot.getPossessions().size());
 
         itemSet.add(battery);
         robot.addItems(itemSet);
 
-        assertEquals(3, robot.getPossesions().size());
+        assertEquals(3, robot.getPossessions().size());
     }
 
     @Test
@@ -589,18 +591,18 @@ public class RobotTest {
         Battery battery = new Battery(position);
         Battery battery2 = new Battery(position);
 
-        assertEquals(0, robot.getPossesions().size());
+        assertEquals(0, robot.getPossessions().size());
         assertEquals(2, position.getElements().size());
 
         robot.setPosition(position);
         robot.pickup(battery);
 
-        assertEquals(1, robot.getPossesions().size());
+        assertEquals(1, robot.getPossessions().size());
         assertEquals(2, position.getElements().size());
 
         robot.pickup(battery2);
 
-        assertEquals(2, robot.getPossesions().size());
+        assertEquals(2, robot.getPossessions().size());
         assertEquals(1, position.getElements().size());
     }
 
@@ -633,15 +635,15 @@ public class RobotTest {
         robot.pickup(battery);
         robot.pickup(battery2);
 
-        assertEquals(2, robot.getPossesions().size());
+        assertEquals(2, robot.getPossessions().size());
 
         robot.drop(battery);
 
-        assertEquals(1, robot.getPossesions().size());
+        assertEquals(1, robot.getPossessions().size());
 
         robot.drop(battery2);
 
-        assertEquals(0, robot.getPossesions().size());
+        assertEquals(0, robot.getPossessions().size());
     }
 
     @Test
@@ -660,24 +662,24 @@ public class RobotTest {
                 new Weight(100, unitOfMass.g), null));
         robot2.pickup(new SurpriseBox(Position.newPosition(26, 36, board)));
 
-        assertEquals(3, robot.getPossesions().size());
-        assertEquals(2, robot2.getPossesions().size());
+        assertEquals(3, robot.getPossessions().size());
+        assertEquals(2, robot2.getPossessions().size());
 
         robot.transferItems(null);
 
-        assertEquals(3, robot.getPossesions().size());
-        assertEquals(2, robot2.getPossesions().size());
+        assertEquals(3, robot.getPossessions().size());
+        assertEquals(2, robot2.getPossessions().size());
 
         robot.transferItems(robot2);
 
-        assertEquals(0, robot.getPossesions().size());
-        assertEquals(5, robot2.getPossesions().size());
+        assertEquals(0, robot.getPossessions().size());
+        assertEquals(5, robot2.getPossessions().size());
 
         robot.terminate();
         robot2.transferItems(robot);
 
-        assertEquals(0, robot.getPossesions().size());
-        assertEquals(5, robot2.getPossesions().size());
+        assertEquals(0, robot.getPossessions().size());
+        assertEquals(5, robot2.getPossessions().size());
     }
 
     @Test
@@ -694,9 +696,9 @@ public class RobotTest {
         robot.pickup(battery2);
 
         assertEquals(0,
-                heavyWeight.compareTo(robot.ithHeaviestElement(1).getWeight()));
+                heavyWeight.compareTo(robot.ithHeaviestItem(1).getWeight()));
         assertEquals(0,
-                lightWeight.compareTo(robot.ithHeaviestElement(2).getWeight()));
+                lightWeight.compareTo(robot.ithHeaviestItem(2).getWeight()));
     }
 
     @Test
@@ -710,10 +712,10 @@ public class RobotTest {
         robot.pickup(battery);
         robot.pickup(battery2);
 
-        assertEquals(2, robot.getPossesions().size());
-        assertTrue(robot.getPossesions().contains(battery));
-        assertTrue(robot.getPossesions().contains(battery2));
-        assertFalse(robot.getPossesions().contains(battery3));
+        assertEquals(2, robot.getPossessions().size());
+        assertTrue(robot.getPossessions().contains(battery));
+        assertTrue(robot.getPossessions().contains(battery2));
+        assertFalse(robot.getPossessions().contains(battery3));
     }
 
     @Test

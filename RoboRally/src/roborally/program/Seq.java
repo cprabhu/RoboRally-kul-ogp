@@ -4,32 +4,75 @@ import java.util.*;
 
 import roborally.model.Robot;
 
+/**
+ * This class represents sequence construct.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class Seq extends CombinedCommand {
 
+    /**
+     * Initializes the sequence with a string and a robot.
+     * 
+     * @param commandString
+     *      The commandString holds the contents of the sequence.
+     * @param robot
+     *      The executing robot.
+     */
     Seq(String commandString, Robot robot) {
-        super(commandString, robot);
+        super(robot);
 
-        for (String command : Program.allSubParenthesed(commandString))
+        for (String command : Program.allSubParenthesed(commandString
+                .substring(5, commandString.length() - 1)))
             sequence.add(newCommand(command, robot));
     }
 
+    /**
+     * Execute the next command in the sequence.
+     */
     @Override
     void execute() {
         if (robot != null) {
-            sequence.get(seqCounter).execute();
-            seqCounter++;
+            isBusy = true;
+            Command command = sequence.get(seqCounter);
+            command.execute();
+            if (!(command instanceof CombinedCommand && ((CombinedCommand) command)
+                    .isBusy()))
+                seqCounter++;
             if (seqCounter == sequence.size()) {
                 seqCounter = 0;
                 isBusy = false;
             } else {
                 robot.getProgram().decrementProgramCounter();
-                isBusy = true;
             }
         }
     }
 
+    /**
+     * Return if this sequence is still busy, not finished.
+     * 
+     * @return true if this sequence is busy.
+     * @return false otherwise.
+     */
     boolean isBusy() {
         return isBusy;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Command#toString()
+     */
+    @Override
+    public String toString() {
+        String newLine = System.getProperty("line.separator");
+        String commandString = "(seq" + newLine;
+        for (Command command : sequence)
+            commandString += "  "
+                    + command.toString().replace(newLine, newLine + "  ")
+                    + newLine;
+
+        return commandString + ")";
     }
 
     private final List<Command> sequence = new ArrayList<Command>();

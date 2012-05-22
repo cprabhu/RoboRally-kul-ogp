@@ -1,7 +1,9 @@
 package roborally.filters;
 
 import roborally.model.Element;
-import roborally.model.Position;
+import roborally.model.auxiliary.Position;
+
+//TODO: NOTE "NoDoc p. 2"
 
 public class InRangeExtractor implements BooleanExtractor {
 

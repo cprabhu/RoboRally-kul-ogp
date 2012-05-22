@@ -18,7 +18,7 @@ import java.util.Set;
  * <li>You may assume that only non-null objects returned by <code>createBoard</code>, <code>createRobot</code>, <code>createWall</code> and <code>createBattery</code>
  *     are passed to <code>putRobot</code>, <code>getBatteryX</code>, <code>getWallY</code>, <code>move</code>, etc.</li>
  * <li>The methods in this interface should not throw exceptions (unless specified otherwise in the documentation of a method). Prevent precondition violations for nominal methods (by checking before calling a method that its precondition holds)
- *   and catch exceptions for defensive methods. If a problem occurs (e.g. insufficient energy to move, trying to use a battery not held by the robot, ...), do not modify the program state and print an error message on standard error (<code>System.err</code>).</li>
+ *   and catch exceptions for defensive methods. If a problem occurs (e.g. insufficient energy to move, trying to use a battery not held by the robot, ...), do not modify the program state and print an error message on standard error <code>System.err</code>.</li>
  * <li>The rules described above and the documentation described below for each method apply only to the class implementing IFacade. Your classes for representing boards, robots, walls and batteries should follow the rules described in the assignment.</li>
  * <li>Do not modify the signatures of the methods defined in this interface. You can however add additional methods, as long as these additional methods do not overload the existing ones. Each additional method should of course
  *     be implemented in your class <code>Facade</code>.</li>
@@ -46,7 +46,7 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	public Battery createBattery(double initialEnergy, int weight);
 	
 	/**
-	 * Put <code>battery</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+	 * Put <code>battery</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
 	 */
 	public void putBattery(Board board, long x, long y, Battery battery);
 	
@@ -67,12 +67,12 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	/**
 	 * Create a new repair kit that repairs <code>repairAmount</code>. 
 	 * 
-	 * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>repairAmount</code>). 
+	 * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>repairAmount</code>. 
 	 */
 	public RepairKit createRepairKit(double repairAmount, int weight);
 	
 	/**
-	 * Put <code>repairKit</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+	 * Put <code>repairKit</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
 	 */
 	public void putRepairKit(Board board, long x, long y, RepairKit repairKit);
 	
@@ -93,12 +93,12 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	/**
 	 * Create a new surprise box with weighing <code>weight</code>. 
 	 * 
-	 * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>weight</code>). 
+	 * This method must return <code>null</code> if the given parameters are invalid (e.g. negative <code>weight</code>. 
 	 */
 	public SurpriseBox createSurpriseBox(int weight);
 	
 	/**
-	 * Put <code>surpriseBox</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+	 * Put <code>surpriseBox</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
 	 */
 	public void putSurpriseBox(Board board, long x, long y, SurpriseBox surpriseBox);
 	
@@ -126,7 +126,7 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	public Robot createRobot(int orientation, double initialEnergy);
 	
 	/**
-	 * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+	 * Put <code>robot</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
 	 */
 	public void putRobot(Board board, long x, long y, Robot robot);
 	
@@ -227,7 +227,7 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	public int isMinimalCostToReach17Plus(); 
 	
 	/**
-	 * Return the minimal amount of energy required for <code>robot</code> to reach (<code>x</code>, </code>y</code>) taking into account the robot's current load and energy level. Do not take into account
+	 * Return the minimal amount of energy required for <code>robot</code> to reach <code>x</code>, </code>y</code> taking into account the robot's current load and energy level. Do not take into account
 	 * shooting and picking up/using/dropping batteries. 
 	 * <p>
 	 * The expected return value of this method depends on <code>isMinimalCostToReach17Plus</code>:
@@ -282,7 +282,7 @@ public interface IFacade<Board, Robot, Wall, Battery, RepairKit, SurpriseBox> {
 	public Wall createWall() throws UnsupportedOperationException;
 	
 	/**
-	 * Put <code>robot</code> at position (<code>x</code>, <code>y</code>) on <code>board</code> (if possible).
+	 * Put <code>robot</code> at position <code>x</code>, <code>y</code> on <code>board</code> (if possible).
 	 * 
 	 * Students working on their own are allowed to throw <code>UnsupportedOperationException</code>.
 	 */

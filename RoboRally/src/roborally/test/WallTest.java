@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import roborally.model.Position;
+import roborally.model.auxiliary.Position;
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 public class WallTest {
 

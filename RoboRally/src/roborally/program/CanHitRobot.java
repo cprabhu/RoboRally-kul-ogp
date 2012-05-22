@@ -1,14 +1,33 @@
 package roborally.program;
 
 import roborally.model.*;
+import roborally.model.auxiliary.Position;
 
+/**
+ * This class represents the can-hit-robot condition, which tests if the robot
+ * can hit another robot.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class CanHitRobot extends BasicCondition {
 
+    /**
+     * Initializes this CanHitRobot condition with a robot.
+     * 
+     * @param robot
+     *      The robot for which the condition will be evaluated.
+     */
     CanHitRobot(Robot robot) {
-        super("(can-hit-robot)");
         this.robot = robot;
     }
 
+    /**
+     * Evaluate the can-hit-robot condition.
+     * 
+     * @return true if the robot can hit another robot.
+     * @return false otherwise.
+     */
     @Override
     boolean evaluate() {
         if (robot != null) {
@@ -26,6 +45,15 @@ class CanHitRobot extends BasicCondition {
                 return true;
         }
         return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Condition#toString()
+     */
+    @Override
+    public String toString() {
+        return "(can-hit-robot)";
     }
 
     private Robot robot;

@@ -2,15 +2,39 @@ package roborally.program;
 
 import roborally.model.Robot;
 
+/**
+ * A Class for representing the shoot command.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class Shoot extends BasicCommand {
 
+    /**
+     * Initializes the shoot command with a robot.
+     * 
+     * @param robot
+     *      The robot that will execute the shoot command.
+     */
     Shoot(Robot robot) {
-        super("(shoot)", robot);
+        super(robot);
     }
 
+    /**
+     * Let the robot shoot if it can.
+     */
     @Override
     void execute() {
         if (robot != null && robot.getAmountOfEnergy() >= 1000)
             robot.shoot();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Command#toString()
+     */
+    @Override
+    public String toString() {
+        return "(shoot)";
     }
 }

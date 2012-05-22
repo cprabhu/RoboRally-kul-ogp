@@ -3,13 +3,11 @@ package roborally.model.auxiliary;
 import java.util.*;
 
 import roborally.model.Element;
-import roborally.model.Orientation;
-import roborally.model.Position;
 import roborally.model.Robot;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 /**
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
  */
 
 // TODO: NOTE "NoDoc p. 2"

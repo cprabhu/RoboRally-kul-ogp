@@ -2,19 +2,46 @@ package roborally.program;
 
 import roborally.model.*;
 
+/**
+ * This class represents the condition at-item which tests if there are items
+ * at the robots position.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
 class AtItem extends BasicCondition {
 
+    /**
+     * Initializes the AtItem condition with a robot.
+     * 
+     * @param robot
+     *      The robot for which the condition will be evaluated.
+     */
     AtItem(Robot robot) {
-        super("(at-item)");
         this.robot = robot;
     }
 
+    /**
+     * Evaluate the at-item condition.
+     * 
+     * @return true if there are item's at the robot's current position.
+     * @return false otherwise.
+     */
     @Override
     boolean evaluate() {
         if (robot != null && robot.getPosition() != null
                 && robot.getPosition().getElementsOf(Item.class).size() > 0)
             return true;
         return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Condition#toString()
+     */
+    @Override
+    public String toString() {
+        return "(at-item)";
     }
 
     private Robot robot;
