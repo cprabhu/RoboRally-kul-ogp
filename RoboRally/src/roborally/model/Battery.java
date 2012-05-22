@@ -1,5 +1,7 @@
 package roborally.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.EnergyElement;
 import roborally.model.auxiliary.Position;
@@ -7,10 +9,25 @@ import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 /**
- * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * This class represents a battery.
+ * 
+ * @invar getEnergy() != null
+ * @invar getWeight() != null
+ * @invar getMaxEnergy() != null
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
  */
 public class Battery extends Item implements EnergyElement {
 
+    /**
+     * Initializes this Battery.
+     * 
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = new Energy(1000, unitOfPower.Ws)
+     */
     public Battery() {
         super();
         this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
@@ -18,6 +35,18 @@ public class Battery extends Item implements EnergyElement {
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }
 
+    /**
+     * Initializes this Battery with a position.
+     * 
+     * @param position
+     *      The position of this Battery
+     * @effect ...
+     *      | super(position)
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = new Energy(1000, unitOfPower.Ws)
+     */
     public Battery(Position position) {
         super(position);
         this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
@@ -25,6 +54,26 @@ public class Battery extends Item implements EnergyElement {
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }
 
+    /**
+     * Initializes this Battery with a position and an energy.
+     * 
+     * @param position
+     *      The position of this Battery.
+     * @param energy
+     *      The energy of this Battery.
+     * @pre ...
+     *      | energy != null
+     * @pre ...
+     *      | energy.isValidEnergy(new.getMaxEnergy());
+     * @effect ...
+     *      | super(position)
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = energy
+     * @post ...
+     *      | new.getPosition() = position
+     */
     public Battery(Position position, Energy energy) {
         super(position);
         this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
@@ -34,6 +83,20 @@ public class Battery extends Item implements EnergyElement {
         this.weight = new Weight(100, Weight.unitOfMass.g);
     }
 
+    /**
+     * Initializes this Battery with a position, energy and a weight.
+     * 
+     * @param position
+     *      The position of this Battery.
+     * @param energy
+     *      The energy of this Battery.
+     * @param weight
+     *      The weight of this Battery.
+     * @effect ...
+     *      | this(position, energy)
+     * @post ...
+     *      | new.getWeight() = weight
+     */
     public Battery(Position position, Energy energy, Weight weight) {
         this(position, energy);
         this.weight.removeWeight(new Weight(100, Weight.unitOfMass.g));
@@ -41,6 +104,17 @@ public class Battery extends Item implements EnergyElement {
 
     }
 
+    /**
+     * Recharge the robot with this Battery's energy.
+     * 
+     * @param robot
+     *      The robot to recharge.
+     * @effect ...
+     *      | if(isTerminated())
+     *      |   robot.drop(this)
+     *      | else if (!robot.isTerminated())
+     *      |   robot.recharge(energy)
+     */
     public void use(Robot robot) {
         if (robot != null) {
             if (isTerminated())
@@ -50,23 +124,47 @@ public class Battery extends Item implements EnergyElement {
         }
     }
 
+    /**
+     * Hit this Battery, the energy of this Battery will increase with 500 Ws.
+     * 
+     * @effect ...
+     *      | if (!isTerminated())
+     *      |   energy.addEnergy(new Energy(500, unitOfPower.Ws))
+     */
     public void hit() {
         if (!isTerminated())
             energy.addEnergy(new Energy(500, unitOfPower.Ws));
     }
 
+    /**
+     * this method returns the current energy of this battery.
+     */
+    @Basic
     public Energy getEnergy() {
         return energy;
     }
 
+    /**
+     * This method returns the current amount of energy in this battery.
+     */
+    @Basic
     public double getAmountOfEnergy() {
         return energy.getAmountOfEnergy();
     }
 
+    /**
+     * This method returns the weight of this battery.
+     */
+    @Basic
     public Weight getWeight() {
         return weight;
     }
 
+    /**
+     * This method returns the maximum energy of this battery.
+     */
+    @Immutable
+    @Basic
     public final Energy getMaxEnergy() {
         return maxEnergy;
     }
