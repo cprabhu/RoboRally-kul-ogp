@@ -5,8 +5,8 @@ import roborally.model.Robot;
 /**
  * This class for representing the energy-at-least condition.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class EnergyAtLeast extends BasicCondition {
 

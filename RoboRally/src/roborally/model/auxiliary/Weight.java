@@ -4,13 +4,9 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
- * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
-
-// TODO: NOTE "NoDoc p. 2"
-// TODO: NOTE All aspects related to the weight of an item must be worked out
-// in a TOTAL way.
-
 public class Weight {
 
     public Weight(int mass, unitOfMass unit) {

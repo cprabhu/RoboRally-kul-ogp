@@ -6,19 +6,6 @@ import java.util.*;
 import roborally.filters.BooleanExtractor;
 import roborally.model.auxiliary.Position;
 
-// TODO: NOTE all aspects related to placement of walls, robots, batteries on
-// boards: defensively
-// TODO: NOTE Placing robot, wall or item on a board at a position must take
-// amortized constant time.
-// TODO: NOTE Removing a particular robot, wall or item is preferably linear in
-// the
-// number of robots, walls or items located at the same position.
-// TODO: NOTE Should be possible to look up all robots, walls and items at
-// particular position in constant time.
-// TODO: NOTE The amount of memory required to store a board should be
-// proportional
-// to the number of positions in use, not to the total size of the board.
-
 /**
  * This class represents a board.
  * 
@@ -27,8 +14,8 @@ import roborally.model.auxiliary.Position;
  * @invar HEIGHT is always a positive integer number less than Long.MAX_VALUE.
  *      | 0 <= HEIGHT <= long.MAX_VALUE
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public class Board {
 

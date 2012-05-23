@@ -10,8 +10,8 @@ import roborally.model.auxiliary.Weight.unitOfMass;
  * 
  * @invar getWeight() != null
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public abstract class Item extends Element {
 

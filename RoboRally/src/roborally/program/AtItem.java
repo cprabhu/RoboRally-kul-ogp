@@ -6,8 +6,8 @@ import roborally.model.*;
  * This class represents the condition at-item which tests if there are items
  * at the robots position.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class AtItem extends BasicCondition {
 

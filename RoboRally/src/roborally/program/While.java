@@ -7,8 +7,8 @@ import roborally.model.Robot;
 /**
  * A class for representing the while construct.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class While extends CombinedCommand {
 

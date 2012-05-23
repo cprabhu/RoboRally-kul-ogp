@@ -5,8 +5,8 @@ import roborally.model.Robot;
 /**
  * A Class for representing the turn command.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class Turn extends BasicCommand {
 
@@ -31,10 +31,15 @@ class Turn extends BasicCommand {
     @Override
     void execute() {
         if (robot != null)
-            if (direction.equals("clockwise"))
-                robot.turnClockwise90();
-            else if (direction.equals("counter-clockwise"))
-                robot.turnCounterClockwise90();
+            try {
+                if (direction.equals("clockwise"))
+                    robot.turnClockwise90();
+                else if (direction.equals("counter-clockwise"))
+                    robot.turnCounterClockwise90();
+            } catch (AssertionError e) {
+                System.err.println("Turn.execute(): The robot does not have "
+                        + "enough energy to turn, do nothing.");
+            }
     }
 
     /*

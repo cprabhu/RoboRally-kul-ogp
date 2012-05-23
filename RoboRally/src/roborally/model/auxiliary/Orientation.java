@@ -4,11 +4,9 @@ import roborally.model.Board;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 /**
- * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
-
-// TODO: NOTE "NoDoc p. 2"
-
 public enum Orientation {
     UP, RIGHT, DOWN, LEFT;
 
@@ -72,7 +70,6 @@ public enum Orientation {
         return turnEnergy;
     }
 
-    // TODO: NOTE check defensief new Position
     public Position nextPosition(Position currentPosition) {
         if (currentPosition != null) {
             long x = currentPosition.X;

@@ -7,6 +7,10 @@ import org.junit.Test;
 import roborally.filters.AllExtractor;
 import roborally.model.*;
 
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class AllExtractorTest {
 
     @Test

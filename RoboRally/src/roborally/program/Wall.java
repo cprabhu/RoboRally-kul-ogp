@@ -6,8 +6,8 @@ import roborally.model.Robot;
  * A Class for representing the condition wall, which tests if there is a wall
  * to the right of the robot.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class Wall extends BasicCondition {
 

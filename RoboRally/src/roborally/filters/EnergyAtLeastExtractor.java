@@ -3,8 +3,10 @@ package roborally.filters;
 import roborally.model.Element;
 import roborally.model.auxiliary.EnergyElement;
 
-// TODO: NOTE "NoDoc p. 2"
-
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class EnergyAtLeastExtractor implements BooleanExtractor {
 
     public EnergyAtLeastExtractor(double energyAmount) {

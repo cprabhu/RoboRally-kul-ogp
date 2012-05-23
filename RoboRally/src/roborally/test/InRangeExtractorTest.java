@@ -10,6 +10,10 @@ import roborally.model.auxiliary.Energy;
 import roborally.model.auxiliary.Position;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class InRangeExtractorTest {
 
     @Test

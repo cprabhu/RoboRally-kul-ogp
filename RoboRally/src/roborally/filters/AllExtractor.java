@@ -2,8 +2,10 @@ package roborally.filters;
 
 import roborally.model.Element;
 
-// TODO: NOTE "NoDoc p. 2"
-
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class AllExtractor implements BooleanExtractor {
 
     @Override

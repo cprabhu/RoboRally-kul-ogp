@@ -15,6 +15,10 @@ import roborally.model.auxiliary.Weight;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
 
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class FacadeTest {
 
     @Before
@@ -493,9 +497,6 @@ public class FacadeTest {
 
         assertEquals(500, facade.getMinimalCostToReach(robot, 3, 5), epsilon);
 
-        // TODO: NOTE Opgave 3, Position(insuf energy: -1, obstacle: -1,
-        // notonboard:
-        // -1)
         assertEquals(-1, facade.getMinimalCostToReach(robot, 1, 1), epsilon);
     }
 

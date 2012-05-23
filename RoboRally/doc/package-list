@@ -1,1 +1,6 @@
 roborally
+roborally.filters
+roborally.model
+roborally.model.auxiliary
+roborally.program
+roborally.test

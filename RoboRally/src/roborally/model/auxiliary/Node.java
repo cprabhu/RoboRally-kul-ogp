@@ -7,11 +7,9 @@ import roborally.model.Robot;
 import roborally.model.auxiliary.Energy.unitOfPower;
 
 /**
- * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
-
-// TODO: NOTE "NoDoc p. 2"
-
 public class Node implements Comparable<Node> {
 
     public Node(Node parent, Orientation orientation, double cost,
@@ -68,8 +66,6 @@ public class Node implements Comparable<Node> {
         return current;
     }
 
-    // TODO: NOTE test of allshortestpaths de beginnode geeft als te weinig
-    // energy.
     public Set<Node> allShortestPaths() {
         if (POSITION == null)
             return null;

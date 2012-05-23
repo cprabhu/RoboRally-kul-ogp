@@ -12,11 +12,12 @@ import roborally.model.auxiliary.Energy.unitOfPower;
  * This class represents a battery.
  * 
  * @invar getEnergy() != null
+ * @invar getAmountOfEnergy() <= Double.MAX_VALUE
  * @invar getWeight() != null
- * @invar getMaxEnergy() != null
+ * @invar getMaxEnergy().compareTo(new Energy(5000, unitOfPower.Ws)) == 0
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public class Battery extends Item implements EnergyElement {
 
@@ -133,7 +134,7 @@ public class Battery extends Item implements EnergyElement {
      */
     public void hit() {
         if (!isTerminated())
-            energy.addEnergy(new Energy(500, unitOfPower.Ws));
+            energy.recharge(new Energy(500, unitOfPower.Ws), getMaxEnergy());
     }
 
     /**

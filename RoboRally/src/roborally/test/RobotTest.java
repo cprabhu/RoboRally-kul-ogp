@@ -1,23 +1,20 @@
 package roborally.test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import roborally.model.*;
-import roborally.model.auxiliary.Energy;
-import roborally.model.auxiliary.Node;
-import roborally.model.auxiliary.Orientation;
-import roborally.model.auxiliary.Position;
-import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.*;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.model.auxiliary.Weight.unitOfMass;
+import roborally.program.Program;
+
 import static org.junit.Assert.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 /**
- * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public class RobotTest {
 
@@ -59,6 +56,26 @@ public class RobotTest {
         assertEquals(maxEnergy.getAmountOfEnergy(), robot.getAmountOfEnergy(),
                 epsilon);
         assertEquals(3000, chargeEnergy2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testIncreaseMaxEnergy() {
+        Robot robot2 = new Robot(new Energy(20000, unitOfPower.Ws),
+                Orientation.UP);
+
+        assertEquals(20000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.hit();
+
+        assertEquals(16000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.increaseMaxEnergy(new Energy(3000, unitOfPower.Ws));
+
+        assertEquals(19000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.increaseMaxEnergy(new Energy(15000, unitOfPower.Ws));
+
+        assertEquals(20000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
     }
 
     @Test
@@ -185,7 +202,12 @@ public class RobotTest {
         assertEquals(energy.getAmountOfEnergy() - robot.getEnergyToTurn(),
                 robot.getAmountOfEnergy(), epsilon);
 
-        robotNotEnoughEnergy.turnClockwise90();
+        try {
+            robotNotEnoughEnergy.turnClockwise90();
+        } catch (AssertionError e) {
+            System.err.println("testTurnClockwise90: "
+                    + "This assertionerror is to be expected.");
+        }
 
         assertEquals(Orientation.UP, robotNotEnoughEnergy.getOrientation());
         assertEquals(notEnoughEnergy.getAmountOfEnergy(),
@@ -203,7 +225,12 @@ public class RobotTest {
         assertEquals(energy.getAmountOfEnergy() - robot.getEnergyToTurn(),
                 robot.getAmountOfEnergy(), epsilon);
 
-        robotNotEnoughEnergy.turnCounterClockwise90();
+        try {
+            robotNotEnoughEnergy.turnCounterClockwise90();
+        } catch (AssertionError e) {
+            System.err.println("testTurnCounterClockwise90: "
+                    + "This assertionerror is to be expected.");
+        }
 
         assertEquals(Orientation.UP, robotNotEnoughEnergy.getOrientation());
         assertEquals(notEnoughEnergy.getAmountOfEnergy(),
@@ -267,16 +294,12 @@ public class RobotTest {
                         .getEnergyToMove()),
                 robot.getAmountOfEnergy(), epsilon);
 
-        // TODO: NOTE Exception als moveTo er niet geraakt?
         try {
             robot.moveTo(unReachablePosition);
         } catch (AssertionError ae) {
             System.err
                     .println("testMoveTo: This assertionerror is to be expected.");
-        } /*
-           * ik denk dat hij het in dit geval gewoon niet doet. Maar zou hij
-           * hier een error moeten geven van "je raakt er niet"
-           */
+        }
 
         assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
 
@@ -503,6 +526,27 @@ public class RobotTest {
                 Position.newPosition(13, 6, board)));
         assertEquals(0, robot.getAmountOfEnergy(), epsilon);
         assertEquals(0, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToZeroEnergy() {
+        Robot robot = new Robot(new Energy(0, unitOfPower.Ws), Orientation.UP);
+        Robot robot2 = new Robot(new Energy(0, unitOfPower.Ws), Orientation.UP);
+
+        board.putElement(Position.newPosition(5, 5, board), robot);
+        board.putElement(Position.newPosition(15, 5, board), robot2);
+
+        assertEquals(Position.newPosition(5, 5, board), robot.getPosition());
+        assertEquals(Position.newPosition(15, 5, board), robot2.getPosition());
+        assertEquals(Orientation.UP, robot.getOrientation());
+        assertEquals(Orientation.UP, robot2.getOrientation());
+
+        robot.moveNextTo(robot2);
+
+        assertEquals(Position.newPosition(5, 5, board), robot.getPosition());
+        assertEquals(Position.newPosition(15, 5, board), robot2.getPosition());
+        assertEquals(Orientation.UP, robot.getOrientation());
+        assertEquals(Orientation.UP, robot2.getOrientation());
     }
 
     @Test
@@ -739,6 +783,63 @@ public class RobotTest {
 
         assertNull(robot.getPosition());
         assertNull(position.getElements());
+    }
+
+    @Test
+    public void testStepn() {
+        board.putElement(Position.newPosition(1, 5, board), robot);
+
+        assertEquals(Position.newPosition(1, 5, board), robot.getPosition());
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(3);
+
+        assertEquals(Position.newPosition(1, 5, board), robot.getPosition());
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.setProgram(new Program("(move) (move) (move)", robot));
+        robot.stepn(1);
+
+        assertEquals(Position.newPosition(1, 4, board), robot.getPosition());
+        assertEquals(2500, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(5);
+
+        assertEquals(Position.newPosition(1, 2, board), robot.getPosition());
+        assertEquals(1500, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(100);
+
+        assertEquals(Position.newPosition(1, 2, board), robot.getPosition());
+        assertEquals(1500, robot.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testSetProgram() {
+        assertNull(robot.getProgram());
+
+        robot.setProgram(new Program("(move)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(move)"));
+
+        robot.setProgram(new Program("(turn clockwise)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(turn clockwise)"));
+    }
+
+    @Test
+    public void testGetProgram() {
+        assertNull(robot.getProgram());
+
+        robot.setProgram(new Program("(move)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(move)"));
     }
 
     @Test

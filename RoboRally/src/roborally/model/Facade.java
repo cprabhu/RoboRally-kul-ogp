@@ -287,7 +287,12 @@ public class Facade implements
     @Override
     public void turn(Robot robot) {
         if (robot != null)
-            robot.turnClockwise90();
+            try {
+                robot.turnClockwise90();
+            } catch (AssertionError e) {
+                System.err.println("facade.turn(): The robot does not have "
+                        + "enough energy to turn.");
+            }
     }
 
     /**

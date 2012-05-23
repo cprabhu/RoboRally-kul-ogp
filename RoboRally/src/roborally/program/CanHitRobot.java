@@ -7,8 +7,8 @@ import roborally.model.auxiliary.Position;
  * This class represents the can-hit-robot condition, which tests if the robot
  * can hit another robot.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 class CanHitRobot extends BasicCondition {
 

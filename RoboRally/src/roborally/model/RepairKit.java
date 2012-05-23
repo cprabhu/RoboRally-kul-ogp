@@ -10,8 +10,8 @@ import roborally.model.auxiliary.Energy.unitOfPower;
 /**
  * This class represents a repair kit.
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public class RepairKit extends Item implements EnergyElement {
 

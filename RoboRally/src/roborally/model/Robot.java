@@ -9,18 +9,14 @@ import java.util.*;
 
 import be.kuleuven.cs.som.annotate.*;
 
-// TODO: NOTE Klassediagram voor verdediging
-
-// TODO: NOTE energy nominally
-// TODO: NOTE orientation totally
-// TODO: NOTE position defensively
-
 /**
  * This class represents a robot.
  * 
  * @invar The energy of this Robot is always greater than or equal to 0 and
  *      less than or equal to it's maximum energy.
  *      | 0 <= getAmountOfEnergy() <= getMaxEnergy().getAmountOfEnergy()
+ * @invar The maximum energy of this robot can never exceed 20000 Ws.
+ *      | getMaxEnergy().getAmountOfEnergy() <= 20000
  * @invar The energy needed to turn a robot is 100 Ws.
  *      | getEnergyToTurn() = new Energy(100, unitOfPower.Ws)
  * @invar The energy needed to move a robot is at least 500 Ws.
@@ -28,8 +24,8 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar The orientation of the robot is never null.
  *      | getOrientation != null
  * 
- * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
- *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
  */
 public class Robot extends Element implements EnergyElement {
 
@@ -247,10 +243,9 @@ public class Robot extends Element implements EnergyElement {
      *      | new.getAmountOfEnergy() = getAmountOfEnergy() - getEnergyToTurn()
      */
     public void turnClockwise90() {
-        if (energyToTurn.compareTo(energy) <= 0) {
-            orientation = orientation.turnClockwise90();
-            energy.removeEnergy(energyToTurn);
-        }
+        assert energyToTurn.compareTo(energy) <= 0;
+        orientation = orientation.turnClockwise90();
+        energy.removeEnergy(energyToTurn);
     }
 
     /**
@@ -266,10 +261,9 @@ public class Robot extends Element implements EnergyElement {
      *      | new.getAmountOfEnergy() = getAmountOfEnergy() - getEnergyToTurn()
      */
     public void turnCounterClockwise90() {
-        if (energyToTurn.compareTo(energy) <= 0) {
-            orientation = orientation.turnCounterClockwise90();
-            energy.removeEnergy(energyToTurn);
-        }
+        assert energyToTurn.compareTo(energy) <= 0;
+        orientation = orientation.turnCounterClockwise90();
+        energy.removeEnergy(energyToTurn);
     }
 
     /**

@@ -13,6 +13,10 @@ import roborally.model.auxiliary.*;
 import roborally.model.auxiliary.Energy.unitOfPower;
 import roborally.program.Program;
 
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
 public class ProgramTest {
 
     @BeforeClass
@@ -45,373 +49,118 @@ public class ProgramTest {
         assertNotNull(cowboyProgram);
     }
 
-    /* TODO: Robots worden ge'hit' als ze beschoten worden, niet ge'terminate. */
     @Test
     public void testCowboyStep() {
+        robot = new Robot(new Energy(15700, unitOfPower.Ws), Orientation.RIGHT);
         robot.setPosition(Position.newPosition(3, 4, board));
-        board.putElement(Position.newPosition(5, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(6, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(7, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(8, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(9, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(10, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
-        board.putElement(Position.newPosition(1, 4, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
         board.putElement(Position.newPosition(3, 2, board), new Robot(
-                new Energy(2300, unitOfPower.Ws), Orientation.LEFT));
+                new Energy(5000, unitOfPower.Ws), Orientation.LEFT));
+        board.putElement(Position.newPosition(5, 4, board), new Robot(
+                new Energy(5000, unitOfPower.Ws), Orientation.LEFT));
+        board.putElement(Position.newPosition(3, 6, board), new Robot(
+                new Energy(5000, unitOfPower.Ws), Orientation.LEFT));
 
         Program cowboyProgram = new Program(cowboy, robot);
         robot.setProgram(cowboyProgram);
 
-        assertEquals(1,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(4, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(7300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(15700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(4, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(6300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(14700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(4, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(5300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(13700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(4, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(4300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(12700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(4, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(3300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(11700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(3, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(2300, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(10700, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(Orientation.RIGHT, robot.getOrientation());
-        assertEquals(1300, robot.getAmountOfEnergy(), epsilon);
-
-        cowboyProgram.step();
-
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(3, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.DOWN, robot.getOrientation());
-        assertEquals(1200, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(10600, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(3, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.DOWN, robot.getOrientation());
+        assertEquals(9600, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+
+        assertEquals(3, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.DOWN, robot.getOrientation());
+        assertEquals(8600, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+
+        assertEquals(3, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.DOWN, robot.getOrientation());
+        assertEquals(7600, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+
+        assertEquals(3, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.DOWN, robot.getOrientation());
+        assertEquals(6600, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+
+        assertEquals(2, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.DOWN, robot.getOrientation());
+        assertEquals(5600, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+
+        assertEquals(2, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.LEFT, robot.getOrientation());
-        assertEquals(1100, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(5500, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(Orientation.LEFT, robot.getOrientation());
-        assertEquals(100, robot.getAmountOfEnergy(), epsilon);
-
-        cowboyProgram.step();
-
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(2, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.UP, robot.getOrientation());
-        assertEquals(0, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(5400, robot.getAmountOfEnergy(), epsilon);
 
         cowboyProgram.step();
+        cowboyProgram.step();
+        cowboyProgram.step();
+        cowboyProgram.step();
+        cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(1, board.getElementsOf(Robot.class).size());
+        assertEquals(Orientation.UP, robot.getOrientation());
+        assertEquals(400, robot.getAmountOfEnergy(), epsilon);
+
+        cowboyProgram.step();
+        cowboyProgram.step();
+        cowboyProgram.step();
+        cowboyProgram.step();
+
+        assertEquals(1, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.UP, robot.getOrientation());
         assertEquals(0, robot.getAmountOfEnergy(), epsilon);
 
@@ -426,30 +175,7 @@ public class ProgramTest {
         cowboyProgram.step();
         cowboyProgram.step();
 
-        assertEquals(0,
-                Position.newPosition(5, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(6, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(7, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(8, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(9, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(10, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(0,
-                Position.newPosition(1, 4, board).getElementsOf(Robot.class)
-                        .size());
-        assertEquals(1,
-                Position.newPosition(3, 2, board).getElementsOf(Robot.class)
-                        .size());
+        assertEquals(1, board.getElementsOf(Robot.class).size());
         assertEquals(Orientation.UP, robot.getOrientation());
         assertEquals(0, robot.getAmountOfEnergy(), epsilon);
     }
