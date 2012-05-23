@@ -1,0 +1,13 @@
+package roborally.program;
+
+public class True extends BasicCondition {
+
+    True() {
+        super("(true)");
+    }
+
+    @Override
+    public boolean evaluate() {
+        return true;
+    }
+}

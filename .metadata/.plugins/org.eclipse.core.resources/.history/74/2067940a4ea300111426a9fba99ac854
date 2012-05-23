@@ -1,0 +1,47 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+/**
+ * A class for representing the and operator.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+class And extends CombinedCondition {
+
+    /**
+     * Initializes the and operator with a String and a robot.
+     * 
+     * @param conditionString
+     *            The parameter conditionString holds the conditions for the and
+     *            operator.
+     * @param robot
+     *            The parameter robot is the robot for which the conditions will
+     *            be evaluated.
+     */
+    And(String conditionString, Robot robot) {
+        for (String subCondition : Program.allSubParenthesed(conditionString
+                .substring(5, conditionString.length()))) {
+            conditions.add(newCondition(subCondition, robot));
+        }
+    }
+
+    @Override
+    boolean evaluate() {
+        for (Condition condition : conditions)
+            if (!condition.evaluate())
+                return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        String conditionString = "(and";
+        for (Condition condition : conditions)
+            conditionString += " " + condition.toString();
+        conditionString += ")";
+
+        return conditionString;
+    }
+}

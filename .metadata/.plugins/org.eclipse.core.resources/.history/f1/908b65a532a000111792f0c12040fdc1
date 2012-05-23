@@ -1,0 +1,11 @@
+package roborally.program;
+
+public class Or extends CombinedCondition {
+
+    @Override
+    public boolean evaluate() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+}

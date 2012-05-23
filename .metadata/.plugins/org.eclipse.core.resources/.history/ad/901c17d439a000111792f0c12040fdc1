@@ -1,0 +1,45 @@
+package roborally.program;
+
+import java.util.Scanner;
+
+import roborally.model.Robot;
+
+public abstract class Condition {
+
+    protected Condition(String conditionString) {
+        this.conditionString = conditionString;
+    }
+
+    public Condition newCondition(String conditionString, Robot robot)
+            throws IllegalArgumentException {
+        String condition = new Scanner(conditionString).next("[a-z-]");
+        if (condition.equals("true"))
+            return new True();
+        else if (condition.equals("energy-at-least")) {
+            Scanner conditionScanner = new Scanner(conditionString);
+            double energyAmount = conditionScanner.nextDouble();
+            return new EnergyAtLeast(energyAmount, robot);
+        } else if (condition.equals("at-item"))
+            return new AtItem(robot);
+        else if (condition.equals("can-hit-robot"))
+            return new CanHitRobot(robot);
+        else if (condition.equals("wall"))
+            return new Wall(robot);
+        else if (condition.equals("and"))
+            return new And(conditionString, robot);
+        else if (condition.equals("or"))
+            return new Or(conditionString, robot);
+        else if (condition.equals("not"))
+            return new Not(conditionString, robot);
+        throw new IllegalArgumentException();
+    }
+
+    public abstract boolean evaluate();
+
+    @Override
+    public String toString() {
+        return conditionString;
+    }
+
+    private String conditionString;
+}

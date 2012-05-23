@@ -1,0 +1,15 @@
+package roborally.program;
+
+public class BasicCondition implements Condition {
+
+    @Override
+    public void evaluate() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public String toString() {
+        return "I'm a Basic Condition!! :)";
+    }
+}

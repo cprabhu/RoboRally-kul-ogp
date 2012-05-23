@@ -1,0 +1,877 @@
+package roborally.test;
+
+import java.util.*;
+
+import roborally.model.*;
+import roborally.model.auxiliary.*;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
+import roborally.program.Program;
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public class RobotTest {
+
+    @Before
+    public void setUp() throws Exception {
+        energy = new Energy(3000, unitOfPower.Ws);
+        robot = new Robot(
+                new Energy(energy.getAmountOfEnergy(), unitOfPower.Ws),
+                Orientation.UP);
+    }
+
+    @Test
+    public void testGetPosition() {
+        Position position = Position.newPosition(10, 5, board);
+
+        robot.setPosition(position);
+
+        assertTrue(position.equals(robot.getPosition()));
+    }
+
+    @Test
+    public void testRobot() {
+        assertNotNull(robot);
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(Orientation.UP, robot.getOrientation());
+    }
+
+    @Test
+    public void testRecharge() {
+        Energy chargeEnergy = new Energy(5000, unitOfPower.Ws);
+        Energy chargeEnergy2 = new Energy(15000, unitOfPower.Ws);
+
+        robot.recharge(chargeEnergy);
+
+        assertEquals(8000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.recharge(chargeEnergy2);
+
+        assertEquals(maxEnergy.getAmountOfEnergy(), robot.getAmountOfEnergy(),
+                epsilon);
+        assertEquals(3000, chargeEnergy2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testIncreaseMaxEnergy() {
+        Robot robot2 = new Robot(new Energy(20000, unitOfPower.Ws),
+                Orientation.UP);
+
+        assertEquals(20000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.hit();
+
+        assertEquals(16000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.increaseMaxEnergy(new Energy(3000, unitOfPower.Ws));
+
+        assertEquals(19000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+
+        robot2.increaseMaxEnergy(new Energy(15000, unitOfPower.Ws));
+
+        assertEquals(20000, robot2.getMaxEnergy().getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testGetEnergyRequiredToReach() {
+        Position reachablePosition1 = Position.newPosition(23, 17, board);
+        Position reachablePosition2 = Position.newPosition(6, 42, board);
+        board.putElement(Position.newPosition(5, 40, board), new Wall());
+        board.putElement(Position.newPosition(6, 41, board), new Wall());
+        board.putElement(Position.newPosition(7, 42, board), new Wall());
+        board.putElement(Position.newPosition(8, 43, board), new Wall());
+        Position robotPosition = Position.newPosition(14, 36, board);
+        Position insufficientEnergyPosition = Position.newPosition(117, 256,
+                board);
+        Position surroundedByWallPosition = Position.newPosition(18, 29, board);
+        for (Position neighbour : surroundedByWallPosition.getNeighbours())
+            board.putElement(neighbour, new Wall());
+
+        assertNull(robot.getEnergyRequiredToReach(reachablePosition1));
+
+        robot.recharge(new Energy(15000, unitOfPower.Ws));
+        robot.setPosition(robotPosition);
+
+        assertEquals(14100, robot.getEnergyRequiredToReach(reachablePosition1)
+                .getAmountOfEnergy(), epsilon);
+
+        assertEquals(9300, robot.getEnergyRequiredToReach(reachablePosition2)
+                .getAmountOfEnergy(), epsilon);
+
+        assertNull(robot.getEnergyRequiredToReach(insufficientEnergyPosition));
+
+        assertNull(robot.getEnergyRequiredToReach(surroundedByWallPosition));
+    }
+
+    @Test
+    public void testGetEnergyRequiredToReachWs() {
+        Position reachablePosition1 = Position.newPosition(23, 17, board);
+        Position reachablePosition2 = Position.newPosition(6, 42, board);
+        board.putElement(Position.newPosition(5, 40, board), new Wall());
+        board.putElement(Position.newPosition(6, 41, board), new Wall());
+        board.putElement(Position.newPosition(7, 42, board), new Wall());
+        board.putElement(Position.newPosition(8, 43, board), new Wall());
+        Position robotPosition = Position.newPosition(14, 36, board);
+        Position robot2Position = Position.newPosition(10, 26, board);
+        Robot robot2 = new Robot(new Energy(1500, unitOfPower.Ws),
+                Orientation.DOWN);
+        robot2.setPosition(robot2Position);
+        Position insufficientEnergyPosition = Position.newPosition(117, 256,
+                board);
+        Position surroundedByWallPosition = Position.newPosition(18, 29, board);
+        for (Position neighbour : surroundedByWallPosition.getNeighbours())
+            board.putElement(neighbour, new Wall());
+
+        // Robot niet op het board.
+        assertEquals(-1, robot.getEnergyRequiredToReachWs(reachablePosition1),
+                epsilon);
+
+        robot.setPosition(robotPosition);
+
+        // Robot te weinig energie
+        assertEquals(-1,
+                robot.getEnergyRequiredToReachWs(insufficientEnergyPosition),
+                epsilon);
+
+        robot.recharge(new Energy(15000, unitOfPower.Ws));
+
+        assertEquals(14100,
+                robot.getEnergyRequiredToReachWs(reachablePosition1), epsilon);
+
+        assertEquals(9300,
+                robot.getEnergyRequiredToReachWs(reachablePosition2), epsilon);
+
+        assertEquals(0, robot.getEnergyRequiredToReachWs(robotPosition),
+                epsilon);
+
+        // Doelpositie omringd door muren
+        assertEquals(-1,
+                robot.getEnergyRequiredToReachWs(surroundedByWallPosition),
+                epsilon);
+
+        // Doelpositie bezet door muur
+        assertEquals(-1, robot.getEnergyRequiredToReachWs(Position.newPosition(
+                5, 40, board)), epsilon);
+
+        // Doelpositie bezet door robot
+        assertEquals(-1, robot.getEnergyRequiredToReachWs(robot2Position),
+                epsilon);
+    }
+
+    @Test
+    public void testGetAmountOfEnergy() {
+        assertEquals(energy.getAmountOfEnergy(), robot.getAmountOfEnergy(),
+                epsilon);
+    }
+
+    @Test
+    public void testGetFractionOfEnergy() {
+        assertEquals(
+                energy.getAmountOfEnergy() / maxEnergy.getAmountOfEnergy(),
+                robot.getFractionOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testGetEnergyToMove() {
+        Position position = Position.newPosition(10, 10, board);
+        Weight weight = new Weight(2, unitOfMass.kg);
+        Battery battery = new Battery(position, energy, weight);
+
+        assertEquals(500, robot.getEnergyToMove(), epsilon);
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+
+        assertEquals(600, robot.getEnergyToMove(), epsilon);
+    }
+
+    @Test
+    public void testTurnClockwise90() {
+        Energy notEnoughEnergy = new Energy(50, unitOfPower.Ws);
+        Robot robotNotEnoughEnergy = new Robot(notEnoughEnergy, Orientation.UP);
+
+        robot.turnClockwise90();
+
+        assertEquals(Orientation.RIGHT, robot.getOrientation());
+        assertEquals(energy.getAmountOfEnergy() - robot.getEnergyToTurn(),
+                robot.getAmountOfEnergy(), epsilon);
+
+        try {
+            robotNotEnoughEnergy.turnClockwise90();
+        } catch (AssertionError e) {
+            System.err.println("testTurnClockwise90: "
+                    + "This assertionerror is to be expected.");
+        }
+
+        assertEquals(Orientation.UP, robotNotEnoughEnergy.getOrientation());
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testTurnCounterClockwise90() {
+        Energy notEnoughEnergy = new Energy(50, unitOfPower.Ws);
+        Robot robotNotEnoughEnergy = new Robot(notEnoughEnergy, Orientation.UP);
+
+        robot.turnCounterClockwise90();
+
+        assertEquals(Orientation.LEFT, robot.getOrientation());
+        assertEquals(energy.getAmountOfEnergy() - robot.getEnergyToTurn(),
+                robot.getAmountOfEnergy(), epsilon);
+
+        try {
+            robotNotEnoughEnergy.turnCounterClockwise90();
+        } catch (AssertionError e) {
+            System.err.println("testTurnCounterClockwise90: "
+                    + "This assertionerror is to be expected.");
+        }
+
+        assertEquals(Orientation.UP, robotNotEnoughEnergy.getOrientation());
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testGetOrientation() {
+        assertEquals(Orientation.UP, robot.getOrientation());
+
+        robot.turnClockwise90();
+
+        assertEquals(Orientation.RIGHT, robot.getOrientation());
+    }
+
+    @Test
+    public void testGetOrientationInt() {
+        assertEquals(0, robot.getOrientationInt());
+
+        robot.turnClockwise90();
+
+        assertEquals(1, robot.getOrientationInt());
+    }
+
+    @Test
+    public void testMove() {
+        Position position = Position.newPosition(50, 50, board);
+        Position moveToPosition = Position.newPosition(50, 49, board);
+
+        robot.setPosition(position);
+
+        assertTrue(position.equals(robot.getPosition()));
+        assertEquals(energy.getAmountOfEnergy(), robot.getAmountOfEnergy(),
+                epsilon);
+
+        robot.move();
+
+        assertTrue(moveToPosition.equals(robot.getPosition()));
+        assertEquals(energy.getAmountOfEnergy() - robot.getEnergyToMove(),
+                robot.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveTo() {
+        Position originalPosition = Position.newPosition(50, 50, board);
+        Node moveablePosition = new Node(null, null, 0, Position.newPosition(
+                60, 55, board), null);
+        Node unReachablePosition = new Node(null, null, 0,
+                Position.newPosition(200, 300, board), null);
+        Node occupiedPosition = new Node(null, null, 0, Position.newPosition(
+                61, 56, board), null);
+        board.putElement(occupiedPosition.getPosition(), new Wall());
+
+        robot.recharge(new Energy(15000, unitOfPower.Ws));
+        robot.setPosition(originalPosition);
+        robot.moveTo(moveablePosition);
+
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
+        assertEquals(
+                18000 - (2 * robot.getEnergyToTurn() + 15 * robot
+                        .getEnergyToMove()),
+                robot.getAmountOfEnergy(), epsilon);
+
+        try {
+            robot.moveTo(unReachablePosition);
+        } catch (AssertionError ae) {
+            System.err
+                    .println("testMoveTo: This assertionerror is to be expected.");
+        }
+
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
+
+        try {
+            robot.moveTo(occupiedPosition);
+        } catch (AssertionError ae) {
+            System.err
+                    .println("testMoveTo: This assertionerror is to be expected.");
+        }
+
+        assertTrue(moveablePosition.getPosition().equals(robot.getPosition()));
+    }
+
+    @Test
+    public void testMoveNextToNoObstacles() {
+        Robot robot2 = new Robot(energy, Orientation.RIGHT);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        board.putElement(Position.newPosition(9, 12, board), robot2);
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().getNeighbours()
+                .contains(robot2.getPosition()));
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(8, 12, board))
+                || robot.getPosition().equals(
+                        Position.newPosition(9, 13, board)));
+    }
+
+    // // Deze test duurt lang. (2 seconden)
+    // @Test
+    // public void testMoveNextToNoObstaclesLongDistance() {
+    // Robot robot2 = new Robot(energy, Orientation.LEFT);
+    // robot.recharge(new Energy(17000, unitOfPower.Ws));
+    // robot2.recharge(new Energy(17000, unitOfPower.Ws));
+    //
+    // board.putElement(Position.newPosition(10, 10, board), robot);
+    // board.putElement(Position.newPosition(40, 40, board), robot2);
+    //
+    // robot.moveNextTo(robot2);
+    //
+    // assertTrue(robot.getPosition().getNeighbours()
+    // .contains(robot2.getPosition()));
+    //
+    // }
+
+    @Test
+    public void testMoveNextToBestEffort() {
+        Robot robot2 = new Robot(energy, Orientation.RIGHT);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        board.putElement(Position.newPosition(12, 23, board), robot2);
+
+        robot.moveNextTo(robot2);
+
+        assertEquals(3,
+                robot.getPosition().manhattanDistance(robot2.getPosition()),
+                epsilon);
+        assertEquals(400, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(400, robot2.getAmountOfEnergy(), epsilon);
+
+    }
+
+    @Test
+    public void testMoveNextToRobotNotOnBoard() {
+        Robot robot2 = new Robot(energy, Orientation.RIGHT);
+        Board board2 = new Board(542, 897);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(7, 15, board)));
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+
+        robot2.moveNextTo(robot);
+
+        assertNull(robot2.getPosition());
+        assertEquals(3000, robot2.getAmountOfEnergy(), epsilon);
+
+        board2.putElement(Position.newPosition(12, 23, board2), robot2);
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(7, 15, board)));
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToBestEffortOverlap() {
+        Robot robot2 = new Robot(energy, Orientation.RIGHT);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        board.putElement(Position.newPosition(9, 20, board), robot2);
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().getNeighbours()
+                .contains(robot2.getPosition()));
+    }
+
+    @Test
+    public void testMoveNextToDifferentCarriedWeight() {
+        Robot robot2 = new Robot(new Energy(1000, unitOfPower.Ws),
+                Orientation.DOWN);
+        Battery battery = new Battery(Position.newPosition(7, 15, board),
+                energy, new Weight(10, unitOfMass.kg));
+
+        robot.recharge(new Energy(3000, unitOfPower.Ws));
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        robot.pickup(battery);
+        board.putElement(Position.newPosition(10, 13, board), robot2);
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(9, 15, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(10, 15, board)));
+        assertEquals(3900, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(0, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToSurroundedByWalls() {
+        Robot robot2 = new Robot(energy, Orientation.UP);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        board.putElement(Position.newPosition(12, 23, board), robot2);
+
+        robot.recharge(new Energy(3000, unitOfPower.Ws));
+
+        Set<Position> wallsRoundRobot2Positions = new HashSet<Position>();
+        for (long x = 10; x < 15; x++) {
+            wallsRoundRobot2Positions.add(Position.newPosition(x, 21, board));
+            wallsRoundRobot2Positions.add(Position.newPosition(x, 26, board));
+        }
+        for (long y = 22; y < 26; y++) {
+            wallsRoundRobot2Positions.add(Position.newPosition(10, y, board));
+            wallsRoundRobot2Positions.add(Position.newPosition(14, y, board));
+        }
+        for (Position wallPosition : wallsRoundRobot2Positions)
+            board.putElement(wallPosition, new Wall());
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(12, 20, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(12, 22, board)));
+        assertEquals(800, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(2500, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToSurroundedByRobots() {
+        Robot robot2 = new Robot(energy, Orientation.UP);
+
+        board.putElement(Position.newPosition(7, 15, board), robot);
+        board.putElement(Position.newPosition(12, 23, board), robot2);
+
+        robot.recharge(new Energy(3000, unitOfPower.Ws));
+
+        Set<Position> robotsRoundRobot2Positions = new HashSet<Position>();
+        for (long x = 10; x < 15; x++) {
+            robotsRoundRobot2Positions.add(Position.newPosition(x, 21, board));
+            robotsRoundRobot2Positions.add(Position.newPosition(x, 26, board));
+        }
+        for (long y = 22; y < 26; y++) {
+            robotsRoundRobot2Positions.add(Position.newPosition(10, y, board));
+            robotsRoundRobot2Positions.add(Position.newPosition(14, y, board));
+        }
+        for (Position robotPosition : robotsRoundRobot2Positions)
+            board.putElement(robotPosition, new Robot(energy, Orientation.UP));
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(12, 20, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(12, 22, board)));
+        assertEquals(800, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(2500, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToObstacles() {
+        Robot robot2 = new Robot(new Energy(1800, unitOfPower.Ws),
+                Orientation.UP);
+
+        board.putElement(Position.newPosition(5, 5, board), robot);
+        robot.recharge(new Energy(3600, unitOfPower.Ws));
+        board.putElement(Position.newPosition(15, 5, board), robot2);
+
+        Set<Position> maze = new HashSet<Position>();
+        for (long x = 3; x < 18; x++) {
+            maze.add(Position.newPosition(x, 3, board));
+            maze.add(Position.newPosition(x, 7, board));
+        }
+        for (long y = 4; y < 7; y++) {
+            maze.add(Position.newPosition(3, y, board));
+            maze.add(Position.newPosition(17, y, board));
+        }
+        maze.add(Position.newPosition(7, 4, board));
+        maze.add(Position.newPosition(7, 5, board));
+        maze.add(Position.newPosition(10, 5, board));
+        maze.add(Position.newPosition(10, 6, board));
+        maze.add(Position.newPosition(13, 4, board));
+        maze.add(Position.newPosition(13, 5, board));
+
+        for (Position position : maze) {
+            board.putElement(position, new Wall());
+        }
+
+        robot.moveNextTo(robot2);
+
+        assertTrue(robot.getPosition().equals(
+                Position.newPosition(12, 6, board)));
+        assertTrue(robot2.getPosition().equals(
+                Position.newPosition(13, 6, board)));
+        assertEquals(0, robot.getAmountOfEnergy(), epsilon);
+        assertEquals(0, robot2.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testMoveNextToZeroEnergy() {
+        Robot robot = new Robot(new Energy(0, unitOfPower.Ws), Orientation.UP);
+        Robot robot2 = new Robot(new Energy(0, unitOfPower.Ws), Orientation.UP);
+
+        board.putElement(Position.newPosition(5, 5, board), robot);
+        board.putElement(Position.newPosition(15, 5, board), robot2);
+
+        assertEquals(Position.newPosition(5, 5, board), robot.getPosition());
+        assertEquals(Position.newPosition(15, 5, board), robot2.getPosition());
+        assertEquals(Orientation.UP, robot.getOrientation());
+        assertEquals(Orientation.UP, robot2.getOrientation());
+
+        robot.moveNextTo(robot2);
+
+        assertEquals(Position.newPosition(5, 5, board), robot.getPosition());
+        assertEquals(Position.newPosition(15, 5, board), robot2.getPosition());
+        assertEquals(Orientation.UP, robot.getOrientation());
+        assertEquals(Orientation.UP, robot2.getOrientation());
+    }
+
+    @Test
+    public void testShoot() {
+        Energy enoughEnergy = new Energy(5000, unitOfPower.Ws);
+        Energy enoughEnergy2 = new Energy(5000, unitOfPower.Ws);
+        Energy notEnoughEnergy = new Energy(500, unitOfPower.Ws);
+        Robot robotEnoughEnergy = new Robot(enoughEnergy, Orientation.RIGHT);
+        Robot robotNotEnoughEnergy = new Robot(notEnoughEnergy,
+                Orientation.LEFT);
+        Robot robotShootAtBoardEdge = new Robot(enoughEnergy2, Orientation.LEFT);
+        Position positionRobotEnoughEnergy = Position.newPosition(0, 0, board);
+        Position positionRobotNotEnoughEnergy = Position.newPosition(20, 0,
+                board);
+        Position positionRobotShootAtBoardEdge = Position.newPosition(3, 2,
+                board);
+
+        robotEnoughEnergy.setPosition(positionRobotEnoughEnergy);
+        robotNotEnoughEnergy.setPosition(positionRobotNotEnoughEnergy);
+        robotShootAtBoardEdge.setPosition(positionRobotShootAtBoardEdge);
+
+        try {
+            robotNotEnoughEnergy.shoot();
+        } catch (AssertionError ae) {
+            System.err
+                    .println("testShoot: This assertionerror is to be expected.");
+        }
+
+        assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
+                .getPosition()));
+        assertTrue(positionRobotNotEnoughEnergy.equals(robotNotEnoughEnergy
+                .getPosition()));
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+        assertEquals(enoughEnergy.getAmountOfEnergy(),
+                robotEnoughEnergy.getAmountOfEnergy(), epsilon);
+
+        robotEnoughEnergy.shoot();
+
+        assertTrue(positionRobotEnoughEnergy.equals(robotEnoughEnergy
+                .getPosition()));
+        assertEquals(16000, robotNotEnoughEnergy.getMaxEnergy()
+                .getAmountOfEnergy(), epsilon);
+        assertEquals(notEnoughEnergy.getAmountOfEnergy(),
+                robotNotEnoughEnergy.getAmountOfEnergy(), epsilon);
+        assertEquals(4000, robotEnoughEnergy.getAmountOfEnergy(), epsilon);
+
+        robotShootAtBoardEdge.shoot();
+
+        assertEquals(4000, robotShootAtBoardEdge.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testAddItems() {
+        Item battery = new Battery();
+        Item repairKit = new RepairKit();
+        Item surpriseBox = new SurpriseBox();
+        Set<Item> itemSet = new HashSet<Item>();
+
+        assertEquals(0, robot.getPossessions().size());
+
+        itemSet.add(battery);
+        robot.addItems(itemSet);
+
+        assertEquals(1, robot.getPossessions().size());
+
+        itemSet.add(repairKit);
+        robot.addItems(itemSet);
+
+        assertEquals(2, robot.getPossessions().size());
+
+        itemSet.add(surpriseBox);
+        robot.addItems(itemSet);
+
+        assertEquals(3, robot.getPossessions().size());
+
+        itemSet.add(battery);
+        robot.addItems(itemSet);
+
+        assertEquals(3, robot.getPossessions().size());
+    }
+
+    @Test
+    public void testPickup() {
+        Position position = Position.newPosition(10, 10, board);
+        Battery battery = new Battery(position);
+        Battery battery2 = new Battery(position);
+
+        assertEquals(0, robot.getPossessions().size());
+        assertEquals(2, position.getElements().size());
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+
+        assertEquals(1, robot.getPossessions().size());
+        assertEquals(2, position.getElements().size());
+
+        robot.pickup(battery2);
+
+        assertEquals(2, robot.getPossessions().size());
+        assertEquals(1, position.getElements().size());
+    }
+
+    @Test
+    public void testUse() {
+        Position position = Position.newPosition(10, 10, board);
+        Energy chargeEnergy = new Energy(3000, unitOfPower.Ws);
+        Battery battery = new Battery(position, chargeEnergy);
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+        robot.recharge(new Energy(16000, unitOfPower.Ws));
+
+        assertEquals(19000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.use(battery);
+
+        assertEquals(maxEnergy.getAmountOfEnergy(), robot.getAmountOfEnergy(),
+                epsilon);
+        assertEquals(2000, battery.getEnergy().getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testDrop() {
+        Position position = Position.newPosition(10, 10, board);
+        Battery battery = new Battery(position);
+        Battery battery2 = new Battery(position);
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+        robot.pickup(battery2);
+
+        assertEquals(2, robot.getPossessions().size());
+
+        robot.drop(battery);
+
+        assertEquals(1, robot.getPossessions().size());
+
+        robot.drop(battery2);
+
+        assertEquals(0, robot.getPossessions().size());
+    }
+
+    @Test
+    public void testTransferItem() {
+        board.putElement(Position.newPosition(25, 36, board), robot);
+        Robot robot2 = new Robot(new Energy(1500, unitOfPower.Ws),
+                Orientation.LEFT);
+        board.putElement(Position.newPosition(26, 36, board), robot2);
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot.pickup(new Battery(Position.newPosition(25, 36, board),
+                new Energy(1500, unitOfPower.Ws)));
+        robot2.pickup(new RepairKit(Position.newPosition(26, 36, board),
+                new Weight(100, unitOfMass.g), null));
+        robot2.pickup(new SurpriseBox(Position.newPosition(26, 36, board)));
+
+        assertEquals(3, robot.getPossessions().size());
+        assertEquals(2, robot2.getPossessions().size());
+
+        robot.transferItems(null);
+
+        assertEquals(3, robot.getPossessions().size());
+        assertEquals(2, robot2.getPossessions().size());
+
+        robot.transferItems(robot2);
+
+        assertEquals(0, robot.getPossessions().size());
+        assertEquals(5, robot2.getPossessions().size());
+
+        robot.terminate();
+        robot2.transferItems(robot);
+
+        assertEquals(0, robot.getPossessions().size());
+        assertEquals(5, robot2.getPossessions().size());
+    }
+
+    @Test
+    public void testIthHeaviestElement() {
+        Position position = Position.newPosition(10, 10, board);
+        Weight lightWeight = new Weight(1, unitOfMass.kg);
+        Weight heavyWeight = new Weight(100, unitOfMass.kg);
+
+        Battery battery = new Battery(position, energy, lightWeight);
+        Battery battery2 = new Battery(position, energy, heavyWeight);
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+        robot.pickup(battery2);
+
+        assertEquals(0,
+                heavyWeight.compareTo(robot.ithHeaviestItem(1).getWeight()));
+        assertEquals(0,
+                lightWeight.compareTo(robot.ithHeaviestItem(2).getWeight()));
+    }
+
+    @Test
+    public void testGetPossesions() {
+        Position position = Position.newPosition(10, 10, board);
+        Battery battery = new Battery(position);
+        Battery battery2 = new Battery(position);
+        Battery battery3 = new Battery(position);
+
+        robot.setPosition(position);
+        robot.pickup(battery);
+        robot.pickup(battery2);
+
+        assertEquals(2, robot.getPossessions().size());
+        assertTrue(robot.getPossessions().contains(battery));
+        assertTrue(robot.getPossessions().contains(battery2));
+        assertFalse(robot.getPossessions().contains(battery3));
+    }
+
+    @Test
+    public void testSetPosition() {
+        Position position = Position.newPosition(10, 10, board);
+
+        robot.setPosition(position);
+
+        assertEquals(position, robot.getPosition());
+        assertTrue(position.containsElement(robot));
+    }
+
+    @Test
+    public void testRemovePosition() {
+        Position position = Position.newPosition(10, 10, board);
+        robot.setPosition(position);
+
+        assertNotNull(robot.getPosition());
+
+        robot.removePosition();
+
+        assertNull(robot.getPosition());
+        assertNull(position.getElements());
+    }
+
+    @Test
+    public void testStepn() {
+        board.putElement(Position.newPosition(1, 5, board), robot);
+
+        assertEquals(Position.newPosition(1, 5, board), robot.getPosition());
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(3);
+
+        assertEquals(Position.newPosition(1, 5, board), robot.getPosition());
+        assertEquals(3000, robot.getAmountOfEnergy(), epsilon);
+
+        robot.setProgram(new Program("(move) (move) (move)", robot));
+        robot.stepn(1);
+
+        assertEquals(Position.newPosition(1, 4, board), robot.getPosition());
+        assertEquals(2500, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(5);
+
+        assertEquals(Position.newPosition(1, 2, board), robot.getPosition());
+        assertEquals(1500, robot.getAmountOfEnergy(), epsilon);
+
+        robot.stepn(100);
+
+        assertEquals(Position.newPosition(1, 2, board), robot.getPosition());
+        assertEquals(1500, robot.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testSetProgram() {
+        assertNull(robot.getProgram());
+
+        robot.setProgram(new Program("(move)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(move)"));
+
+        robot.setProgram(new Program("(turn clockwise)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(turn clockwise)"));
+    }
+
+    @Test
+    public void testGetProgram() {
+        assertNull(robot.getProgram());
+
+        robot.setProgram(new Program("(move)", robot));
+
+        assertNotNull(robot.getProgram());
+
+        assertTrue(robot.getProgram().toString().equals("(move)"));
+    }
+
+    @Test
+    public void testTerminate() {
+        Position position = Position.newPosition(10, 10, board);
+        Battery battery = new Battery(position);
+        Battery battery2 = new Battery(position);
+        robot.setPosition(position);
+        robot.pickup(battery);
+        robot.pickup(battery2);
+
+        assertFalse(robot.isTerminated());
+
+        robot.terminate();
+
+        assertTrue(robot.isTerminated());
+        assertFalse(position.containsElement(robot));
+        assertFalse(board.isOccupiedPosition(position));
+        assertTrue(battery.isTerminated());
+        assertTrue(battery2.isTerminated());
+    }
+
+    @Test
+    public void testIsTerminated() {
+        robot.terminate();
+
+        assertTrue(robot.isTerminated());
+    }
+
+    private Robot robot;
+    private Energy energy;
+    private final Energy maxEnergy = new Energy(20000, unitOfPower.Ws);
+    private final Board board = new Board(535, 364);
+    private double epsilon = 0.01;
+}

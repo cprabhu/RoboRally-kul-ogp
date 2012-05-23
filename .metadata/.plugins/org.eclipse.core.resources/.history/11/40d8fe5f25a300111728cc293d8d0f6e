@@ -1,0 +1,7 @@
+package roborally.program;
+
+import java.util.*;
+
+abstract class CombinedCondition extends Condition {
+    protected final Set<Condition> conditions = new HashSet<Condition>();
+}

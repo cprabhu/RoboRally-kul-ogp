@@ -1,0 +1,51 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+/**
+ * This class for representing the not operator.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+class Not extends CombinedCondition {
+
+    /**
+     * Initializes the not operator with a string and a robot.
+     * 
+     * @param conditionString
+     *      The conditionString contains the condition this not operates on.
+     * @param robot
+     *      The executing robot.
+     */
+    Not(String conditionString, Robot robot) {
+        condition = newCondition(
+                Program.allSubParenthesed(
+                        conditionString.substring(5, conditionString.length()))
+                        .get(0), robot);
+    }
+
+    /**
+     * Evaluate this not.
+     * 
+     * @return true if the condition evaluates to false.
+     * @return false otherwise.
+     */
+    @Override
+    boolean evaluate() {
+        return !condition.evaluate();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see roborally.program.Condition#toString()
+     */
+    @Override
+    public String toString() {
+        String conditionString = "(not " + condition.toString() + ")";
+
+        return conditionString;
+    }
+
+    private Condition condition;
+}

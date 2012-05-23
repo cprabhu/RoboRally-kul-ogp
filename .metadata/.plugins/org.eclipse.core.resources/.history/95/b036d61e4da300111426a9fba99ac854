@@ -1,0 +1,4 @@
+package roborally.program;
+
+abstract class BasicCondition extends Condition {
+}

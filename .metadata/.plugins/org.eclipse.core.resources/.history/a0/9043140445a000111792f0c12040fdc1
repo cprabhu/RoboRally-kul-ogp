@@ -1,0 +1,18 @@
+package roborally.program;
+
+class If extends CombinedCommand {
+
+    If(String commandString, Robot robot) {
+        super(commandString, robot);
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private Condition condition;
+    private Command conditionSatisfiedCommand;
+    private Command conditionNotSatisfiedCommand;
+}

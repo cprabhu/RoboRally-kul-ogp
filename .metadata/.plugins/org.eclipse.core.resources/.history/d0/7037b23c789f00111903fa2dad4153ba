@@ -1,0 +1,13 @@
+package roborally.filters;
+
+import roborally.model.Element;
+
+public class AllExtractor implements BooleanExtractor {
+
+    @Override
+    public boolean isSatisfied(Element element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+}

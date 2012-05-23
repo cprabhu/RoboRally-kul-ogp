@@ -1,0 +1,8 @@
+package roborally.program;
+
+public abstract class BasicCondition extends Condition {
+
+    public BasicCondition(String basicCondition, Robot robot) {
+        super(basicCondition, robot);
+    }
+}

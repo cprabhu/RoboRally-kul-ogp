@@ -1,0 +1,8 @@
+package roborally.program;
+
+abstract class CombinedCommand extends Command {
+
+    protected CombinedCommand(String commandString, Robot robot) {
+        super(commandString, robot);
+    }
+}

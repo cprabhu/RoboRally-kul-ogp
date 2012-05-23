@@ -1,0 +1,148 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+import roborally.model.*;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
+
+public class SurpriseBoxTest {
+
+    @Before
+    public void setUp() {
+        board = new Board(15, 22);
+        robot = new Robot(new Energy(1000, unitOfPower.Ws), Orientation.UP);
+        surpriseBox = new SurpriseBox(Position.newPosition(3, 4, board),
+                new Weight(500, unitOfMass.g));
+    }
+
+    @Test
+    public void testHit() {
+        Battery hitBattery1 = new Battery(Position.newPosition(4, 3, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery hitBattery2 = new Battery(Position.newPosition(5, 4, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery hitBattery3 = new Battery(Position.newPosition(4, 5, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery hitBattery4 = new Battery(Position.newPosition(3, 4, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery noHitBattery1 = new Battery(Position.newPosition(3, 3, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery noHitBattery2 = new Battery(Position.newPosition(5, 3, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery noHitBattery3 = new Battery(Position.newPosition(5, 5, board),
+                new Energy(0, unitOfPower.Ws));
+        Battery noHitBattery4 = new Battery(Position.newPosition(3, 5, board),
+                new Energy(0, unitOfPower.Ws));
+
+        board.putElement(Position.newPosition(4, 4, board), surpriseBox);
+
+        assertFalse(surpriseBox.isTerminated());
+        assertEquals(0, hitBattery1.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, hitBattery2.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, hitBattery3.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, hitBattery4.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery1.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery2.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery3.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery4.getEnergy().getAmountOfEnergy(), epsilon);
+
+        surpriseBox.hit();
+
+        assertTrue(surpriseBox.isTerminated());
+        assertEquals(500, hitBattery1.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(500, hitBattery2.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(500, hitBattery3.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(500, hitBattery4.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery1.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery2.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery3.getEnergy().getAmountOfEnergy(), epsilon);
+        assertEquals(0, noHitBattery4.getEnergy().getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testUse() {
+        boolean surpriseBoxExplode = false;
+        boolean surpriseBoxTeleport = false;
+        boolean surpriseBoxChange = false;
+
+        while (!(surpriseBoxExplode && surpriseBoxTeleport && surpriseBoxChange)) {
+            setUp();
+            robot.recharge(new Energy(1, unitOfPower.foe));
+            board.putElement(Position.newPosition(3, 4, board), robot);
+            robot.pickup(surpriseBox);
+
+            surpriseBox.use(robot);
+
+            if (robot.getAmountOfEnergy() < 20000)
+                surpriseBoxExplode = true;
+            else if (!robot.getPosition().equals(
+                    Position.newPosition(3, 4, board)))
+                surpriseBoxTeleport = true;
+            else if (robot.getPossesions().size() > 0)
+                surpriseBoxChange = true;
+        }
+
+        assertTrue(surpriseBoxExplode);
+        assertTrue(surpriseBoxTeleport);
+        assertTrue(surpriseBoxChange);
+    }
+
+    @Test
+    public void testSurpriseBox() {
+        SurpriseBox surpriseBox1 = new SurpriseBox();
+
+        assertFalse(surpriseBox1.isTerminated());
+        assertEquals(
+                0,
+                surpriseBox1.getWeight().compareTo(
+                        new Weight(100, unitOfMass.g)));
+    }
+
+    @Test
+    public void testSurpriseBoxPosition() {
+        SurpriseBox surpriseBox1 = new SurpriseBox(Position.newPosition(12, 10,
+                board));
+
+        assertFalse(surpriseBox1.isTerminated());
+        assertEquals(
+                0,
+                surpriseBox1.getWeight().compareTo(
+                        new Weight(100, unitOfMass.g)));
+        assertTrue(surpriseBox1.getPosition().equals(
+                Position.newPosition(12, 10, board)));
+    }
+
+    @Test
+    public void testSurpriseBoxPositionWeight() {
+        Weight weight = new Weight(1700, unitOfMass.g);
+        SurpriseBox surpriseBox1 = new SurpriseBox(Position.newPosition(8, 17,
+                board), weight);
+
+        assertFalse(surpriseBox1.isTerminated());
+        assertEquals(
+                0,
+                surpriseBox1.getWeight().compareTo(
+                        new Weight(1700, unitOfMass.g)));
+        assertTrue(surpriseBox1.getPosition().equals(
+                Position.newPosition(8, 17, board)));
+    }
+
+    @Test
+    public void testGetWeight() {
+        assertEquals(0,
+                surpriseBox.getWeight()
+                        .compareTo(new Weight(500, unitOfMass.g)));
+    }
+
+    private Board board;
+    private Robot robot;
+    private SurpriseBox surpriseBox;
+    private double epsilon = 0.01;
+}

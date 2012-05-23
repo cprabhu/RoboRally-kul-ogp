@@ -1,0 +1,11 @@
+package roborally.program;
+
+public class Wall extends BasicCondition {
+
+    @Override
+    public boolean evaluate() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+}

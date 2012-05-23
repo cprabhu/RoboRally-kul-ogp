@@ -1,0 +1,10 @@
+package roborally.program;
+
+public abstract class BasicCondition extends Condition {
+
+    public BasicCondition(String basicCondition) {
+        super(basicCondition);
+    }
+
+    public abstract boolean evaluate();
+}

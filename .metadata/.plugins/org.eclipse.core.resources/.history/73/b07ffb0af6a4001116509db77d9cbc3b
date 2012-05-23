@@ -1,0 +1,84 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+import roborally.model.*;
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Orientation;
+import roborally.model.auxiliary.Position;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
+
+/**
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public class RepairKitTest {
+
+    @Before
+    public void setUp() {
+        board = new Board(15, 22);
+        testEnergy = new Energy(1500, unitOfPower.Ws);
+        robot = new Robot(new Energy(1000, unitOfPower.Ws), Orientation.UP);
+        repairKit = new RepairKit(Position.newPosition(3, 4, board),
+                new Weight(500, unitOfMass.g), testEnergy);
+    }
+
+    @Test
+    public void testHit() {
+        assertEquals(0, testEnergy.compareTo(new Energy(1500, unitOfPower.Ws)));
+
+        repairKit.hit();
+
+        assertEquals(0, testEnergy.compareTo(new Energy(2000, unitOfPower.Ws)));
+
+        repairKit.terminate();
+
+        repairKit.hit();
+
+        assertEquals(0, testEnergy.compareTo(new Energy(2000, unitOfPower.Ws)));
+    }
+
+    @Test
+    public void testUse() {
+        robot.hit();
+
+        robot.recharge(new Energy(1, unitOfPower.foe));
+        assertEquals(16000, robot.getAmountOfEnergy(), epsilon);
+
+        repairKit.use(robot);
+
+        robot.recharge(new Energy(1, unitOfPower.foe));
+        assertEquals(16750, robot.getAmountOfEnergy(), epsilon);
+    }
+
+    @Test
+    public void testRepairKit() {
+        RepairKit repairKit2 = new RepairKit();
+
+        assertNotNull(repairKit2);
+        assertFalse(repairKit2.isTerminated());
+    }
+
+    @Test
+    public void testRepairKitPositionWeightEnergy() {
+        assertNotNull(repairKit);
+        assertFalse(repairKit.isTerminated());
+        assertEquals(0, testEnergy.compareTo(new Energy(1500, unitOfPower.Ws)));
+    }
+
+    @Test
+    public void testGetWeight() {
+        assertEquals(0,
+                repairKit.getWeight().compareTo(new Weight(500, unitOfMass.g)));
+    }
+
+    private Board board = new Board(15, 22);
+    private Energy testEnergy;
+    private Item repairKit;
+    private Robot robot;
+    private double epsilon = 0.01;
+}

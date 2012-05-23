@@ -1,0 +1,11 @@
+package roborally.program;
+
+public class CombinedCommand implements Command {
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

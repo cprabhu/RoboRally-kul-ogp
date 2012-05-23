@@ -1,0 +1,9 @@
+package roborally.model.auxiliary;
+
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public interface EnergyElement {
+    public double getAmountOfEnergy();
+}

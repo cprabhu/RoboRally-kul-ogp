@@ -1,0 +1,143 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+
+import java.util.*;
+
+import org.junit.*;
+
+import roborally.model.*;
+import roborally.model.auxiliary.*;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.program.Program;
+
+public class ProgramTest {
+
+    @Before
+    public void setUp() {
+        robot = new Robot(new Energy(7300, unitOfPower.Ws), Orientation.RIGHT);
+        board = new Board(75, 63);
+    }
+
+    @Test
+    public void testCowboy() {
+        Program cowboyProgram = new Program(cowboy, robot);
+
+        assertNotNull(cowboyProgram);
+    }
+
+    @Test
+    public void testEmptyString() {
+        Program emptyStringProgram = new Program(emptyString, robot);
+
+        assertNotNull(emptyStringProgram);
+    }
+
+    @Test
+    public void testExample() {
+        Program exampleProgram = new Program(example, robot);
+
+        assertNotNull(exampleProgram);
+    }
+
+    @Test
+    public void testGump() {
+        Program gumpProgram = new Program(gump, robot);
+
+        assertNotNull(gumpProgram);
+    }
+
+    @Test
+    public void testMove() {
+        Program moveProgram = new Program(move, robot);
+
+        assertNotNull(moveProgram);
+    }
+
+    @Test
+    public void testStep() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testCowboyToString() {
+        Program cowboyProgram = new Program(cowboy, robot);
+
+        assertTrue(cowboy.equals(cowboyProgram.toString()));
+    }
+
+    @Test
+    public void testEmptyStringToString() {
+        Program emptyStringProgram = new Program(emptyString, robot);
+
+        assertTrue(emptyString.equals(emptyStringProgram.toString()));
+    }
+
+    @Test
+    public void testExampleToString() {
+        Program exampleProgram = new Program(example, robot);
+
+        assertTrue(example.equals(exampleProgram.toString()));
+    }
+
+    @Test
+    public void testGumpToString() {
+        Program gumpProgram = new Program(gump, robot);
+
+        assertTrue(gump.equals(gumpProgram.toString()));
+    }
+
+    @Test
+    public void testMoveToString() {
+        Program moveProgram = new Program(move, robot);
+
+        assertTrue(move.equals(moveProgram.toString()));
+    }
+
+    @Test
+    public void testDecrementProgramCounter() {
+        robot.setPosition(Position.newPosition(3, 5, board));
+        double energy = robot.getAmountOfEnergy();
+        Program moveProgram = new Program(move, robot);
+
+        moveProgram.step();
+
+        assertTrue(robot.getPosition()
+                .equals(Position.newPosition(4, 5, board)));
+
+        if (energy > robot.getAmountOfEnergy())
+            energy = robot.getAmountOfEnergy();
+
+        moveProgram.step();
+
+        assertTrue(robot.getPosition()
+                .equals(Position.newPosition(5, 5, board)));
+
+        assertTrue(energy > robot.getAmountOfEnergy());
+    }
+
+    @Test
+    public void testMoveAllSubParenthesed() {
+        System.out.println(new Program(move, robot).toString());
+        List<String> allSubParenthesed = Program.allSubParenthesed(new Program(
+                move, robot).toString());
+
+        assertEquals(1, allSubParenthesed.size());
+    }
+
+    private Robot robot;
+    private Board board;
+    private final String testProgramsDirectory = "src/roborally/test/testPrograms/";
+    private String cowboy = new File(testProgramsDirectory + "cowboy.prog")
+            .toString();
+    private String emptyString = new File(testProgramsDirectory
+            + "emptystring.prog").toString();
+    private String example = new File(testProgramsDirectory + "example.prog")
+            .toString();
+    private String gump = new File(testProgramsDirectory + "gump.prog")
+            .toString();
+    private String move = new File(testProgramsDirectory + "move.prog")
+            .toString();
+}

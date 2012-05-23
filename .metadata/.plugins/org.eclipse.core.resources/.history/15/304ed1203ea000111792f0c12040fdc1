@@ -1,0 +1,19 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class Move extends BasicCommand {
+
+    Move(Robot robot) {
+        super("(move)");
+        this.robot = robot;
+    }
+
+    @Override
+    public void execute() {
+        if (robot != null)
+            robot.move();
+    }
+
+    private Robot robot;
+}

@@ -1,0 +1,161 @@
+package roborally.model;
+
+import be.kuleuven.cs.som.annotate.*;
+import java.util.*;
+
+import roborally.filters.BooleanExtractor;
+import roborally.model.auxiliary.Position;
+
+// TODO: NOTE all aspects related to placement of walls, robots, batteries on
+// boards: defensively
+// TODO: NOTE Placing robot, wall or item on a board at a position must take
+// amortized constant time.
+// TODO: NOTE Removing a particular robot, wall or item is preferably linear in
+// the
+// number of robots, walls or items located at the same position.
+// TODO: NOTE Should be possible to look up all robots, walls and items at
+// particular position in constant time.
+// TODO: NOTE The amount of memory required to store a board should be
+// proportional
+// to the number of positions in use, not to the total size of the board.
+
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
+public class Board {
+
+    public Board(long width, long height) throws IllegalArgumentException {
+        this.isTerminated = false;
+        if (width < 0 || height < 0)
+            throw new IllegalArgumentException();
+        this.WIDTH = width;
+        this.HEIGHT = height;
+    }
+
+    public void merge(Board board2) {
+        if (board2 != null) {
+            Set<Position> occupiedPositionsBoard2 = new HashSet<Position>();
+            occupiedPositionsBoard2.addAll(board2.occupiedPositions);
+            for (Position occupiedPosition2 : occupiedPositionsBoard2) {
+                if (isValidPosition(occupiedPosition2)) {
+                    Position position = Position.newPosition(
+                            occupiedPosition2.X, occupiedPosition2.Y, this);
+                    for (Element elem : occupiedPosition2.getElements()) {
+                        if (position.canContainElement(elem))
+                            putElement(position, elem);
+                        else
+                            elem.terminate();
+                    }
+                }
+            }
+            board2.terminate();
+        }
+    }
+
+    public void putElement(Position position, Element element) {
+        if (isValidPosition(position))
+            if (occupiedPositions.contains(position)) {
+                position.addElement(element);
+            } else {
+                addOccupiedPosition(position);
+                putElement(position, element);
+            }
+    }
+
+    public void removeElement(Element element) {
+        element.getPosition().removeElement(element);
+    }
+
+    public Set<Element> getElementsAt(Position position) {
+        if (isOccupiedPosition(position))
+            return position.getElements();
+        return new HashSet<Element>();
+    }
+
+    public Set<Element> getElementsOf(Class<?> type) {
+        Set<Element> elements = new HashSet<Element>();
+        for (Position occupiedPosition : occupiedPositions) {
+            elements.addAll(occupiedPosition.getElementsOf(type));
+        }
+        return elements;
+    }
+
+    public void addOccupiedPosition(Position position) {
+        if (isValidPosition(position))
+            occupiedPositions.add(position);
+    }
+
+    public int getNumberOfOccupiedPositions() {
+        return occupiedPositions.size();
+    }
+
+    public Set<Position> getOccupiedPositions() {
+        return occupiedPositions;
+    }
+
+    public boolean isValidPosition(Position position) {
+        if (position != null)
+            return isValidPosition(position.X, position.Y);
+        return false;
+    }
+
+    public boolean isValidPosition(long x, long y) {
+        return x >= 0 && x <= WIDTH && y >= 0 && y <= HEIGHT;
+    }
+
+    public boolean isOccupiedPosition(Position position) {
+        return occupiedPositions.contains(position);
+    }
+
+    public void removePosition(Position position) {
+        occupiedPositions.remove(position);
+    }
+
+    public void terminate() {
+        Set<Position> occupiedPositionIterator = new HashSet<Position>();
+        occupiedPositionIterator.addAll(occupiedPositions);
+        for (Position pos : occupiedPositionIterator)
+            pos.terminate();
+        this.isTerminated = true;
+    }
+
+    @Basic
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+
+    public Iterator<Element> conditionIterator(final BooleanExtractor extractor) {
+        return new Iterator<Element>() {
+            private Iterator<Element> iterator;
+
+            {
+                Set<Element> allElements = new HashSet<Element>();
+                for (Position position : occupiedPositions)
+                    allElements.addAll(position.getElements());
+                Set<Element> satisfyingElements = new HashSet<Element>();
+                for (Element element : allElements)
+                    if (extractor.isSatisfied(element))
+                        satisfyingElements.add(element);
+                iterator = satisfyingElements.iterator();
+            }
+
+            public Element next() throws NoSuchElementException {
+                return iterator.next();
+            }
+
+            public void remove() throws UnsupportedOperationException {
+                throw new UnsupportedOperationException();
+            }
+
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+        };
+    }
+
+    public final long WIDTH;
+    public final long HEIGHT;
+
+    private boolean isTerminated;
+    private final Set<Position> occupiedPositions = new HashSet<Position>();
+}

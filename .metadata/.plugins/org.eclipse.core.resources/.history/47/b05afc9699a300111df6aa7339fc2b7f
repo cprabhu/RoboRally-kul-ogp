@@ -1,0 +1,105 @@
+package roborally.program;
+
+import java.util.*;
+
+import roborally.model.Robot;
+
+/**
+ * This class represents a program.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+public class Program {
+
+    /**
+     * Initializes this robot given a string and a robot;
+     * 
+     * @param programString
+     *      The string that holds all the commands of the program.
+     * @param executingRobot
+     *      The robot that will execute this program.
+     */
+    public Program(String programString, Robot executingRobot) {
+        programCounter = 0;
+        decremented = false;
+        commands = new ArrayList<Command>();
+
+        for (String commandString : allSubParenthesed(programString))
+            commands.add(Command.newCommand(commandString, executingRobot));
+    }
+
+    /**
+     * Execute the next basic command in the program until the program reaches
+     * it's end.
+     */
+    public void step() {
+        if (programCounter < commands.size())
+            commands.get(programCounter).execute();
+        programCounter++;
+        decremented = false;
+    }
+
+    /**
+     * Return the string representation of this program.
+     * 
+     * @return The string representation of this program.
+     */
+    @Override
+    public String toString() {
+        String programString = "";
+        String newLine = System.getProperty("line.separator");
+        for (Command command : commands)
+            programString += command.toString() + newLine;
+
+        return programString.trim();
+    }
+
+    /**
+     * Decrement this programs programcounter if it has not been decremented
+     * during the current execution step already.
+     */
+    void decrementProgramCounter() {
+        if (!decremented)
+            programCounter--;
+        decremented = true;
+    }
+
+    /**
+     * Return a list of all parenthesed blocks in string.
+     * 
+     * @param string
+     *      The string to extract blocks from.
+     * @return A list containing code blocks.
+     */
+    static List<String> allSubParenthesed(String string) {
+        List<String> allSubParenthesed = new ArrayList<String>();
+
+        int parenthesesCounter = 0;
+        int beginIndex = string.indexOf("(");
+
+        for (int endIndex = beginIndex; endIndex < string.length(); endIndex++) {
+            if (beginIndex < 0 || endIndex < 0)
+                break;
+            if ('(' == string.charAt(endIndex))
+                parenthesesCounter++;
+            else if (')' == string.charAt(endIndex))
+                parenthesesCounter--;
+            if (parenthesesCounter == 0) {
+                allSubParenthesed.add(string
+                        .substring(beginIndex, endIndex + 1));
+                int nextOpenParen = string.indexOf("(", endIndex + 1);
+                if (nextOpenParen < 0)
+                    break;
+                beginIndex = string.indexOf("(", endIndex + 1);
+                endIndex = string.indexOf("(", endIndex + 1) - 1;
+            }
+        }
+
+        return allSubParenthesed;
+    }
+
+    private int programCounter;
+    private boolean decremented;
+    private final List<Command> commands;
+}

@@ -1,0 +1,14 @@
+package roborally.program;
+
+class PickupAndUse extends BasicCommand {
+
+    PickupAndUse(Robot robot) {
+
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+}

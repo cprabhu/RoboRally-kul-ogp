@@ -1,0 +1,709 @@
+package roborally.model;
+
+import roborally.model.auxiliary.*;
+import roborally.model.auxiliary.Energy.unitOfPower;
+import roborally.model.auxiliary.Weight.unitOfMass;
+import roborally.program.Program;
+
+import java.util.*;
+
+import be.kuleuven.cs.som.annotate.*;
+
+// TODO: NOTE Klassediagram voor verdediging
+
+// TODO: NOTE energy nominally
+// TODO: NOTE orientation totally
+// TODO: NOTE position defensively
+
+/**
+ * This class represents a robot.
+ * 
+ * @invar The energy of this Robot is always greater than or equal to 0 and
+ *      less than or equal to it's maximum energy.
+ *      | 0 <= getAmountOfEnergy() <= getMaxEnergy().getAmountOfEnergy()
+ * @invar The maximum energy of this robot can never exceed 20000 Ws.
+ *      | getMaxEnergy().getAmountOfEnergy() <= 20000
+ * @invar The energy needed to turn a robot is 100 Ws.
+ *      | getEnergyToTurn() = new Energy(100, unitOfPower.Ws)
+ * @invar The energy needed to move a robot is at least 500 Ws.
+ *      | getEnergyToMove.compareTo(new Energy(500, unitOfPower.Ws)) >= 0
+ * @invar The orientation of the robot is never null.
+ *      | getOrientation != null
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public class Robot extends Element implements EnergyElement {
+
+    /**
+     * Initializes this Robot with an energy and an orientation.
+     * 
+     * @param initialEnergy
+     *      This is the initial energy of the robot.
+     * @param initialOrientation
+     *      This is the initial orientation of the robot.
+     * @pre The initial energy must exist.
+     *      | initialEnergy != null
+     * @pre The initial energy must be a valid energy.
+     *      | initialEnergy.isValidEnergy(new Energy(20000, unitOfPower.Ws))
+     * @post The energy of this Robot will be set to initialEnergy.
+     *      | new.getAmountOfEnergy() = initialEnergy
+     * @post The Orientation of this Robot will be set to initialOrientation.
+     *      | new.getOrientation() = initialOrientation.
+     * @post The position of this Robot will be set to null.
+     *      | new.getPosition() = null
+     */
+    public Robot(Energy initialEnergy, Orientation initialOrientation) {
+        maxEnergy = new Energy(20000, unitOfPower.Ws);
+        assert (initialEnergy != null);
+        assert (initialEnergy.isValidEnergy(maxEnergy));
+        energy = initialEnergy;
+        orientation = initialOrientation;
+        position = null;
+        carryWeight = null;
+    }
+
+    /**
+     * Recharge this Robot.
+     * 
+     * @param chargeEnergy
+     *      The energy that will be used to recharge this Robot.
+     * @pre The energy that is used to recharge must exist.
+     *      | chargeEnergy != null
+     * @pre The energy that is used to recharge must contain atleast 0 Ws.
+     *      | chargeEnergy.isValidEnergy(chargeEnergy)
+     * @effect The energy of this robot will be recharged until the chargeEnergy
+     *      is empty or this Robot has reached it's maximum energy. 
+     *      | new Energy ((new.getAmountOfEnergy()), UnitOfPower.Ws)
+     *      |   = new Energy (getAmountOfEnergy(), UnitOfPower.Ws)
+     *      |       .recharge(chargeEnergy, getMaxEnergy())
+     */
+    public void recharge(Energy chargeEnergy) {
+        assert (chargeEnergy != null);
+        assert (chargeEnergy.isValidEnergy(chargeEnergy));/*
+                                                           * chargeEnergy als
+                                                           * argument omdat de
+                                                           * energie zo groot
+                                                           * mag zijn als ze
+                                                           * wil.
+                                                           */
+        energy.recharge(chargeEnergy, maxEnergy);
+    }
+
+    /**
+     * Increase the maximum energy of this Robot.
+     * 
+     * @param energy
+     *      The energy that will be used to increase this Robot's maximum energy.
+     * @pre energy must exist.
+     *      | energy != null
+     * @pre energy must be a positive energy.
+     *      | energy.compareTo(new Energy(0, unitOfPower.Ws)) >= 0
+     * @effect The current maximum energy maxEnergy will be increased 
+     *      with energy until energy is empty or the maximum energy 
+     *      reaches the energy limit of 20000 Ws.
+     *      | new.getMaxEnergy() =
+     *      |   maxEnergy.recharge(energy, new Energy(20000, unitOfPower.Ws)
+     */
+    public void increaseMaxEnergy(Energy energy) {
+        assert (energy != null);
+        assert (energy.compareTo(new Energy(0, unitOfPower.Ws)) >= 0);
+        maxEnergy.recharge(energy, energyLimit);
+    }
+
+    /**
+     * Return the least possible energy for this robot to reach the given position.
+     * 
+     * @param destination
+     *      The destination position.
+     * @return null if the destination can not contain this element.
+     *      | if (!destination.canContainElement(this))
+     *      |   result == null
+     * @return null if no path exists to the destination or the end of the
+     *      calculated path is not the destination.
+     *      | Node shortestPath = new Node(null, getOrientation, 0,
+     *      |   getPosition(), destination).shortestPath()
+     *      | if (shortestPath == null ||
+     *      |   !(shortestPath.getPosition().equals(destination)))
+     *      |   result == null
+     * @return The least possible energy for this robot to reach the given
+     *      position otherwise.
+     *      | result == shortestPath.getEnergy()
+     */
+    public Energy getEnergyRequiredToReach(Position destination) {
+        if (!destination.canContainElement(this))
+            return null;
+        Node node = new Node(null, getOrientation(), 0, getPosition(),
+                destination);
+        Node shortestPath = node.shortestPath();
+        if (shortestPath == null /*
+                                  * Robot staat niet op een position dus niet
+                                  * op een board.
+                                  */
+                || !(shortestPath.getPosition().equals(destination)))
+            return null;
+        Energy energyRequiredToReach = shortestPath.getEnergy();
+
+        return energyRequiredToReach;
+    }
+
+    /**
+     * Return the least possible amount of energy in Ws for this robot to reach
+     * a given position.
+     * 
+     * @param destination
+     *      The destination position.
+     * @return -1 if the destination can not contain this element.
+     *      | if (!destination.canContainElement(this))
+     *      |   result == -1
+     * @return -1 if no path exists to the destination or the end of the
+     *      calculated path is not the destination.
+     *      | Node shortestPath = new Node(null, getOrientation, 0, getPosition(), destination).shortestPath()
+     *      | if (shortestPath == null ||
+     *      |   !(shortestPath.getPosition().equals(destination)))
+     *      |   result == -1
+     * @return The least possible amount of energy in Ws for this robot to
+     *      reach the given position otherwise.
+     *      | result == shortestPath.getEnergy().getAmountOfEnergy
+     */
+    public double getEnergyRequiredToReachWs(Position destination) {
+        if (!destination.canContainElement(this))
+            return -1;
+        Node node = new Node(null, getOrientation(), 0, getPosition(),
+                destination);
+        Node shortestPath = node.shortestPath();
+        if (shortestPath == null /*
+                                  * Robot staat niet op een position dus niet
+                                  * op een board.
+                                  */
+                || !(shortestPath.getPosition().equals(destination)))
+            return -1;
+        Energy energyRequiredToReach = shortestPath.getEnergy();
+
+        return energyRequiredToReach.getAmountOfEnergy();
+    }
+
+    /**
+     * This method returns the current amount of energy of this robot.
+     */
+    @Basic
+    @Raw
+    public double getAmountOfEnergy() {
+        return energy.getAmountOfEnergy();
+    }
+
+    /**
+     * Returns the ratio of the current energy and maximum energy
+     * of this Robot.
+     * 
+     * @return The ratio of this Robot's current energy to it's current maximum
+     *      energy.
+     *      | result == getAmountOfEnergy() / getMaxEnergy().getAmountOfEnergy()
+     */
+    public double getFractionOfEnergy() {
+        return getAmountOfEnergy() / maxEnergy.getAmountOfEnergy();
+    }
+
+    /**
+     * Return this Robot's current maximum energy.
+     */
+    @Basic
+    public Energy getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    /**
+     * This method returns the energy in Ws this robot needs when it wants to move.
+     */
+    @Basic
+    @Raw
+    public double getEnergyToMove() {
+        Energy weightEnergy = new Energy(50 * getCarriedWeight(unitOfMass.kg),
+                unitOfPower.Ws);
+        Energy moveEnergy = new Energy(0, unitOfPower.Ws);
+        moveEnergy.addEnergy(weightEnergy);
+        moveEnergy.addEnergy(energyToMove);
+        return moveEnergy.getAmountOfEnergy();
+    }
+
+    /**
+     * This method returns the amount of energy in Ws this robot needs to turn.
+     */
+    @Basic
+    @Immutable
+    @Raw
+    public double getEnergyToTurn() {
+        return energyToTurn.getAmountOfEnergy();
+    }
+
+    /**
+     * Turn this Robot clockwise 90 degrees.
+     * 
+     * @pre The energy this Robot currently has must be more then the energy it
+     *      needs to turn.
+     *      | getAmountOfEnergy() >= getEnergyToTurn().getAmountOfEnergy()
+     * @effect The orientation of this Robot will change 90 degrees in a
+     *      clockwise direction.
+     *      | new.getOrientation() = getOrientation().turnClockWise90()
+     * @post The energy of this Robot will decrease due to the turning.
+     *      | new.getAmountOfEnergy() = getAmountOfEnergy() - getEnergyToTurn()
+     */
+    public void turnClockwise90() {
+        assert energyToTurn.compareTo(energy) <= 0;
+        orientation = orientation.turnClockwise90();
+        energy.removeEnergy(energyToTurn);
+    }
+
+    /**
+     * Turn this Robot counterclockwise 90 degrees.
+     * 
+     * @pre The energy this Robot currently has must be more then the energy it
+     *      needs to turn.
+     *      | getAmountOfEnergy() >= getEnergyToTurn().getAmountOfEnergy()
+     * @effect The orientation of this Robot will change 90 degrees in a
+     *      counter-clockwise direction.
+     *      | new.getOrientation() = getOrientation().turnCounterClockWise90()
+     * @post The energy of this robot will decrease due to the turning.
+     *      | new.getAmountOfEnergy() = getAmountOfEnergy() - getEnergyToTurn()
+     */
+    public void turnCounterClockwise90() {
+        assert energyToTurn.compareTo(energy) <= 0;
+        orientation = orientation.turnCounterClockwise90();
+        energy.removeEnergy(energyToTurn);
+    }
+
+    /**
+     * Returns the current orientation of this robot.
+     */
+    @Basic
+    @Raw
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    /**
+     * Returns the ordinal of the orientation.
+     * 
+     * @return The ordinal of the orientation.
+     *      | result == getOrientation.ordinal()
+     */
+    public int getOrientationInt() {
+        return orientation.ordinal();
+    }
+
+    /**
+     * Move this Robot.
+     * 
+     * @pre The current energy of this robot must be more then the energy to move.
+     *      | getAmountOfEnergy() >= getEnergyToMove()
+     * @effect Change the position of this Robot.
+     *      | setPosition(getOrientation.nextPosition(getPosition))
+     * @effect Remove the energy this robot has used due to moving.
+     *      | new.getAmountOfEnergy() = getAmountOfEnergy() - getEnergyToMove()
+     * @throws IllegalStateException
+     *      There is no legal next position.
+     *      | getOrientation.nextPosition(getPosition).equals(getPosition())
+     */
+    public void move() throws IllegalStateException {
+        assert (getEnergyToMove() <= energy.getAmountOfEnergy());
+        Position nextPosition = orientation.nextPosition(position);
+        if (nextPosition.equals(getPosition()))
+            throw new IllegalStateException();
+        setPosition(nextPosition);
+        energy.removeEnergy(energyToMove);
+
+    }
+
+    /**
+     * Move this Robot to the given node's position.
+     * 
+     * @param node
+     *      Holds the position and energycost of the position this robot has to
+     *      move to.
+     * @pre The energy required to reach the position must exist.
+     *      | energyRequiredToReach != null
+     * @pre The energy required to reach the position must be a valid energy. 
+     *      | getEnergyRequiredToReach(node.getPosition()).isValidEnergy(maxEnergy)
+     * @post Remove the energy this robot has used due to moving.
+     *      | new.getAmountEnergy() = getAmountOfEnergy() - getEnergyToMove()
+     * @post Change the position of this Robot.
+     *      | new.getPosition() = node.getPosition()
+     * @post Change the orientation of this Robot.
+     *      | new.getOrientation() = node.getOrientation()
+     */
+    public void moveTo(Node node) {
+        Energy energyRequiredToReach = getEnergyRequiredToReach(node
+                .getPosition());
+        assert (energyRequiredToReach != null);
+        assert (energyRequiredToReach.isValidEnergy(maxEnergy));
+        energy.removeEnergy(energyRequiredToReach);
+        node.getPosition().BOARD.putElement(node.getPosition(), this);
+        orientation = node.getOrientation();
+    }
+
+    /**
+     * Move this robot and robot2 as close to each other as possible, while
+     * trying to use the least possible energy.
+     * 
+     * @param robot2
+     *      The robot that this Robot will have to end up as close as possible to.
+     * 
+     * @effect Move this robot and robot2 as close to each other as possible,
+     *      while trying to use the least possible energy.
+     *      | bestNodePairs = Node.bestNodePairs(new Node(null,
+     *      |   getOrientation(), 0, getPosition(),
+     *      |   robot2.getPosition()).allShortestPaths(),
+     *      |   new Node(null, getOrientation(), 0, robot2.getPosition(),
+     *      |   getPosition()).allShortestPaths()) 
+     *      | if (energyRequiredToReachRobot1Destination != null
+     *      |   && energyRequiredToReachRobot1Destination.isValidEnergy(maxEnergy))
+     *      |   moveTo(bestNodePairs.get(0)[0]
+     *      | if (energyRequiredToReachRobot2Destination != null
+     *      |   && energyRequiredToReachRobot2Destination.isValidEnergy(robot2.getMaxEnergy()))
+     *      |   moveTo(bestNodePairs.get(0)[1]
+     */
+    public void moveNextTo(Robot robot2) {
+        Node robot1Node = new Node(null, getOrientation(), 0, getPosition(),
+                robot2.getPosition());
+        Node robot2Node = new Node(null, robot2.getOrientation(), 0,
+                robot2.getPosition(), getPosition());
+
+        Set<Node> robot1AllShortestPaths = new HashSet<Node>();
+        Set<Node> robot2AllShortestPaths = new HashSet<Node>();
+
+        try {
+            robot1AllShortestPaths = robot1Node.allShortestPaths();
+            robot2AllShortestPaths = robot2Node.allShortestPaths();
+
+            List<Node[]> bestNodePairs = Node.bestNodePairs(
+                    robot1AllShortestPaths, robot2AllShortestPaths);
+            Node robot1Destination = bestNodePairs.get(0)[0];
+            Node robot2Destination = bestNodePairs.get(0)[1];
+
+            Energy energyRequiredToReachRobot1Destination = getEnergyRequiredToReach(robot1Destination
+                    .getPosition());
+            Energy energyRequiredToReachRobot2Destination = robot2
+                    .getEnergyRequiredToReach(robot2Destination.getPosition());
+            if (energyRequiredToReachRobot1Destination != null
+                    && energyRequiredToReachRobot1Destination
+                            .isValidEnergy(maxEnergy))
+                moveTo(robot1Destination);
+
+            if (energyRequiredToReachRobot2Destination != null
+                    && energyRequiredToReachRobot2Destination
+                            .isValidEnergy(maxEnergy))
+                robot2.moveTo(robot2Destination);
+        } catch (IllegalArgumentException e) {
+            System.err
+                    .println("Een van de twee robots heeft een position null.");
+        } catch (AssertionError ae) {
+            System.err
+                    .println("moveNextTo: This assertionerror is to be expected.");
+        }
+    }
+
+    /**
+     * Shoot this Robot's laser if it can hit something.
+     * 
+     * @pre This Robot has enough energy to shoot.
+     *      | getAmountOfEnergy() >= 1000
+     * @effect This Robot's energy is decreased by 1000 Ws.
+     *      | new.getAmountOfEnergy() = getAmountOfEnergy() - 1000
+     * @post One of the items the robot could hit is hit.
+     */
+    public void shoot() {
+        assert (energy.compareTo(new Energy(1000, unitOfPower.Ws)) >= 0);
+        energy.removeEnergy(new Energy(1000, unitOfPower.Ws));
+        Position bulletPosition = orientation.nextPosition(position);
+        while (position.BOARD.isValidPosition(bulletPosition)
+                && !position.BOARD.isOccupiedPosition(bulletPosition)) {
+            bulletPosition = orientation.nextPosition(bulletPosition);
+        }
+
+        if (bulletPosition != null) {
+            int item = new Random()
+                    .nextInt(bulletPosition.getElements().size());
+
+            Iterator<Element> elementsAtBulletPositionIt = bulletPosition
+                    .getElements().iterator();
+            for (int i = 0; i < item; i++) {
+                elementsAtBulletPositionIt.next();
+            }
+            elementsAtBulletPositionIt.next().hit();
+        }
+    }
+
+    /**
+     * Hit this Robot.
+     * 
+     * @effect This Robot it's maximum energy will decrease with 4000 Ws.
+     *      | new.getMaxEnergy().getAmountOfEnergy() =
+     *      |   getMaxEnergy().getAmountOfEnergy() - 4000
+     * @effect This Robot's energy may not exceed it's maximum energy.
+     *      | If (getAmountOfEnergy() > new.getMaxEnergy())
+     *      |   new.getAmountOfEnergy() = new.getMaxEnergy().getAmountOfEnergy()
+     * @effect If this Robot's maximum energy reaches 0 it will terminate itself.
+     *      | If (getMaxEnergy().getAmountOfEnergy() <= 0)
+     *      |   this.terminate()
+     */
+    public void hit() {
+        maxEnergy.removeEnergy(new Energy(4000, unitOfPower.Ws));
+        assert energy.compareTo(maxEnergy) > 0
+            energy.removeEnergy(new Energy(energy.getAmountOfEnergy()
+                    - maxEnergy.getAmountOfEnergy(), unitOfPower.Ws));
+        if (maxEnergy.compareTo(new Energy(0, unitOfPower.Ws)) <= 0)
+            terminate();
+    }
+
+    /**
+     * Add a set of items to this Robot's possessions while keeping them ordered.
+     * 
+     * @param itemsToAdd
+     *      The set of items to add.
+     * @post The items are added to this Robot's possessions if it has not been
+     *      terminated and the item isn't null.
+     *      | if (!isTerminated())
+     *      |   for itemToAdd in itemsToAdd
+     *      |       if (itemToAdd != null)
+     *      |           new.getPossessions().contains(itemToAdd)
+     * @post This Robot's possessions are sorted by weight from heavy to light.
+     *      | 0 <= i <= j < new.getPossessions().size()
+     *      | new.getPossessions().get(i).compareTo(
+     *      |   new.getPossessions().get(i + j)) >= 0
+     */
+    public void addItems(Set<Item> itemsToAdd) {
+        if (!isTerminated())
+            for (Item itemToAdd : itemsToAdd) {
+                if (itemToAdd != null)
+                    if (items.isEmpty()
+                            || itemToAdd.getWeight().compareTo(
+                                    items.get(items.size() - 1).getWeight()) < 0)
+                        items.add(itemToAdd);
+                    else {
+                        List<Item> compItems = new ArrayList<Item>(items);
+                        for (Item compItem : compItems)
+                            if (itemToAdd.getWeight().compareTo(
+                                    compItem.getWeight()) >= 0)
+                                items.add(items.indexOf(compItem), itemToAdd);
+                    }
+            }
+    }
+
+    /**
+     * Pickup the given item if this Robot's position is the same as the item's
+     * position.
+     * 
+     * @param item
+     *      The item to pick up.
+     * @post This Robot is carrying the given item if it was in the same
+     *      position.
+     *      | if (getPosition().equals(item.getPosition())
+     *      |   new.getPossessions().contains(item)
+     * @effect The item is picked up if it was in the same position.
+     *      | if (getPosition().equals(item.getPosition())
+     *      |   item.removPosition()
+     * @throws IllegalStateException
+     */
+    public void pickup(Item item) throws IllegalStateException {
+        if (item == null
+                || (carryWeight != null && carryWeight.compareTo(item
+                        .getWeight()) < 0))
+            throw new IllegalStateException();
+        if (position.equals(item.getPosition())) {
+            if (items.size() != 0) {
+                Set<Item> itemsToAdd = new HashSet<Item>();
+                itemsToAdd.add(item);
+                addItems(itemsToAdd);
+            } else if (!items.contains(item))
+                items.add(item);
+            item.removePosition();
+            if (carryWeight != null)
+                carryWeight.removeWeight(item.getWeight());
+        }
+    }
+
+    /**
+     * Use the given item if this Robot can.
+     * 
+     * @param item
+     *      The item to use.
+     * @post If this Robot is carrying the item but it is terminated, the item
+     *      is discarded.
+     *      | if (item != null && item.isTerminated())
+     *      |   !new.getPossessions().contains(item)
+     * @post If this Robot is carrying the item and it has not been terminated
+     *      use it.
+     *      | if (getPossessions().contains(item))
+     *      |   item.use(this)
+     * @throws IllegalArgumentException
+     *      If this Robot isn't carrying the item it cannot use it.
+     *      | !getPossessions().contains(item)
+     */
+    public void use(Item item) throws IllegalArgumentException {
+        if (!getPossessions().contains(item))
+            throw new IllegalArgumentException();
+
+        if (item.isTerminated())
+            items.remove(item);
+        if (items.contains(item))
+            item.use(this);
+    }
+
+    /**
+     * Drop the given item.
+     * 
+     * @param item
+     *      The item to drop.
+     * @post This Robot is no longer carrying the give item.
+     *      | !new.getPossessions().contains(item)
+     * @effect If the Robot is carrying the item, it will drop it.
+     *      | if (getPossessions().contains(item))
+     *      |   item.setPosition(getPosition())
+     * @throws IllegalArgumentException
+     */
+    public void drop(Item item) throws IllegalArgumentException {
+        if (!getPossessions().contains(item))
+            throw new IllegalArgumentException();
+        items.remove(item);
+        item.setPosition(position);
+        if (carryWeight != null)
+            carryWeight.addWeight(item.getWeight());
+    }
+
+    /**
+     * Transfer all items from this Robot to the given robot.
+     * 
+     * @param robot2
+     *      The robot that will receive this Robot's items.
+     * @effect If the two robots are capable of transfering items, the items
+     *      from this Robot are transfered to robot2.
+     *      | if (!(isTerminated() || robot2 == null || robot2.isTerminated())
+     *      | && position == null
+     *      | && getPosition().getNeigbours().contains(robot2.getPosition()))
+     *      |   robot2.addItems(getPossessions())
+     *      |   new.getPossessions().size() == 0
+     */
+    public void transferItems(Robot robot2) {
+        if (!(isTerminated() || robot2 == null || robot2.isTerminated())
+                && position != null
+                && getPosition().getNeighbours().contains(robot2.getPosition())) {
+            robot2.addItems(getPossessions());
+            items.clear();
+        }
+    }
+
+    /**
+     * Return the ordinal'th heaviest item this Robot is carrying.
+     * 
+     * @param ordinal
+     *      The ordinal of the item. (i.e. first == 1, second == 2, third == 3)
+     * @throws IndexOutOfBoundsException
+     *      There is no ordinal'th item.
+     *      | ordinal >= getPossessions().size()
+     */
+    public Item ithHeaviestItem(int ordinal) throws IndexOutOfBoundsException {
+        if (ordinal > items.size())
+            throw new IndexOutOfBoundsException();
+        return items.get(ordinal - 1);
+    }
+
+    /**
+     * Returns a set of all the items carried by this Robot.
+     */
+    @Basic
+    public Set<Item> getPossessions() {
+        Set<Item> possessions = new HashSet<Item>();
+        possessions.addAll(items);
+        return possessions;
+    }
+
+    /**
+     * Execute n steps of this Robot's program if this Robot has a program.
+     * 
+     * @param n
+     *      The number of steps to execute.
+     * @effect Execute n steps of the program if this Robot has a program.
+     *      | if (program != null)
+     *      |   for i = 1..n
+     *      |       program.step()
+     */
+    public void stepn(int n) {
+        if (program != null)
+            for (int i = 0; i < n; i++) {
+                program.step();
+            }
+    }
+
+    /**
+     * Set this Robot's program to the given program.
+     * 
+     * @param program
+     *      The program to give to this Robot.
+     */
+    @Basic
+    @Raw
+    public void setProgram(Program program) {
+        this.program = program;
+    }
+
+    /**
+     * Return this Robot's program.
+     */
+    @Basic
+    public Program getProgram() {
+        return program;
+    }
+
+    /**
+     * Terminate this Robot.
+     * 
+     * @effect If this Robot has a position remove the robot from the position.
+     *      | getPosition().removeElement(this)
+     * @effect Terminate each item this Robot is carrying.
+     *      | for item in getPossessions()
+     *      |   item.terminate()
+     * @post Forget your position.
+     *      | position = null
+     * @post Forget your program.
+     *      | program = null
+     * @post new.isTerminated() = true
+     */
+    @Override
+    public void terminate() {
+        if (position != null)
+            position.removeElement(this);
+        position = null;
+        for (Item item : getPossessions())
+            item.terminate();
+        program = null;
+        this.isTerminated = true;
+    }
+
+    /**
+     * Return the total weight this Robot is carrying in the given unit.
+     * 
+     * @param unit
+     *      The unit this Robot's carried weight should be expressed in.
+     * @return The total weight this Robot is carrying in the given unit.
+     *      | for item in getPossesions()
+     *      |   result += item.getWeight().getMassIn(unit)
+     *          
+     */
+    private int getCarriedWeight(unitOfMass unit) {
+        int carriedWeight = 0;
+        for (Item item : items)
+            carriedWeight += item.getWeight().getMassIn(unit);
+        return carriedWeight;
+    }
+
+    private final Energy energyToMove = new Energy(500, unitOfPower.Ws);
+    private static final Energy energyToTurn = new Energy(100, unitOfPower.Ws);
+    private final Energy energy;
+    private final Energy maxEnergy;
+    private static final Energy energyLimit = new Energy(20000, unitOfPower.Ws);
+    private final Weight carryWeight;
+    private final List<Item> items = new ArrayList<Item>();
+
+    private Program program;
+    private Orientation orientation;
+}

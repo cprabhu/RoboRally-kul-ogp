@@ -1,0 +1,8 @@
+package roborally.program;
+
+abstract class CombinedCommand extends Command {
+
+    protected CombinedCommand() {
+        // TODO Auto-generated constructor stub
+    }
+}

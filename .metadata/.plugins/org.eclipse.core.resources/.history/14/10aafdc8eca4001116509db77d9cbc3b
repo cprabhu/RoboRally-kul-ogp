@@ -1,0 +1,82 @@
+package roborally.test;
+
+import roborally.model.*;
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+import roborally.model.auxiliary.Position;
+
+/**
+ * @author Ben Adriaenssens <<ben.adriaenssens@student.kuleuven.be>>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
+public class WallTest {
+
+    @Before
+    public void setUp() {
+        wall = new Wall();
+        wall2 = new Wall(POSITION);
+    }
+
+    @Test
+    public void testWall() {
+        assertNotNull(wall);
+        assertNotNull(wall2);
+        assertFalse(wall.equals(wall2));
+    }
+
+    @Test
+    public void testSetPosition() {
+        Position position = Position.newPosition(3, 2, BOARD);
+
+        wall.setPosition(position);
+
+        assertEquals(position, wall.getPosition());
+        assertTrue(position.containsElement(wall));
+    }
+
+    @Test
+    public void testGetPosition() {
+        assertFalse(wall.getPosition() == POSITION);
+        assertEquals(POSITION, wall2.getPosition());
+    }
+
+    @Test
+    public void testRemovePosition() {
+        Position wallPosition = wall2.getPosition();
+
+        assertNotNull(wall2.getPosition());
+
+        wall2.removePosition();
+
+        assertNull(wall2.getPosition());
+        assertNull(wallPosition.getElements());
+    }
+
+    @Test
+    public void testTerminate() {
+        assertFalse(wall.isTerminated());
+        assertFalse(wall2.isTerminated());
+
+        wall.terminate();
+        wall2.terminate();
+
+        assertTrue(wall.isTerminated());
+        assertTrue(wall2.isTerminated());
+        assertFalse(POSITION.containsElement(wall2));
+        assertFalse(BOARD.isOccupiedPosition(POSITION));
+    }
+
+    @Test
+    public void testIsTerminated() {
+        wall.terminate();
+
+        assertTrue(wall.isTerminated());
+        assertFalse(wall2.isTerminated());
+    }
+
+    private Wall wall;
+    private Wall wall2;
+    private final Board BOARD = new Board(4, 5);
+    private final Position POSITION = Position.newPosition(2, 3, BOARD);
+}

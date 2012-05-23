@@ -1,0 +1,29 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import roborally.filters.AllExtractor;
+import roborally.model.*;
+
+public class AllExtractorTest {
+
+    @Test
+    public void testAllExtractor() {
+        assertNull(allExtractor1);
+
+        AllExtractor allExtractor1 = new AllExtractor();
+
+        assertNotNull(allExtractor1);
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        assertTrue(allExtractor.isSatisfied(new Wall()));
+        assertTrue(allExtractor.isSatisfied(new Battery()));
+        assertTrue(allExtractor.isSatisfied(new SurpriseBox()));
+    }
+
+    private final AllExtractor allExtractor = new AllExtractor();
+}

@@ -1,0 +1,16 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+public class Wall extends BasicCondition {
+
+    Wall() {
+        super("(wall)");
+    }
+
+    @Override
+    public boolean evaluate() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+}

@@ -1,0 +1,8 @@
+1331571003441	Encapsulate field 'x'
+1331571010782	Encapsulate field 'y'
+1331571018557	Encapsulate field 'orientation'
+1331571024334	Encapsulate field 'energy'
+1331571296975	Extract interface 'IRobot'
+1331571322862	Move compilation unit
+1331572629801	Delete element
+1331855530521	Extract method 'isValidCoordinate'

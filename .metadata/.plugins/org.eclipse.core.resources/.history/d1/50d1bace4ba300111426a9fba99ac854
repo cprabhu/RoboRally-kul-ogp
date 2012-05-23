@@ -1,0 +1,63 @@
+package roborally.program;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import roborally.model.Robot;
+
+/**
+ * This class represents a command with the robot which executes the command.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+abstract class Command {
+
+    /**
+     * Construct a command given a String and a robot.
+     * 
+     * @param commandString
+     *            The parameter commandString is a string which contains a
+     *            command.
+     * @param robot
+     *            The parameter robot is the robot that will execute the
+     *            command.
+     */
+    protected Command(Robot robot) {
+        this.robot = robot;
+    }
+
+    static Command newCommand(String commandString, Robot robot)
+            throws IllegalArgumentException {
+        Matcher commandMatcher = Pattern.compile("[a-z-]+").matcher(
+                commandString);
+        commandMatcher.find();
+        String command = commandString.substring(commandMatcher.start(),
+                commandMatcher.end());
+        if (command.equals("move"))
+            return new Move(robot);
+        else if (command.equals("turn")) {
+            commandMatcher.find();
+            return new Turn(commandString.substring(commandMatcher.start(),
+                    commandMatcher.end()), robot);
+        } else if (command.equals("shoot"))
+            return new Shoot(robot);
+        else if (command.equals("pickup-and-use"))
+            return new PickupAndUse(robot);
+        else if (command.equals("if"))
+            return new If(commandString, robot);
+        else if (command.equals("while"))
+            return new While(commandString, robot);
+        else if (command.equals("seq"))
+            return new Seq(commandString, robot);
+        throw new IllegalArgumentException("newCommand: The command '"
+                + command + "' couldn't be interpreted.");
+    }
+
+    abstract void execute();
+
+    @Override
+    abstract public String toString();
+
+    protected Robot robot;
+}

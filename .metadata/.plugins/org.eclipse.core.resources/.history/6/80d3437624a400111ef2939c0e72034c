@@ -1,0 +1,138 @@
+package roborally.model;
+
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Position;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+
+/**
+ * This class represents a battery.
+ * 
+ * @invar getEnergy() != null
+ * @invar getWeight() != null
+ * @invar getMaxEnergy() != null
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public class Battery extends Item implements EnergyElement {
+
+    /**
+     * Initializes this Battery.
+     * 
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = new Energy(1000, unitOfPower.Ws)
+     */
+    public Battery() {
+        super();
+        this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
+        this.energy = new Energy(1000, unitOfPower.Ws);
+        this.weight = new Weight(100, Weight.unitOfMass.g);
+    }
+
+    /**
+     * Initializes this Battery with a position.
+     * 
+     * @param position
+     *      The position of this Battery
+     * @effect ...
+     *      | super(position)
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = new Energy(1000, unitOfPower.Ws)
+     */
+    public Battery(Position position) {
+        super(position);
+        this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
+        this.energy = new Energy(1000, unitOfPower.Ws);
+        this.weight = new Weight(100, Weight.unitOfMass.g);
+    }
+
+    /**
+     * Initializes this Battery with a position and an energy.
+     * 
+     * @param position
+     *      The position of this Battery.
+     * @param energy
+     *      The energy of this Battery.
+     * @pre ...
+     *      | energy != null
+     * @pre ...
+     *      | energy.isValidEnergy(new.getMaxEnergy());
+     * @effect ...
+     *      | super(position)
+     * @post ...
+     *      | new.getMaxEnergy() = new Energy(5000, Energy.unitOfPower.Ws)
+     * @post ...
+     *      | new.getEnergy() = energy
+     * @post ...
+     *      | new.getPosition() = position
+     */
+    public Battery(Position position, Energy energy) {
+        super(position);
+        this.maxEnergy = new Energy(5000, Energy.unitOfPower.Ws);
+        assert (energy != null);
+        assert energy.isValidEnergy(maxEnergy);
+        this.energy = energy;
+        this.weight = new Weight(100, Weight.unitOfMass.g);
+    }
+
+    /**
+     * Initializes this Battery with a position, energy and a weight.
+     * 
+     * @param position
+     *      The position of this Battery.
+     * @param energy
+     *      The energy of this Battery.
+     * @param weight
+     *      The weight of this Battery.
+     * @effect ...
+     *      | this(position, energy)
+     * @post ...
+     *      | new.getWeight() = weight
+     */
+    public Battery(Position position, Energy energy, Weight weight) {
+        this(position, energy);
+        this.weight.removeWeight(new Weight(100, Weight.unitOfMass.g));
+        this.weight.addWeight(weight);
+
+    }
+
+    public void use(Robot robot) {
+        if (robot != null) {
+            if (isTerminated())
+                robot.drop(this);
+            else if (!robot.isTerminated())
+                robot.recharge(energy);
+        }
+    }
+
+    public void hit() {
+        if (!isTerminated())
+            energy.addEnergy(new Energy(500, unitOfPower.Ws));
+    }
+
+    public Energy getEnergy() {
+        return energy;
+    }
+
+    public double getAmountOfEnergy() {
+        return energy.getAmountOfEnergy();
+    }
+
+    public Weight getWeight() {
+        return weight;
+    }
+
+    public final Energy getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    private final Energy energy;
+    private final Energy maxEnergy;
+    private final Weight weight;
+}

@@ -1,0 +1,31 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class Or extends CombinedCondition {
+
+    Or(String conditionString, Robot robot) {
+        for (String subCondition : Program.allSubParenthesed(conditionString
+                .substring(4, conditionString.length()))) {
+            conditions.add(newCondition(subCondition, robot));
+        }
+    }
+
+    @Override
+    boolean evaluate() {
+        for (Condition condition : conditions)
+            if (condition.evaluate())
+                return true;
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        String conditionString = "(or";
+        for (Condition condition : conditions)
+            conditionString += " " + condition.toString();
+        conditionString += ")";
+
+        return conditionString;
+    }
+}

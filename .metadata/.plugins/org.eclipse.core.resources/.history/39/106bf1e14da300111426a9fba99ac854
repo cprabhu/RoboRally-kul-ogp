@@ -1,0 +1,31 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class And extends CombinedCondition {
+
+    And(String conditionString, Robot robot) {
+        for (String subCondition : Program.allSubParenthesed(conditionString
+                .substring(5, conditionString.length()))) {
+            conditions.add(newCondition(subCondition, robot));
+        }
+    }
+
+    @Override
+    boolean evaluate() {
+        for (Condition condition : conditions)
+            if (!condition.evaluate())
+                return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        String conditionString = "(and";
+        for (Condition condition : conditions)
+            conditionString += " " + condition.toString();
+        conditionString += ")";
+
+        return conditionString;
+    }
+}

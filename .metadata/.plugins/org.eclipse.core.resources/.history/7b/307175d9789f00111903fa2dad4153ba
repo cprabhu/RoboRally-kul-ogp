@@ -1,0 +1,21 @@
+package roborally.filters;
+
+import roborally.model.Element;
+
+public class InRangeExtractor implements BooleanExtractor {
+
+    public InRangeExtractor(long x1, long y1, long x2, long y2) {
+
+    }
+
+    @Override
+    public boolean isSatisfied(Element element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    private final long x1;
+    private final long y1;
+    private final long x2;
+    private final long y2;
+}

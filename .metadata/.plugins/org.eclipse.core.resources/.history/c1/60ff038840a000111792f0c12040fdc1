@@ -1,0 +1,16 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class PickupAndUse extends BasicCommand {
+
+    PickupAndUse(Robot robot) {
+        super("(pickup-and-use)", robot);
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+}

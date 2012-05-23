@@ -1,0 +1,74 @@
+package roborally.program;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import roborally.model.Robot;
+
+public class Program {
+
+    public Program(String programString, Robot executingRobot) {
+        programCounter = 0;
+        this.programString = programString;
+        commands = new ArrayList<Command>();
+
+        for (String commandString : allSubParenthesed(programString))
+            commands.add(Command.newCommand(commandString, executingRobot));
+    }
+
+    public void step() {
+        if (programCounter < commands.size())
+            commands.get(programCounter).execute();
+        programCounter++;
+    }
+
+    @Override
+    public String toString() {
+        return programString;
+    }
+
+    void decrementProgramCounter() {
+        programCounter--;
+    }
+
+    public static List<String> allSubParenthesed(String string) {
+        List<String> allSubParenthesed = new ArrayList<String>();
+        // string = string.substring(string.indexOf(" ") + 1, string.length() -
+        // 1);
+
+        System.out.print(string + "    -->    ");
+
+        int parenthesesCounter = 0;
+        Matcher stringMatcher = Pattern.compile("[a-z]").matcher(string);
+        stringMatcher.find(string.indexOf("("));
+        int beginIndex = stringMatcher.start();
+        for (int endIndex = string.indexOf("("); endIndex < string.length(); endIndex++) {
+            if (beginIndex < 0 || endIndex < 0)
+                break;
+            System.out.println("CHARAT " + string.charAt(endIndex)
+                    + " /CHARAT");
+            if ('(' == string.charAt(endIndex))
+                parenthesesCounter++;
+            else if (")".equals(string.charAt(endIndex)))
+                parenthesesCounter--;
+            if (parenthesesCounter == 0) {
+                System.out.println(string.substring(beginIndex, endIndex + 1));
+                allSubParenthesed.add(string
+                        .substring(beginIndex, endIndex + 1));
+                int nextOpenParen = string.indexOf("(", endIndex + 1);
+                if (nextOpenParen < 0)
+                    break;
+                stringMatcher.find(nextOpenParen);
+                beginIndex = stringMatcher.start();
+                endIndex = string.indexOf("(", endIndex + 1) - 1;
+            }
+        }
+
+        return allSubParenthesed;
+    }
+
+    private int programCounter;
+    private String programString;
+    private final List<Command> commands;
+}

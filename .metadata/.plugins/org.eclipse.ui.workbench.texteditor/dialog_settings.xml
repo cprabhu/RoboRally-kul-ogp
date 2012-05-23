@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="263" key="DIALOG_WIDTH"/>
+		<item value="393" key="DIALOG_Y_ORIGIN"/>
+		<item value="395" key="DIALOG_HEIGHT"/>
+		<item value="-280" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Lucida Grande|11.0|0|COCOA|1|LucidaGrande" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="isRegEx"/>
+		<item value="true" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="this RepairKit" key="selection"/>
+		<list key="findhistory">
+			<item value="the repair kit"/>
+			<item value="the item"/>
+			<item value="getOccupiedPositions().contains()"/>
+			<item value=")"/>
+			<item value="command"/>
+			<item value="aaowboy"/>
+			<item value="owboy"/>
+			<item value="energyAtLeastExtractor"/>
+		</list>
+		<list key="replacehistory">
+			<item value="this RepairKit"/>
+			<item value="this Item"/>
+			<item value="condition"/>
+			<item value="gump"/>
+			<item value="example"/>
+			<item value="emptyString"/>
+			<item value="inRangeExtractor"/>
+			<item value="InRangeExtractor"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="595" key="DIALOG_Y_ORIGIN"/>
+		<item value="472" key="DIALOG_X_ORIGIN"/>
+	</section>
+</section>

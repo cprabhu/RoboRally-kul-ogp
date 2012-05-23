@@ -1,0 +1,24 @@
+package roborally.program;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import roborally.model.Robot;
+
+public class And extends CombinedCondition {
+
+    And(String conditionString, Robot robot) {
+        super(conditionString);
+        this.robot = robot;
+
+    }
+
+    @Override
+    public boolean evaluate() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    private Robot robot;
+    private final Set<Condition> conditions = new HashSet<Condition>();
+}

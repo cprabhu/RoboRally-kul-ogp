@@ -1,0 +1,10 @@
+package roborally.program;
+
+public class BasicCommand implements Command {
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+    }
+
+}

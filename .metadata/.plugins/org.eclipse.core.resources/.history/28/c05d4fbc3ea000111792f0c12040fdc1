@@ -1,0 +1,23 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class Move extends BasicCommand {
+
+    Move(Robot robot) {
+        super("(move)");
+        this.robot = robot;
+    }
+
+    @Override
+    public void execute() {
+        if (robot != null
+                && robot.getAmountOfEnergy() >= robot.getEnergyToMove())
+            try {
+                robot.move();
+            } catch (IllegalStateException e) {
+            }
+    }
+
+    private Robot robot;
+}

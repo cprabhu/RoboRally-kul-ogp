@@ -1,0 +1,41 @@
+package roborally.program;
+
+import java.util.*;
+
+import roborally.model.Robot;
+
+class And extends CombinedCondition {
+
+    And(String conditionString, Robot robot) {
+        super(conditionString);
+
+        String conditionsList = conditionString.substring(5,
+                conditionString.length() - 1);
+
+        int parenthesesCounter = 0;
+        int beginIndex = 0;
+        for (int endIndex = 0; endIndex < conditionsList.length(); endIndex++) {
+            if ("(".equals(conditionsList.charAt(endIndex)))
+                parenthesesCounter++;
+            else if (")".equals(conditionsList.charAt(endIndex)))
+                parenthesesCounter++;
+            if (parenthesesCounter == 0) {
+                conditions.add(newCondition(
+                        conditionsList.substring(beginIndex, endIndex + 1),
+                        robot));
+                beginIndex = endIndex + 2;
+                endIndex += 2;
+            }
+        }
+    }
+
+    @Override
+    boolean evaluate() {
+        for (Condition condition : conditions)
+            if (!condition.evaluate())
+                return false;
+        return true;
+    }
+
+    private final Set<Condition> conditions = new HashSet<Condition>();
+}

@@ -1,0 +1,19 @@
+package roborally.program;
+
+class Turn extends BasicCommand {
+
+    Turn(String direction, Robot robot) {
+        super("(turn " + direction + ")");
+        this.direction = direction;
+    }
+
+    @Override
+    public void execute() {
+        if (direction.equals("clockwise"))
+            robot.turnClockwise90();
+        else if (direction.equals("counter-clockwise"))
+            robot.turnCounterClockwise90();
+    }
+
+    private String direction;
+}

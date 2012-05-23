@@ -1,0 +1,340 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import java.util.Iterator;
+import java.util.Set;
+
+import org.junit.*;
+
+import roborally.filters.EnergyAtLeastExtractor;
+import roborally.model.*;
+import roborally.model.Energy.unitOfPower;
+
+/**
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be>, Toon Nolten <toon.nolten@student.kuleuven.be>
+ */
+public class BoardTest {
+
+    @Before
+    public void setUp() throws Exception {
+        board = new Board(535, 364);
+    }
+
+    @Test
+    public void testBoard() {
+        assertNotNull(board);
+
+        Position legalPosition = Position.newPosition(346, 210, board);
+        assertTrue(board.isValidPosition(legalPosition));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBoardFail() {
+        Position illegalPositionUp = Position.newPosition(236, -17, board);
+        assertFalse(board.isValidPosition(illegalPositionUp));
+        Position illegalPositionRight = Position.newPosition(714, 156, board);
+        assertFalse(board.isValidPosition(illegalPositionRight));
+        Position illegalPositionDown = Position.newPosition(524, 425, board);
+        assertFalse(board.isValidPosition(illegalPositionDown));
+        Position illegalPositionLeft = Position.newPosition(-42, 357, board);
+        assertFalse(board.isValidPosition(illegalPositionLeft));
+    }
+
+    @Test
+    public void testMerge() {
+        Energy energy = new Energy(100, unitOfPower.Ws);
+        Position emptyBoard = Position.newPosition(2, 4, board);
+        Position occupiedBoard = Position.newPosition(3, 6, board);
+        board.putElement(occupiedBoard, new Battery(occupiedBoard, energy));
+        Position occupied2Board = Position.newPosition(4, 14, board);
+        board.putElement(occupied2Board, new Battery(occupied2Board, energy));
+        Position obstacleBoard = Position.newPosition(5, 25, board);
+        board.putElement(obstacleBoard, new Wall(obstacleBoard));
+        Position surroundedBoard = Position.newPosition(423, 0, board);
+        board.putElement(surroundedBoard, new Wall());
+        board.putElement(Position.newPosition(424, 0, board), new Wall());
+        board.putElement(Position.newPosition(423, 1, board), new Wall());
+        board.putElement(Position.newPosition(422, 0, board), new Wall());
+
+        Board board2 = new Board(600, 234);
+        Position overlapEmptyBoard2 = Position.newPosition(2, 4, board2);
+        board2.putElement(overlapEmptyBoard2, new Battery(overlapEmptyBoard2,
+                energy));
+        Position overlapOccupiedBoard2 = Position.newPosition(3, 6, board2);
+        board2.putElement(overlapOccupiedBoard2,
+                new Wall(overlapOccupiedBoard2));
+        Position overlapOccupied2Board2 = Position.newPosition(4, 14, board2);
+        board2.putElement(overlapOccupied2Board2, new Battery(
+                overlapOccupied2Board2, energy));
+        Position overlapObstacleBoard2 = Position.newPosition(5, 25, board2);
+        board2.putElement(overlapObstacleBoard2, new Battery(
+                overlapObstacleBoard2, energy));
+        Position surroundedBoard2 = Position.newPosition(423, 0, board2);
+        board2.putElement(surroundedBoard2, new Battery());
+        Position noOverlapBoard2 = Position.newPosition(586, 215, board2);
+        board2.putElement(noOverlapBoard2, new Battery(noOverlapBoard2, energy));
+
+        board.merge(board2);
+
+        assertEquals(1, board.getElementsAt(emptyBoard).size());
+        assertEquals(1, board.getElementsAt(occupiedBoard).size());
+        assertEquals(2, board.getElementsAt(occupied2Board).size());
+        assertEquals(1, board.getElementsAt(obstacleBoard).size());
+        assertEquals(1, board.getElementsAt(surroundedBoard).size());
+        assertFalse(board.isOccupiedPosition(noOverlapBoard2));
+        assertTrue(board2.isTerminated());
+        assertTrue(overlapEmptyBoard2.isTerminated());
+        assertTrue(overlapOccupiedBoard2.isTerminated());
+        assertTrue(overlapOccupied2Board2.isTerminated());
+        assertTrue(overlapObstacleBoard2.isTerminated());
+        assertTrue(surroundedBoard2.isTerminated());
+        assertTrue(noOverlapBoard2.isTerminated());
+
+        board.merge(null);
+
+        assertEquals(8, board.getNumberOfOccupiedPositions());
+    }
+
+    @Test
+    public void testPutElement() {
+        Position position = Position.newPosition(33, 57, board);
+        Energy energy = new Energy(100, unitOfPower.Ws);
+        Element element1 = new Battery(position, energy);
+        Element element2 = new Battery(position, energy);
+        Position newPosition = Position.newPosition(15, 254, board);
+        Position illegalPosition = Position.newPosition(516, 457, new Board(
+                600, 500));
+
+        board.putElement(newPosition, element1);
+
+        assertTrue(newPosition.containsElement(element1));
+        assertFalse(position.containsElement(element1));
+        assertTrue(element1.getPosition().equals(newPosition));
+        assertFalse(position.isTerminated());
+
+        board.putElement(newPosition, element2);
+
+        assertTrue(newPosition.containsElement(element2));
+        assertFalse(position.containsElement(element2));
+        assertTrue(element2.getPosition().equals(newPosition));
+        assertTrue(position.isTerminated());
+
+        board.putElement(illegalPosition, element2);
+
+        assertFalse(illegalPosition.containsElement(element2));
+        assertFalse(element2.getPosition().equals(illegalPosition));
+        assertTrue(element2.getPosition().equals(newPosition));
+        assertTrue(position.isTerminated());
+        assertEquals(0, illegalPosition.getElements().size());
+    }
+
+    @Test
+    public void testRemoveElement() {
+        Position position = Position.newPosition(33, 57, board);
+        Element element = new Battery();
+        board.putElement(position, element);
+
+        assertEquals(1, board.getNumberOfOccupiedPositions());
+
+        board.removeElement(element);
+
+        assertEquals(0, board.getNumberOfOccupiedPositions());
+        assertTrue(position.isTerminated());
+        assertFalse(element.isTerminated());
+        assertNull(element.getPosition());
+
+    }
+
+    @Test
+    public void testGetElementsAt() {
+        Position position = Position.newPosition(33, 57, board);
+        Element element = new Battery();
+
+        assertFalse(element.equals(board.getElementsAt(position)));
+        assertEquals(0, board.getElementsAt(position).size());
+
+        board.putElement(position, element);
+
+        assertTrue(board.getElementsAt(position).contains(element));
+        assertEquals(1, board.getElementsAt(position).size());
+
+        board.removeElement(element);
+
+        assertFalse(element.equals(board.getElementsAt(position)));
+        assertEquals(0, board.getElementsAt(position).size());
+    }
+
+    @Test
+    public void testGetElementsOf() {
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
+
+        Element wall = new Wall();
+        Element battery1 = new Battery();
+        Element battery2 = new Battery();
+        Element robot = new Robot(new Energy(100, unitOfPower.Ws),
+                Orientation.UP);
+
+        board.putElement(occupied1, wall);
+        board.putElement(occupied2, battery1);
+        board.putElement(occupied3, battery2);
+        board.putElement(occupied3, robot);
+
+        Set<Element> walls = board.getElementsOf(Wall.class);
+        assertEquals(1, walls.size());
+        assertTrue(walls.contains(wall));
+
+        Set<Element> batteries = board.getElementsOf(Battery.class);
+        assertEquals(2, batteries.size());
+        assertTrue(batteries.contains(battery1));
+        assertTrue(batteries.contains(battery2));
+
+        Set<Element> robots = board.getElementsOf(Robot.class);
+        assertEquals(1, robots.size());
+        assertTrue(robots.contains(robot));
+    }
+
+    @Test
+    public void testAddOccupiedPosition() {
+        Position position = Position.newPosition(33, 57, board);
+        Position illegalPosition = Position.newPosition(516, 457, new Board(
+                600, 500));
+
+        board.addOccupiedPosition(position);
+
+        assertTrue(board.isOccupiedPosition(position));
+
+        board.addOccupiedPosition(illegalPosition);
+
+        assertFalse(board.isOccupiedPosition(illegalPosition));
+    }
+
+    @Test
+    public void testGetNumberOfOccupiedPositions() {
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
+
+        assertEquals(0, board.getNumberOfOccupiedPositions());
+
+        board.putElement(occupied1, new Wall());
+
+        assertEquals(1, board.getNumberOfOccupiedPositions());
+
+        board.putElement(occupied2, new Wall());
+
+        assertEquals(2, board.getNumberOfOccupiedPositions());
+
+        board.putElement(occupied3, new Wall());
+
+        assertEquals(3, board.getNumberOfOccupiedPositions());
+    }
+
+    @Test
+    public void testGetOccupiedPositions() {
+        Position occupied1 = Position.newPosition(3, 6, board);
+        Position occupied2 = Position.newPosition(4, 14, board);
+        Position occupied3 = Position.newPosition(5, 25, board);
+
+        assertEquals(0, board.getOccupiedPositions().size());
+
+        board.putElement(occupied1, new Wall());
+
+        assertTrue(board.getOccupiedPositions().contains(occupied1));
+        assertFalse(board.getOccupiedPositions().contains(occupied2));
+        assertFalse(board.getOccupiedPositions().contains(occupied3));
+
+        board.putElement(occupied2, new Wall());
+
+        assertTrue(board.getOccupiedPositions().contains(occupied1));
+        assertTrue(board.getOccupiedPositions().contains(occupied2));
+        assertFalse(board.getOccupiedPositions().contains(occupied3));
+
+        board.putElement(occupied3, new Wall());
+
+        assertTrue(board.getOccupiedPositions().contains(occupied1));
+        assertTrue(board.getOccupiedPositions().contains(occupied2));
+        assertTrue(board.getOccupiedPositions().contains(occupied3));
+    }
+
+    @Test
+    public void testIsValidPosition() {
+        Position position = Position.newPosition(33, 57, board);
+
+        assertTrue(board.isValidPosition(position));
+        assertFalse(board.isValidPosition(null));
+    }
+
+    @Test
+    public void testIsValidPosition2() {
+        assertTrue(board.isValidPosition(315, 243));
+
+        assertFalse(board.isValidPosition(236, -17));
+        assertFalse(board.isValidPosition(714, 156));
+        assertFalse(board.isValidPosition(524, 425));
+        assertFalse(board.isValidPosition(-42, 357));
+    }
+
+    @Test
+    public void testTerminate() {
+        Energy energy = new Energy(100, unitOfPower.Ws);
+        Position position = Position.newPosition(3, 6, board);
+        board.putElement(position, new Battery(position, energy));
+
+        assertFalse(board.isTerminated());
+        assertFalse(position.isTerminated());
+
+        board.terminate();
+
+        assertEquals(0, board.getNumberOfOccupiedPositions());
+        assertTrue(board.isTerminated());
+        assertNull(position.getElements());
+        assertTrue(position.isTerminated());
+    }
+
+    @Test
+    public void testIsTerminated() {
+        assertFalse(board.isTerminated());
+        board.terminate();
+        assertTrue(board.isTerminated());
+    }
+
+    @Test
+    public void testConditionIterator() {
+
+        try {
+            board.conditionIterator(new EnergyAtLeastExtractor(200)).hasNext();
+            fail("An illegalStateException should have been thrown.");
+        } catch (IllegalStateException e) {
+            System.err.println("testConditionIterator: "
+                    + "This illegalStateException is to be expected.");
+        }
+
+        Energy energy = new Energy(100, unitOfPower.Ws);
+        Energy energy2 = new Energy(500, unitOfPower.Ws);
+        Position occupiedBoard = Position.newPosition(3, 6, board);
+        board.putElement(occupiedBoard, new Battery(occupiedBoard, energy));
+        Position occupied2Board = Position.newPosition(4, 14, board);
+        board.putElement(occupied2Board, new Battery(occupied2Board, energy2));
+        Position obstacleBoard = Position.newPosition(5, 25, board);
+        board.putElement(obstacleBoard, new Wall(obstacleBoard));
+        Position surroundedBoard = Position.newPosition(423, 0, board);
+        board.putElement(surroundedBoard, new Wall());
+        board.putElement(Position.newPosition(424, 0, board), new Wall());
+        board.putElement(Position.newPosition(423, 1, board), new Wall());
+        board.putElement(Position.newPosition(422, 0, board), new Wall());
+
+        Iterator<Element> iterator = board
+                .conditionIterator(new EnergyAtLeastExtractor(200));
+
+        assertTrue(iterator.hasNext());
+
+        iterator.remove();
+
+        assertFalse(iterator.hasNext());
+    }
+
+    private Board board;
+}

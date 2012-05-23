@@ -1,0 +1,28 @@
+package roborally.filters;
+
+import roborally.model.Element;
+import roborally.model.Position;
+
+public class InRangeExtractor implements BooleanExtractor {
+
+    public InRangeExtractor(long x1, long y1, long x2, long y2) {
+        this.minX = x1;
+        this.maxX = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+    }
+
+    @Override
+    public boolean isSatisfied(Element element) {
+        Position position = element.getPosition();
+        if (position.X >= minX && position.X <= x2 && position.Y >= maxX
+                && position.Y <= y2)
+            return true;
+        return false;
+    }
+
+    private final long minX;
+    private final long maxX;
+    private final long x2;
+    private final long y2;
+}

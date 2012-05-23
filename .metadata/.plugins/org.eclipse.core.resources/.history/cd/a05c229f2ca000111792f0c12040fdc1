@@ -1,0 +1,28 @@
+package roborally.program;
+
+import roborally.model.Position;
+import roborally.model.Robot;
+
+public class CanHitRobot extends BasicCondition {
+
+    public CanHitRobot(String conditionString, Robot robot) {
+        super(conditionString);
+    }
+
+    @Override
+    public boolean evaluate() {
+        Position bulletPosition = robot.getOrientation().nextPosition(
+                robot.getPosition());
+        while (robot.getPosition().BOARD.isValidPosition(bulletPosition)
+                && !robot.getPosition().BOARD
+                        .isOccupiedPosition(bulletPosition))
+            bulletPosition = robot.getOrientation()
+                    .nextPosition(bulletPosition);
+        if (bulletPosition != null
+                && bulletPosition.getElementsOf(Robot.class).size() > 0)
+            return true;
+        return false;
+    }
+
+    private Robot robot;
+}

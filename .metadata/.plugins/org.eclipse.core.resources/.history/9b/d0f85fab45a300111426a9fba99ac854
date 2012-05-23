@@ -1,0 +1,27 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class Not extends CombinedCondition {
+
+    Not(String conditionString, Robot robot) {
+        condition = newCondition(
+                Program.allSubParenthesed(
+                        conditionString.substring(5, conditionString.length()))
+                        .get(0), robot);
+    }
+
+    @Override
+    boolean evaluate() {
+        return !condition.evaluate();
+    }
+
+    @Override
+    public String toString() {
+        String conditionString = "(not " + condition.toString() + ")";
+
+        return conditionString;
+    }
+
+    private Condition condition;
+}

@@ -1,0 +1,17 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+public class AtItem extends BasicCondition {
+
+    AtItem(Robot robot) {
+        super("(at-item)", robot);
+    }
+
+    @Override
+    public boolean evaluate() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+}

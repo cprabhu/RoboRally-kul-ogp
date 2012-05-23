@@ -1,0 +1,15 @@
+1334682731591	Encapsulate field 'position'
+1334683659594	Delete element
+1334684119400	Delete element
+1334693593477	Rename type 'Mass'
+1334695476710	Delete element
+1334696295084	Rename field 'board1'
+1334696312051	Rename field 'position1'
+1334696360577	Rename field 'board1'
+1334696372371	Rename field 'position1'
+1334771690266	Extract local variable 'element1'
+1334771702959	Extract local variable 'element2'
+1334771717707	Extract local variable 'element3'
+1334781077440	Extract local variable 'energy'
+1334851399754	Delete element
+1334851456681	Delete element

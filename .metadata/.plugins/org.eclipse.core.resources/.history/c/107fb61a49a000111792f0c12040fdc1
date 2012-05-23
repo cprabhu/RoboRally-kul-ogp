@@ -1,0 +1,26 @@
+package roborally.program;
+
+import java.util.List;
+
+import roborally.model.Robot;
+
+class While extends CombinedCommand {
+
+    While(String commandString, Robot robot) {
+        super(commandString, robot);
+
+        List<String> whileString = Program.allSubParenthesed(commandString);
+
+        condition = Condition.newCondition(whileString.get(0), robot);
+        command = newCommand(whileString.get(1), robot);
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private Condition condition;
+    private Command command;
+}

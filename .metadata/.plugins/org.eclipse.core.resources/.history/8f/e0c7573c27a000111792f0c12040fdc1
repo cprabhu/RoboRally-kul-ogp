@@ -1,0 +1,14 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+public abstract class BasicCondition extends Condition {
+
+    public BasicCondition(String basicCondition, Robot robot) {
+        super(basicCondition);
+
+        this.robot = robot;
+    }
+
+    protected Robot robot;
+}

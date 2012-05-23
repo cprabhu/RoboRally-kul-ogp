@@ -1,0 +1,14 @@
+package roborally.program;
+
+class Shoot extends BasicCommand {
+
+    Shoot(Robot robot) {
+        super("(shoot)", robot);
+    }
+
+    @Override
+    public void execute() {
+        if (robot != null && robot.getAmountOfEnergy() >= 1000)
+            robot.shoot();
+    }
+}

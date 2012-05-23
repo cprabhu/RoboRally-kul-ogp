@@ -1,0 +1,11 @@
+package roborally.program;
+
+public class Move extends BasicCommand {
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

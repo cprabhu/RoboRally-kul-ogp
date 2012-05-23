@@ -1,0 +1,6 @@
+1335871117133	Extract local variable 'position1Board1Wall'
+1335871133156	Extract local variable 'position2Board1Wall'
+1335871146165	Extract local variable 'position3Board1Wall'
+1335872159233	Extract local variable 'robot1Destination'
+1335872276480	Extract local variable 'energyRequiredToReachRobot1Destination'
+1335876563205	Extract local variable 'board'

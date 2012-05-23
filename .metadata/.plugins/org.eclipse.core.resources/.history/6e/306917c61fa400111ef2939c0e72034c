@@ -1,0 +1,91 @@
+package roborally.model;
+
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.EnergyElement;
+import roborally.model.auxiliary.Position;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+
+/**
+ * This class represents a repair kit.
+ * 
+ * @author Ben Adriaenssens <ben.adriaenssens@student.kuleuven.be> - WtkCws,
+ *         Toon Nolten <toon.nolten@student.kuleuven.be> - CwsElt.
+ */
+public class RepairKit extends Item implements EnergyElement {
+
+    /**
+     * Initializes the repair kit.
+     * 
+     * @effect ...
+     *      | super()
+     * @post ...
+     *      | new.getEnergy() = new Energy(1000, unitOfPower.Ws)
+     */
+    public RepairKit() {
+        super();
+        energy = new Energy(1000, unitOfPower.Ws);
+    }
+
+    /**
+     * Initializes the repair kit with a position, weight and energy.
+     * 
+     * @param position
+     *      The position of this RepairKit.
+     * @param weight
+     *      The weight of this RepairKit.
+     * @param energy
+     *      The energy of this RepairKit.
+     * @effect ...
+     *      | super(position, weight)
+     * @post ...
+     *      | new.getEnergy() = energy
+     */
+    public RepairKit(Position position, Weight weight, Energy energy) {
+        super(position, weight);
+        this.energy = energy;
+    }
+
+    /**
+     * Hit this RepairKit, the energy of this RepairKit will increase with 500 Ws.
+     * 
+     * @effect ...
+     *      | if (!isTerminated())
+     *      |   energy.addEnergy(new Energy(500, unitOfPower.Ws))
+     */
+    @Override
+    public void hit() {
+        if (!isTerminated())
+            energy.addEnergy(new Energy(500, unitOfPower.Ws));
+    }
+
+    /**
+     * Increase the robot's maximum energy.
+     * 
+     * @param robot
+     *      The robot that uses this RepairKit
+     * @effect ...
+     *      | robot.increaseMaxEnergy(new Energy(getAmountOfEnergy()/2, unitOfPower.Ws))
+     * @post ...
+     *      | new.getEnergy() = new Energy((this.getAmountOfEnergy()/2
+     *      |   - (20000 - robot.getAmountOfEnergy()))*2, unitOfPower.Ws)
+     */
+    @Override
+    public void use(Robot robot) {
+        Energy increaseEnergy = new Energy(energy.getAmountOfEnergy() / 2,
+                unitOfPower.Ws);
+        robot.increaseMaxEnergy(increaseEnergy);
+        energy = new Energy(increaseEnergy.getAmountOfEnergy() * 2,
+                unitOfPower.Ws);
+    }
+
+    /**
+     * This method returns the amount of energy.
+     */
+    @Basic
+    public double getAmountOfEnergy() {
+        return energy.getAmountOfEnergy();
+    }
+
+    private Energy energy;
+}

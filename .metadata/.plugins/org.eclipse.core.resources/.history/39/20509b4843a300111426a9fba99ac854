@@ -1,0 +1,53 @@
+package roborally.program;
+
+import java.util.*;
+
+import roborally.model.Robot;
+
+class Seq extends CombinedCommand {
+
+    Seq(String commandString, Robot robot) {
+        super(robot);
+
+        for (String command : Program.allSubParenthesed(commandString
+                .substring(5, commandString.length() - 1)))
+            sequence.add(newCommand(command, robot));
+    }
+
+    @Override
+    void execute() {
+        if (robot != null) {
+            isBusy = true;
+            Command command = sequence.get(seqCounter);
+            command.execute();
+            if (!(command instanceof CombinedCommand && ((CombinedCommand) command)
+                    .isBusy()))
+                seqCounter++;
+            if (seqCounter == sequence.size()) {
+                seqCounter = 0;
+                isBusy = false;
+            } else {
+                robot.getProgram().decrementProgramCounter();
+            }
+        }
+    }
+
+    public String toString() {
+        String newLine = System.getProperty("line.separator");
+        String commandString = "(seq" + newLine;
+        for (Command command : sequence)
+            commandString += "  "
+                    + command.toString().replace(newLine, newLine + "  ")
+                    + newLine;
+
+        return commandString + ")";
+    }
+
+    boolean isBusy() {
+        return isBusy;
+    }
+
+    private final List<Command> sequence = new ArrayList<Command>();
+    private int seqCounter = 0;
+    private boolean isBusy = false;
+}

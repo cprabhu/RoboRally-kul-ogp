@@ -1,0 +1,10 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+public abstract class BasicCondition extends Condition {
+
+    public BasicCondition(String basicCondition) {
+        super(basicCondition);
+    }
+}

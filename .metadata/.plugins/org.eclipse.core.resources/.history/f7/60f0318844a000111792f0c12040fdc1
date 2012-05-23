@@ -1,0 +1,15 @@
+package roborally.program;
+
+class If extends CombinedCommand {
+
+    If(String commandString) {
+        super(commandString);
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

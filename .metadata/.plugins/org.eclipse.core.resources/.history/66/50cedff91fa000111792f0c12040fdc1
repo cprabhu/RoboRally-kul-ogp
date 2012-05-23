@@ -1,0 +1,11 @@
+package roborally.program;
+
+public class True extends BasicCondition {
+
+    @Override
+    public void evaluate() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

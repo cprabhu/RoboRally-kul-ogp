@@ -1,0 +1,12 @@
+1332185689058	Extract method 'getBoundaryInQuadrant'
+1332190367848	Rename local variable 'robot2boundary'
+1332190378402	Rename local variable 'robot1boundary'
+1332190407944	Rename local variable 'robot1coord'
+1332190421505	Rename local variable 'robot2coord'
+1332193394991	Extract local variable 'firstPair'
+1332358712243	Move compilation units
+1332358737079	Move compilation units
+1332359078325	Rename package 'roborally.res'
+1332447102588	Delete element
+1332447174886	Extract interface 'IRobot'
+1332447195944	Move compilation unit

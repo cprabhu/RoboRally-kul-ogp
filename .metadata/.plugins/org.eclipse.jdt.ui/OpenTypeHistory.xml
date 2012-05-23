@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+<typeInfo handle="=RoboRally/src&lt;roborally{IFacade.java[IFacade" modifiers="513" timestamp="1337641546000"/>
+<typeInfo handle="=RoboRally/src&lt;roborally.model{Element.java[Element" modifiers="1025" timestamp="1337791252000"/>
+<typeInfo handle="=RoboRally/src&lt;roborally.model{Item.java[Item" modifiers="1025" timestamp="1337791244000"/>
+<typeInfo handle="=RoboRally/\/System\/Library\/Java\/JavaVirtualMachines\/1.6.0.jdk\/Contents\/Classes\/classes.jar&lt;com.sun.jdi.connect(Connector$BooleanArgument.class[BooleanArgument" modifiers="1545" timestamp="1333999695000"/>
+<typeInfo handle="=RoboRally/src&lt;roborally.filters{BooleanExtractor.java[BooleanExtractor" modifiers="513" timestamp="1337791248000"/>
+<typeInfo handle="=RoboRally/src&lt;roborally.program{CombinedCondition.java[CombinedCondition" modifiers="1024" timestamp="1337791248000"/>
+</typeInfoHistroy>

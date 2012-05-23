@@ -1,0 +1,8 @@
+package roborally.program;
+
+public abstract class CombinedCondition extends Condition {
+
+    public CombinedCondition() {
+        super(conditionString);
+    }
+}

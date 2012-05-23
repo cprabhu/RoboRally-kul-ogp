@@ -1,0 +1,67 @@
+package roborally.program;
+
+import java.util.List;
+
+import roborally.model.Robot;
+
+/**
+ * A class for representing the while construct.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+class While extends CombinedCommand {
+
+    /**
+     * Initializes the while construct with a string and a robot.
+     * 
+     * @param commandString
+     *            The parameter commandString holds the contents of the while
+     *            construct.
+     * @param robot
+     *            The parameter robot is the executing robot.
+     */
+    While(String commandString, Robot robot) {
+        super(robot);
+
+        List<String> whileString = Program.allSubParenthesed(commandString
+                .substring(7, commandString.length() - 1));
+
+        condition = Condition.newCondition(whileString.get(0), robot);
+        command = newCommand(whileString.get(1), robot);
+    }
+
+    @Override
+    void execute() {
+        if (robot != null)
+            isBusy = true;
+        if (condition.evaluate() || command instanceof CombinedCommand
+                && ((CombinedCommand) command).isBusy()) {
+            command.execute();
+            robot.getProgram().decrementProgramCounter();
+        }
+        if (!(condition.evaluate() || command instanceof CombinedCommand
+                && ((CombinedCommand) command).isBusy()))
+            isBusy = false;
+    }
+
+    @Override
+    boolean isBusy() {
+        return isBusy;
+    }
+
+    public String toString() {
+        String newLine = System.getProperty("line.separator");
+        String commandString = "(while" + newLine + "  "
+                + condition.toString().replace(newLine, newLine + "  ")
+                + newLine + "  "
+                + command.toString().replace(newLine, newLine + "  ") + newLine
+                + ")";
+
+        return commandString;
+    }
+
+    private Condition condition;
+    private Command command;
+    private boolean isBusy;
+}

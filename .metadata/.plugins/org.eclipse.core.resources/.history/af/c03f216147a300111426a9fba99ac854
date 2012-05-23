@@ -1,0 +1,42 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+/**
+ * A Class for representing the EnergyAtLeast condition.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+class EnergyAtLeast extends BasicCondition {
+
+    /**
+     * Initializes the EnergyAtLeast condition.
+     * 
+     * @param energyAmount
+     *            The parameter energyAmount is the energy boundry for the
+     *            EnergyAtLeast method.
+     * @param robot
+     *            The parameter robot is the robot for which the parameter will
+     *            be evaluated.
+     */
+    EnergyAtLeast(double energyAmount, Robot robot) {
+        this.energyAmount = energyAmount;
+        this.robot = robot;
+    }
+
+    @Override
+    boolean evaluate() {
+        if (robot != null && robot.getAmountOfEnergy() >= energyAmount)
+            return true;
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "(energy-at-least " + String.format("%.0f", energyAmount) + ")";
+    }
+
+    private double energyAmount;
+    private Robot robot;
+}

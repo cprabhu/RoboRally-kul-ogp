@@ -1,0 +1,8 @@
+package roborally.program;
+
+public abstract class BasicCommand extends Command {
+
+    BasicCommand(String commandString) {
+        super(commandString);
+    }
+}

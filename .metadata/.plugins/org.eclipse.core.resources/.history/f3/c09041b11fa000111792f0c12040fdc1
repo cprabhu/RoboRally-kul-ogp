@@ -1,0 +1,22 @@
+package roborally.program;
+
+public class BasicCondition implements Condition {
+
+    private enum Condition {
+        TRUE("(true)"), ENERGYATLEAST(""), ATITEM("(at-item)"), CANHITROBOT(
+                "(can-hit-robot)"), WALL("(wall)");
+
+        private double energyAmount;
+    }
+
+    @Override
+    public void evaluate() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public String toString() {
+        return "I'm a Basic Condition!! :)";
+    }
+}

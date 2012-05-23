@@ -1,0 +1,111 @@
+package roborally.model;
+
+import java.util.Random;
+
+import roborally.model.auxiliary.Energy;
+import roborally.model.auxiliary.Position;
+import roborally.model.auxiliary.Weight;
+import roborally.model.auxiliary.Energy.unitOfPower;
+
+/**
+ * This class represents a surprise box.
+ * 
+ * @author Ben Adriaenssens (<ben.adriaenssens@student.kuleuven.be>) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+public class SurpriseBox extends Item {
+
+    /**
+     * Initialize a new surprise box.
+     */
+    public SurpriseBox() {
+    }
+
+    /**
+     * Initialize a new surprise box with a position.
+     * 
+     * @param position
+     *      | new.getPosition() == position
+     */
+    public SurpriseBox(Position position) {
+        super(position);
+    }
+
+    /**
+     * Initialize a new surprise box with a position and a weight.
+     * 
+     * @param position
+     *      | new.getPosition() == position
+     * @param weight
+     *      | new.getWeight() == weight
+     */
+    public SurpriseBox(Position position, Weight weight) {
+        super(position, weight);
+    }
+
+    /**
+     * Hit every element on neighbouring positions and terminate this
+     * SurpriseBox.
+     * 
+     * @effect ...
+     *      | for neighbour in getPosition().getNeigbours()
+     *      |       for element in neighbour.getElements()
+     *      |           element.hit()
+     */
+    @Override
+    public void hit() {
+        for (Position neighbour : position.getNeighbours())
+            for (Element elem : neighbour.getElements())
+                elem.hit();
+        terminate();
+    }
+
+    /**
+     * One of the following happens at random:
+     *  - The robot using this SurpriseBox is hit.
+     *  - The robot using this SurpriseBox is teleported to a random position
+     *      on the same board.
+     *  - This SurpriseBox is replaced at random by a Battery, RepairKit or
+     *      SurpriseBox.
+     *      
+     * @effect one of robot.hit(),
+     *  board.putElement(Position.newPosition(rand(x), rand(y), board), robot),
+     *  robot.pickup(new Battery(robot.getPosition()),
+     *  robot.pickup(new RepairKit(robot.getPosition(), getWeight(),
+     *      new Energy(1000, Ws)) or
+     *  robot.pickup(new SurpriseBox(robot.getPosition())
+     * @effect robot.drop(this)
+     * @effect terminate()
+     */
+    @Override
+    public void use(Robot robot) {
+        switch (new Random().nextInt(3)) {
+        case 0:
+            robot.hit();
+            break;
+        case 1:
+            Board board = robot.getPosition().BOARD;
+            long x = new Random().nextInt((int) Math.min(board.WIDTH,
+                    Integer.MAX_VALUE));
+            long y = new Random().nextInt((int) Math.min(board.HEIGHT,
+                    Integer.MAX_VALUE));
+            board.putElement(Position.newPosition(x, y, board), robot);
+            break;
+        case 2:
+            switch (new Random().nextInt(3)) {
+            case 0:
+                robot.pickup(new Battery(robot.getPosition()));
+                break;
+            case 1:
+                robot.pickup(new RepairKit(robot.getPosition(), getWeight(),
+                        new Energy(1000, unitOfPower.Ws)));
+                break;
+            case 2:
+                robot.pickup(new SurpriseBox(robot.getPosition()));
+                break;
+            }
+        }
+        robot.drop(this);
+        terminate();
+    }
+}

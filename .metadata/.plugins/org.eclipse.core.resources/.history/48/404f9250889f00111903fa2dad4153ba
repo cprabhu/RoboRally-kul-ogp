@@ -1,0 +1,19 @@
+package roborally.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class EnergyAtLeastExtractorTest {
+
+    @Test
+    public void testEnergyAtLeastExtractor() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        fail("Not yet implemented");
+    }
+
+}

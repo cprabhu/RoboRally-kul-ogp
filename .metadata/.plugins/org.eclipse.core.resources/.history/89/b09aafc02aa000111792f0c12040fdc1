@@ -1,0 +1,33 @@
+package roborally.program;
+
+import java.util.Scanner;
+
+import roborally.model.Robot;
+
+public abstract class Condition {
+
+    public Condition(String conditionString, Robot robot) {
+        this.conditionString = conditionString;
+        this.robot = robot;
+    }
+
+    public Condition newCondition(String conditionString) {
+        String condition = new Scanner(conditionString).next("");
+        if (condition.equals("true"))
+            return new True();
+        else if (condition.equals("energy-at-least")) {
+            private double energyAmount = conditionScanner.nextDouble();
+            return new EnergyAtLeast(double energyAmount, robot);
+        }
+    }
+
+    public abstract boolean evaluate();
+
+    @Override
+    public String toString() {
+        return conditionString;
+    }
+
+    private String conditionString;
+    protected Robot robot;
+}

@@ -1,0 +1,22 @@
+package roborally.program;
+
+import java.util.Scanner;
+
+import roborally.model.Robot;
+
+public class EnergyAtLeast extends BasicCondition {
+
+    EnergyAtLeast(String conditionString, Robot robot) {
+        super(conditionString, robot);
+
+        Scanner conditionScanner = new Scanner(conditionString);
+        energyAmount = conditionScanner.nextDouble();
+    }
+
+    @Override
+    public boolean evaluate() {
+        if (robot.get)
+    }
+
+    private double energyAmount;
+}

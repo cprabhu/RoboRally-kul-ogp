@@ -1,0 +1,16 @@
+package roborally.program;
+
+import java.util.Scanner;
+
+public class Not extends CombinedCondition {
+
+    Not(String conditionString, Robot robot) {
+        super(conditionString);
+
+        condition = newCondition(
+                conditionString.substring(4, conditionString.length() - 1),
+                robot);
+    }
+
+    private Condition condition;
+}

@@ -1,0 +1,19 @@
+package roborally.program;
+
+public abstract class BasicCondition implements Condition {
+
+    public BasicCondition(String basicCondition) {
+
+    }
+
+    @Override
+    public void evaluate() {
+    }
+
+    @Override
+    public String toString() {
+        return basicCondition;
+    }
+
+    private String basicCondition;
+}

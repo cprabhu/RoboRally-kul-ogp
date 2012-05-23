@@ -1,0 +1,19 @@
+package roborally.program;
+
+import java.util.*;
+
+class Seq extends CombinedCommand {
+
+    Seq(String commandString, Robot robot) {
+        super(commandString, robot);
+
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+    List<Command> sequence = new ArrayList<Command>();
+}

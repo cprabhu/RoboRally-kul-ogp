@@ -1,0 +1,82 @@
+package roborally.program;
+
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import roborally.model.Robot;
+
+/**
+ * This class represents a condition.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+abstract class Condition {
+
+    /**
+     * Construct a condition given a String and an executing robot.
+     * 
+     * @param conditionString
+     *      The string containing the condition.
+     * @param robot
+     *      The robot for which the condition is evaluated.
+     * @return new True if the first word of the conditionString is "true".
+     * @return new EnergyAtLeast if the first word of the conditionString is
+     *      "energy-at-least".
+     * @return new AtItem if the first word of the conditionString is "at-item".
+     * @return new CanHitRobot if the first word of the conditionString is
+     *      "can-hit-robot".
+     * @return new Wall if the first word of the conditionString is "wall".
+     * @return new And if the first word of the conditionString is "and".
+     * @return new Or if the first word of the conditionString is "or".
+     * @return new Not if the first word of the conditionString is "not".
+     * @throws IllegalArgumentException
+     *      This condition must have a valid conditionString.
+     */
+    static Condition newCondition(String conditionString, Robot robot)
+            throws IllegalArgumentException {
+        Matcher conditionMatcher = Pattern.compile("[a-z-]+").matcher(
+                conditionString);
+        conditionMatcher.find();
+        String condition = conditionString.substring(conditionMatcher.start(),
+                conditionMatcher.end());
+        if (condition.equals("true"))
+            return new True();
+        else if (condition.equals("energy-at-least")) {
+            Scanner conditionScanner = new Scanner(conditionString);
+            conditionScanner.useDelimiter("[\\D]+");
+            double energyAmount = conditionScanner.nextDouble();
+            return new EnergyAtLeast(energyAmount, robot);
+        } else if (condition.equals("at-item"))
+            return new AtItem(robot);
+        else if (condition.equals("can-hit-robot"))
+            return new CanHitRobot(robot);
+        else if (condition.equals("wall"))
+            return new Wall(robot);
+        else if (condition.equals("and"))
+            return new And(conditionString, robot);
+        else if (condition.equals("or"))
+            return new Or(conditionString, robot);
+        else if (condition.equals("not"))
+            return new Not(conditionString, robot);
+        throw new IllegalArgumentException("newCondition: The condition '"
+                + condition + "' couldn't be interpreted.");
+    }
+
+    /**
+     * Evaluate this condition.
+     * 
+     * @return true if this condition holds.
+     * @return false otherwise.
+     */
+    abstract boolean evaluate();
+
+    /**
+     * Return the string representation of this condition.
+     * 
+     * @return The string representation of this condition.
+     */
+    @Override
+    public abstract String toString();
+}

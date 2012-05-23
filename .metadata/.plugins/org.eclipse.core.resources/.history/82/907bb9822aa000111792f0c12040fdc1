@@ -1,0 +1,24 @@
+package roborally.program;
+
+import java.util.Scanner;
+
+public abstract class Condition {
+
+    public Condition(String conditionString) {
+        this.conditionString = conditionString;
+    }
+
+    public Condition newCondition(String conditionString) {
+        String condition = new Scanner(conditionString).next("");
+        if (condition )
+    }
+
+    public abstract boolean evaluate();
+
+    @Override
+    public String toString() {
+        return conditionString;
+    }
+
+    private String conditionString;
+}

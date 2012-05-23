@@ -1,0 +1,51 @@
+package roborally.program;
+
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import roborally.model.Robot;
+
+/**
+ * This class represents a condition.
+ * 
+ * @author Ben Adriaenssens (ben.adriaenssens@student.kuleuven.be) - WtkCws,
+ *         Toon Nolten (toon.nolten@student.kuleuven.be) - CwsElt.
+ */
+abstract class Condition {
+
+    static Condition newCondition(String conditionString, Robot robot)
+            throws IllegalArgumentException {
+        Matcher conditionMatcher = Pattern.compile("[a-z-]+").matcher(
+                conditionString);
+        conditionMatcher.find();
+        String condition = conditionString.substring(conditionMatcher.start(),
+                conditionMatcher.end());
+        if (condition.equals("true"))
+            return new True();
+        else if (condition.equals("energy-at-least")) {
+            Scanner conditionScanner = new Scanner(conditionString);
+            conditionScanner.useDelimiter("[\\D]+");
+            double energyAmount = conditionScanner.nextDouble();
+            return new EnergyAtLeast(energyAmount, robot);
+        } else if (condition.equals("at-item"))
+            return new AtItem(robot);
+        else if (condition.equals("can-hit-robot"))
+            return new CanHitRobot(robot);
+        else if (condition.equals("wall"))
+            return new Wall(robot);
+        else if (condition.equals("and"))
+            return new And(conditionString, robot);
+        else if (condition.equals("or"))
+            return new Or(conditionString, robot);
+        else if (condition.equals("not"))
+            return new Not(conditionString, robot);
+        throw new IllegalArgumentException("newCondition: The condition '"
+                + condition + "' couldn't be interpreted.");
+    }
+
+    abstract boolean evaluate();
+
+    @Override
+    public abstract String toString();
+}

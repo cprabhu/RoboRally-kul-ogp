@@ -1,0 +1,8 @@
+#Tue May 22 15:58:55 CEST 2012
+eclipse.preferences.version=1
+org.eclipse.ui.internal.views.markers.CachedMarkerBuilderorg.eclipse.ui.views.TaskList=<?xml version\="1.0" encoding\="UTF-8"?>\n<filterGroups andFilters\="false">\n<filterGroup IMemento.internal.id\="TODOs" enabled\="false" scope\="1" workingSet\="Aggregate for window 1330687508542">\n<fieldFilter IMemento.internal.id\="org.eclipse.ui.ide.completionField" completion\="3"/>\n<fieldFilter IMemento.internal.id\="org.eclipse.ui.ide.priorityField" selectedPriorities\="7"/>\n<fieldFilter IMemento.internal.id\="org.eclipse.ui.ide.descriptionField" containsModifier\="CONTAINS" containsText\="TODO"/>\n<fieldFilter IMemento.internal.id\="org.eclipse.ui.ide.markerType"/>\n</filterGroup>\n</filterGroups>
+TASKS_FILTERS_MIGRATE=true
+tipsAndTricks=true
+platformState=1330598281885
+quickStart=false
+PROBLEMS_FILTERS_MIGRATE=true

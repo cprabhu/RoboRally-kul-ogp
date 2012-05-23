@@ -1,0 +1,12 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+abstract class CombinedCommand extends Command {
+
+    protected CombinedCommand(Robot robot) {
+        super(robot);
+    }
+    
+    abstract boolean isBusy()
+}

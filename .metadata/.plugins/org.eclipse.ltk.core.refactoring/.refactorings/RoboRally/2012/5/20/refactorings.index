@@ -1,0 +1,22 @@
+1337001776998	Rename field 'possessions'
+1337008310248	Extract local variable 'testRobot'
+1337094998575	Rename local variable 'nohitBattery1'
+1337095006990	Rename local variable 'nohitBattery2'
+1337095013913	Rename local variable 'nohitBattery3'
+1337095020551	Rename local variable 'nohitBattery4'
+1337096496018	Delete element
+1337096546918	Delete element
+1337186617545	Rename type 'booleanExtractor'
+1337186740646	Delete element
+1337195037311	Rename field 'x1'
+1337195044717	Rename field 'y1'
+1337195051137	Rename field 'x2'
+1337195096289	Rename local variable 'x1'
+1337195102815	Rename local variable 'y1'
+1337195110136	Rename local variable 'x2'
+1337253811115	Move compilation unit
+1337253836654	Move compilation unit
+1337253851463	Move compilation unit
+1337253874960	Move compilation unit
+1337276122838	Delete element
+1337348629945	Extract local variable 'commandMatcher'

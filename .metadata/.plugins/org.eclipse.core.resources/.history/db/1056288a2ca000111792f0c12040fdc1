@@ -1,0 +1,19 @@
+package roborally.program;
+
+import roborally.model.*;
+
+public class AtItem extends BasicCondition {
+
+    AtItem(String conditionString, Robot robot) {
+        super(conditionString);
+    }
+
+    @Override
+    public boolean evaluate() {
+        if (robot.getPosition().getElementsOf(Item.class).size() > 0)
+            return true;
+        return false;
+    }
+
+    private Robot robot;
+}

@@ -1,0 +1,22 @@
+package roborally.program;
+
+import roborally.model.*;
+
+class PickupAndUse extends BasicCommand {
+
+    PickupAndUse(Robot robot) {
+        super("(pickup-and-use)", robot);
+    }
+
+    @Override
+    public void execute() {
+        Item itemToPickupAndUse;
+        if (robot != null && robot.getPosition() != null) {
+            for (Element item : robot.getPosition().getElementsOf(Item.class)) {
+                itemToPickupAndUse = item;
+                break;
+            }
+
+        }
+    }
+}

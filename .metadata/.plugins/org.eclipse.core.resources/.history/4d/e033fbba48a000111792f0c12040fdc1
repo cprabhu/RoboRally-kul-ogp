@@ -1,0 +1,17 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+class While extends CombinedCommand {
+
+    While(String commandString, Robot robot) {
+
+    }
+
+    @Override
+    public void execute() {
+        // TODO Auto-generated method stub
+
+    }
+
+}

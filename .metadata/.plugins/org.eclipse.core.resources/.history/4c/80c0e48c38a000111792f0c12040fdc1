@@ -1,0 +1,22 @@
+package roborally.program;
+
+import roborally.model.Robot;
+
+public class Wall extends BasicCondition {
+
+    Wall(Robot robot) {
+        super("(wall)");
+        this.robot = robot;
+    }
+
+    @Override
+    public boolean evaluate() {
+        if (robot.getOrientation().turnClockwise90()
+                .nextPosition(robot.getPosition())
+                .getElementsOf(roborally.model.Wall.class).size() > 0)
+            return true;
+        return false;
+    }
+
+    private Robot robot;
+}
