@@ -3,8 +3,8 @@
 <workbenchAdvisor/>
 <window height="1414" width="1417" x="1141" y="22">
 <fastViewData fastViewLocation="1024">
-<orientation position="512" view="org.eclipse.ui.views.ProgressView"/>
 <orientation position="512" view="org.eclipse.jdt.ui.TypeHierarchy"/>
+<orientation position="512" view="org.eclipse.ui.views.ProgressView"/>
 <orientation position="512" view="org.eclipse.ui.console.ConsoleView"/>
 <orientation position="512" view="org.eclipse.ui.views.TaskList"/>
 <orientation position="512" view="org.eclipse.ui.views.ContentOutline"/>
@@ -54,8 +54,7 @@
 </view>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
-<expanded>
-<category IMemento.internal.id="Errors (1 item)"/>
+<expanded>&#x0A;<category IMemento.internal.id="Errors (1 item)"/>
 </expanded>
 <columnWidths org.eclipse.ui.ide.locationField="0" org.eclipse.ui.ide.markerType="0" org.eclipse.ui.ide.pathField="0" org.eclipse.ui.ide.resourceField="0" org.eclipse.ui.ide.severityAndDescriptionField="0"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
